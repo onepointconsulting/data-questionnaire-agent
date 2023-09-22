@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "data-questionnaire-agent"
+version = "0.1.0"
+description = "Implementation of an agent which asks questions and gives advices about a predefined question."
+authors = ["Gil Fernandes <gil.fernandes@onepointltd.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+openai = "^0.28.0"
+langchain = "^0.0.292"
+prompt-toolkit = "^3.0.39"
+tomli = "^2.0.1"
+faiss-cpu = "^1.7.4"
+tiktoken = "^0.5.1"
+python-dotenv = "^1.0.0"
+pydantic = "1.10.12"
+duckduckgo-search = "^3.8.5"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
