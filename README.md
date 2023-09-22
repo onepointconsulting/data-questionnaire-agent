@@ -24,9 +24,15 @@ poetry install
 
 ## Running
 
+
+Coming soon:
+
 ```
-chainlit run ./data_integration_questionnaire/ui/integration_questionnaire_chainlit.py --port 8080
+chainlit run ./data_integration_agent/ui/integration_questionnaire_chainlit.py --port 8080
 ```
+
+This is not yet implemented.
+
 
 ## Configuration
 

@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 
 # Avoid pushing the embedding database.
-.embeddings/
+embeddings/
