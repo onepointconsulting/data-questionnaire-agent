@@ -4,7 +4,6 @@ from pathlib import Path
 
 from langchain.schema import Document
 from langchain.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from langchain.vectorstores import FAISS
 
@@ -29,10 +28,9 @@ def load_text(path: Path) -> List[Document]:
     """
     assert path.exists()
     all_pages = []
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
     for text_file in path.glob("*.txt"):
         loader = TextLoader(text_file.as_posix(), encoding="utf-8")
-        pages: List[Document] = loader.load_and_split(text_splitter=text_splitter)
+        pages: List[Document] = loader.load()
         for i, p in enumerate(pages):
             file_name = re.sub(r".+[\\/]", "", p.metadata["source"])
             p.metadata["source"] = f"{file_name} page {i + 1}"

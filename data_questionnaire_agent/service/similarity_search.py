@@ -7,7 +7,7 @@ from data_questionnaire_agent.service.embedding_service import (
     load_text,
 )
 
-from langchain.vectorstores import FAISS
+from langchain.vectorstores import FAISS, Chroma
 
 
 def init_vector_search() -> FAISS:

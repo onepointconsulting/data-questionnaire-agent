@@ -78,3 +78,4 @@ if __name__ == "__main__":
     agent_executor = create_clarification_agent()
     response = agent_executor.run("What is dark data?")
     logger.info('Agent response: %s', response)
+    logger.info('Agent response type: %s', type(response))

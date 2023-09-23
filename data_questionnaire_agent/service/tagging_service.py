@@ -52,9 +52,12 @@ def sentiment_chain_factory() -> LLMChain:
 
 chain = create_tagging_chain_pydantic(ResponseTags, cfg.llm, prompt_factory_sentiment())
 
+def prepare_sentiment_input(question: str) -> dict:
+    return {"answer": question}
+
 
 def tag_response(response: str) -> dict:
-    res = chain({"answer": response})
+    res = chain(prepare_sentiment_input(response))
     return res
 
 
