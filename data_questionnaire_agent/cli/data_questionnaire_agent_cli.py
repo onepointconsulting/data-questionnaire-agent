@@ -72,6 +72,8 @@ if __name__ == "__main__":
     question_answer = QuestionAnswer.question_answer_factory(initial_question, "")
     questionnaire = Questionnaire(questions=[question_answer])
 
+    response_questions: ResponseQuestions = None
+
     while True:
         match workflow_step:
             case WorkflowState.INITIAL:
@@ -94,8 +96,8 @@ if __name__ == "__main__":
                     questions_per_batch=cfg.questions_per_batch,
                     knowledge_base=search_res,
                 )
-                response: ResponseQuestions = initial_question_chain.run(input)
-                logger.info("LLM questions: %s", response.questions)
+                response_questions = initial_question_chain.run(input)
+                logger.info("LLM questions: %s", response_questions.questions)
                 workflow_step = WorkflowState.PROCESS_RESPONSE
 
             case WorkflowState.PROCESS_RESPONSE:
@@ -108,5 +110,8 @@ if __name__ == "__main__":
                         logger.info("Clarifications: %s", clarification_agent.run(clarification_question))
                 workflow_step = WorkflowState.SECONDARY_QUESTION
                 break
+            case WorkflowState.SECONDARY_QUESTION:
+                if response_questions:
+                    pass
             case _:
                 break
