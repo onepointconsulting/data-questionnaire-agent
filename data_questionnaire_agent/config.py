@@ -55,6 +55,7 @@ class Config:
 
     # Questions
     questions_per_batch = int(os.getenv("QUESTIONS_PER_BATCH"))
+    minimum_questionnaire_size = int(os.getenv("MINIMUM_QUESTIONNAIRE_SIZE"))
 
 cfg = Config()
 

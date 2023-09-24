@@ -34,6 +34,9 @@ class Questionnaire:
     def __repr__(self) -> str:
         return "\n\n".join([str(qa) for qa in self.questions])
 
+    def __len__(self):
+        return len(self.questions)
+
     def answers_str(self) -> str:
         return "\n\n".join(
             [

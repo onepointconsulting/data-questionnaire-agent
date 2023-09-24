@@ -84,7 +84,7 @@ The questions and answers section answered by the customer starts with ==== QUES
 {questions_answers}
 ==== QUESTIONNAIRE END ====
 
-Here is an example of a questionnaire with answers that are too vague to which you should not give answers:
+Here is an example of a questionnaire with answers that are too vague to which you should not give advice:
 ==== QUESTIONNAIRE EXAMPLE ====
 question: Which area of your data ecosystem are you most concerned about?
 answer: Data Quality
@@ -92,6 +92,20 @@ question: What specific issues are you facing with data quality? Are they relate
 answer: Accuracy
 question: What measures are currently in place to ensure data quality? Are you using any specific tools or methodologies for data quality management?
 answer: We are using an MDM product.
+==== QUESTIONNAIRE EXAMPLE END ====
+
+Here is an example of a questionnaire with answers that have enough detail to which you should give advices:
+==== QUESTIONNAIRE EXAMPLE ====
+question: Which area of your data ecosystem are you most concerned about?
+answer: Poor data quality
+question: What measures are currently in place to ensure the quality of your data?
+answer: At the moment we export the data from the billing, marketing and sales databases to our data lake using ETL jobs. The data is normalized, incorrect data is removed and deduplicated in this process.
+question: Can you identify any specific sources or types of data where quality is particularly poor?
+answer: Yes, customer data. It is often incorrect and has many duplicates.
+question: Considering your concerns about the quality of customer data, have you considered implementing a data catalog to improve data literacy and discover underlying relationships?
+answer: Yes, but we have not done so. Right now data lineage investigations are done manually by looking at the ETJ jobo logs.
+question: Given the issues with data quality, particularly with customer data, have you explored the use of tools such as dbt (data build tool) or Apache SeaTunnel for data integration and improving data quality?
+answer: Not yet, but I would like to know about it.
 ==== QUESTIONNAIRE EXAMPLE END ====
 
 """

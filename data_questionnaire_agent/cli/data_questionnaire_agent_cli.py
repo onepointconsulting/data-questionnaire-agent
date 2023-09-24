@@ -1,4 +1,6 @@
 from enum import Enum
+from data_questionnaire_agent.service.advice_service import chain_factory_advice, prepare_conditional_advice
+from data_questionnaire_agent.service.question_generation_service import chain_factory_secondary_question, prepare_secondary_question
 
 from prompt_toolkit import prompt
 from prompt_toolkit.formatted_text import HTML
@@ -18,7 +20,7 @@ from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
 )
-from data_questionnaire_agent.model.openai_schema import ResponseQuestions, ResponseTags
+from data_questionnaire_agent.model.openai_schema import ConditionalAdvice, ResponseQuestions, ResponseTags
 from data_questionnaire_agent.service.clarifications_agent import (
     create_clarification_agent,
 )
@@ -54,8 +56,27 @@ def prompt_continuation(width, line_number, wrap_count):
         return HTML("<strong>%s</strong>") % text
 
 
-def log_question(question):
+def ask_question(question) -> str:
     logger.info(" Q: %s", question)
+    return prompt(
+        "(data questionnaire)> ",
+        multiline=True,
+        prompt_continuation=prompt_continuation,
+    )
+
+
+def process_clarifications(has_questions_chain, clarification_agent, content):
+    response_tags: ResponseTags = has_questions_chain.run(
+        prepare_sentiment_input(content)
+    )
+    logger.info("Response tags: %s", response_tags)
+    if len(response_tags.extracted_questions) > 0:
+        for clarification_question in response_tags.extracted_questions:
+            logger.info("Question: %s", clarification_question)
+            logger.info(
+                "Clarifications: %s",
+                clarification_agent.run(clarification_question),
+            )
 
 
 if __name__ == "__main__":
@@ -67,6 +88,8 @@ if __name__ == "__main__":
     initial_question_chain = chain_factory_initial_question()
     has_questions_chain = sentiment_chain_factory()
     clarification_agent = create_clarification_agent()
+    secondary_question_chain = chain_factory_secondary_question()
+    advice_chain = chain_factory_advice()
 
     workflow_step = WorkflowState.INITIAL
     question_answer = QuestionAnswer.question_answer_factory(initial_question, "")
@@ -77,41 +100,70 @@ if __name__ == "__main__":
     while True:
         match workflow_step:
             case WorkflowState.INITIAL:
-                log_question(initial_question)
-                answer = prompt(
-                    "(data questionnaire)> ",
-                    multiline=True,
-                    prompt_continuation=prompt_continuation,
-                )
-                
+                answer = ask_question(initial_question)
                 if answer.lower().strip() == "q":
                     break
-                questionnaire.questions[-1].answer = answer
-                search_res = similarity_search(docsearch, answer, how_many=2)
+                questionnaire.questions[-1].answer = {"content": answer}
+                knowledge_base = similarity_search(docsearch, answer, how_many=2)
                 logger.info("You said: %s", answer)
-                logger.info("Search result: %s", search_res[:100])
+                logger.info("Search result: %s", knowledge_base[:100])
                 input = prepare_initial_question(
                     question=initial_question,
                     answer=answer,
                     questions_per_batch=cfg.questions_per_batch,
-                    knowledge_base=search_res,
+                    knowledge_base=knowledge_base,
                 )
                 response_questions = initial_question_chain.run(input)
                 logger.info("LLM questions: %s", response_questions.questions)
+
                 workflow_step = WorkflowState.PROCESS_RESPONSE
 
             case WorkflowState.PROCESS_RESPONSE:
                 answer = questionnaire.questions[-1].answer
-                response_tags: ResponseTags = has_questions_chain.run(prepare_sentiment_input(answer))
-                logger.info("Response tags: %s", response_tags)
-                if len(response_tags.extracted_questions) > 0:
-                    for clarification_question in response_tags.extracted_questions:
-                        logger.info("Question: %s", clarification_question)
-                        logger.info("Clarifications: %s", clarification_agent.run(clarification_question))
+                content = answer["content"]
+                process_clarifications(
+                    has_questions_chain, clarification_agent, content
+                )
+                
                 workflow_step = WorkflowState.SECONDARY_QUESTION
-                break
+
             case WorkflowState.SECONDARY_QUESTION:
+                quit = False
                 if response_questions:
-                    pass
+                    answers = []
+                    for question in response_questions.questions:
+                        answer = ask_question(question)
+                        if answer.lower().strip() == "q":
+                            quit = True
+                            break
+                        questionnaire.questions.append(
+                            QuestionAnswer.question_answer_factory(
+                                question, {"content": answer}
+                            )
+                        )
+                        answers.append(answer)
+                    process_clarifications(
+                        has_questions_chain, clarification_agent, "\n".join(answers)
+                    )
+                if quit:
+                    break
+                workflow_step = WorkflowState.ADVICE
+
+            case WorkflowState.ADVICE:
+                questionnaire_str = str(questionnaire)
+                knowledge_base = similarity_search(docsearch, questionnaire_str, how_many=2)
+                logger.info("Search result: %s", knowledge_base[:100])
+                advice_input = prepare_conditional_advice(knowledge_base=knowledge_base, questions_answers=questionnaire_str)
+                conditional_advice: ConditionalAdvice = advice_chain.run(advice_input)
+                if conditional_advice.has_advice and len(questionnaire) >= cfg.minimum_questionnaire_size:
+                    # We have advice
+                    for i, advice in enumerate(conditional_advice.advices):
+                        logger.info("%d. %s", i + 1, advice)
+                    break
+                # Generate more questions
+                secondary_question_input = prepare_secondary_question(questionnaire, knowledge_base)
+                response_questions: ResponseQuestions = secondary_question_chain.run(secondary_question_input)
+                workflow_step = WorkflowState.SECONDARY_QUESTION
+
             case _:
                 break
