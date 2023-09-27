@@ -1,0 +1,79 @@
+:root {
+    --text_blue: #0066A4;
+  }
+
+.markdown-body img {
+    width: 100%
+}
+
+.MuiFormControl-root.MuiFormControl-fullWidth.MuiTextField-root {
+    border: 1px var(--text_blue) solid;
+}
+
+.generated-message {
+    color: var(--text_blue)
+}
+
+.MuiButtonBase-root.MuiButtonBase-root.css-1vhtqje {
+    background-color: #edf3f8;
+    color: #91b3d6
+}
+
+.MuiButtonBase-root.MuiButton-root.css-1ruedog {
+    border: 1px solid var(--text_blue);
+    color: #5285be
+}
+
+.MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.MuiAvatar-fallback.css-13y7ul3 {
+    color: #4f83bd
+}
+
+.image-banner {
+    background: url("/public/images/banner_blank.png") center center / cover no-repeat;
+    color: white;
+    min-height: 10em;
+}
+
+.logo-box img {
+    position: relative;
+    right: -1em;
+    max-width: 68%
+}
+
+.image-banner > .css-dvxtzn {
+    align-items: start;
+}
+
+/* Hiding chat button */
+.logo-box + .MuiStack-root.css-1mzerio {
+    display: none;
+}
+
+/* Aavatar related */
+.MuiAvatar-circular {
+    margin: 0 auto
+}
+
+.css-kt4rn8 {
+    text-align: center;
+}
+/* End Avatar */
+
+/* Medium devices (tablets, 768px and up) */
+@media (max-width: 768px) {
+
+    /* Mobile title */
+    .css-17yvo7f {
+        font-size: 84%;
+        padding: 0 1em;
+    }
+ }
+
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+
+    .image-banner {
+        min-height: 15em;
+    }
+}

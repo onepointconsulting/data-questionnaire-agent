@@ -4,6 +4,7 @@ tip_language = "Tip: Please make sure that you write all your answers in British
 
 [general_settings]
 questions_per_batch = 2
+minimum_number_of_questions = 4
 
 
 [questionnaire]

@@ -25,6 +25,10 @@ class QuestionAnswer:
     @staticmethod
     def question_answer_factory(question: str, answer: dict):
         return QuestionAnswer(question=question, answer=answer, clarification="")
+    
+    @staticmethod
+    def question_factory(question: str):
+        return QuestionAnswer(question=question, answer="", clarification="")
 
 
 @dataclass

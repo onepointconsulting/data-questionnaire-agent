@@ -20,6 +20,7 @@ poetry init
 
 ```
 poetry install
+poetry add --editable \\wsl.localhost\Ubuntu\home\gilf\projects\chainlit-2023-september\backend\dist\chainlit-0.7.1-py3-none-any.whl
 ```
 
 ## Running
@@ -28,7 +29,7 @@ poetry install
 Coming soon:
 
 ```
-chainlit run ./data_integration_agent/ui/integration_questionnaire_chainlit.py --port 8080
+chainlit run .\data_questionnaire_agent\ui\data_questionnaire_chainlit.py --port 8080
 ```
 
 This is not yet implemented.
