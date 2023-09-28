@@ -19,4 +19,5 @@ async def process_clarifications_chainlit(questionnaire: Questionnaire, question
         for clarification_question in response_tags.extracted_questions:
             clarification = await clarification_agent.arun(clarification_question)
             await cl.Message(content=clarification).send()
+            
 

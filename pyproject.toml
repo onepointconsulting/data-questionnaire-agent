@@ -16,6 +16,7 @@ tiktoken = "^0.5.1"
 python-dotenv = "^1.0.0"
 pydantic = "1.10.12"
 duckduckgo-search = "^3.8.5"
+pdfkit = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

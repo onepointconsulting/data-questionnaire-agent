@@ -3,6 +3,8 @@ from typing import List
 from dataclasses import dataclass
 from typing import Union, Optional
 
+from data_questionnaire_agent.model.openai_schema import ResponseQuestions
+
 
 @dataclass
 class QuestionAnswer:
@@ -48,3 +50,26 @@ class Questionnaire:
                 for qa in self.questions
             ]
         )
+    
+    def to_html(self) -> str:
+        html = """<table>       
+"""
+        for qa in self.questions:
+            answer = qa.answer
+            html += f"""
+<tr>
+    <td class="onepoint-blue">
+        <br />
+        Q: {qa.question}
+    </td>
+</tr>
+<tr>
+    <td>A: {answer}</td>
+</tr>
+"""
+        html += "</table>"
+        return html
+    
+
+def convert_to_question_answers(response_questions: ResponseQuestions) -> List[QuestionAnswer]:
+    return [QuestionAnswer.question_factory(q) for q in response_questions.questions]

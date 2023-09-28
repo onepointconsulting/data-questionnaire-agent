@@ -40,7 +40,7 @@ class ResponseTags(BaseModel):
 
 
 class ConditionalAdvice(BaseModel):
-    """If there is enough information to give advice then advice will be available here."""    
+    """If there is enough information to give advice then advice will be available here."""
 
     has_advice: bool = Field(
         ...,
@@ -50,3 +50,10 @@ class ConditionalAdvice(BaseModel):
         ...,
         description="In case there is enough information to give advice, this list will contain advice to give to the user",
     )
+
+    def to_html(self) -> str:
+        html = "<ul>"
+        for advice in self.advices:
+            html += f'<li class="onepoint-blue">{advice}</li>'
+        html += "</ul>"
+        return html
