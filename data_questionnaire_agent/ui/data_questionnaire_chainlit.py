@@ -38,6 +38,7 @@ from data_questionnaire_agent.service.similarity_search import (
 from data_questionnaire_agent.ui.clarifications_chainlit import (
     process_clarifications_chainlit,
 )
+from data_questionnaire_agent.ui.mail_processor import process_send_email
 from data_questionnaire_agent.ui.pdf_processor import generate_display_pdf
 
 
@@ -58,10 +59,12 @@ async def init():
 async def setup_agent(settings: cl.ChatSettings):
     logger.info("Settings: %s", settings)
 
-    await process_questionnaire(settings)
+    advice_sent = await process_questionnaire(settings)
+    if not advice_sent:
+        await cl.Message(content="Session ended. Please restart the chat by pressing the 'New Chat' button.").send()
 
 
-async def process_questionnaire(settings: cl.ChatSettings):
+async def process_questionnaire(settings: cl.ChatSettings) -> bool:
     minimum_number_of_questions: int = int(settings[MINIMUM_NUMBER_OF_QUESTIONS])
     question_per_batch: int = int(settings[QUESTION_PER_BATCH])
     initial_question: str = settings[INITIAL_QUESTION]
@@ -88,16 +91,21 @@ async def process_questionnaire(settings: cl.ChatSettings):
             if has_advice:
                 await display_advice(conditional_advice)
                 await generate_display_pdf(conditional_advice, questionnaire)
+                await process_send_email(questionnaire, conditional_advice)
+                return True
+    return False
 
 
 async def loop_questions(questions: List[QuestionAnswer], questionnaire: Questionnaire):
     for question in questions:
-        response = await cl.AskUserMessage(
-            content=question.question,
-            timeout=cfg.ui_timeout,
-            author=AVATAR["CHATBOT"],
-        ).send()
-        logger.info(response)
+        response = None
+        while response is None:
+            response = await cl.AskUserMessage(
+                content=question.question,
+                timeout=cfg.ui_timeout,
+                author=AVATAR["CHATBOT"],
+            ).send()
+        logger.info("",response)
         question.answer = response["content"]
     questionnaire.questions.extend(questions)
     await process_clarifications_chainlit(questionnaire, len(questions))

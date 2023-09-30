@@ -69,7 +69,9 @@ can you please answer all questions you see in it?
 Please be concise and limit your replies to around 30 words if possible."""
 
 [advice]
-system_message = "You are a British data integration and gouvernance advisor that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems"
+system_message = """You are a British data integration and gouvernance advisor \
+that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems \
+You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present."""
 human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
 please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
 if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \

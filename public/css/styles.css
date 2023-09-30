@@ -59,6 +59,11 @@
 }
 /* End Avatar */
 
+/* Hide Ggithub button */
+a[href*='https://onepointltd.com'].css-1deacqj {
+    display: none
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (max-width: 768px) {
 

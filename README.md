@@ -20,7 +20,7 @@ poetry init
 
 ```
 poetry install
-poetry add --editable \\wsl.localhost\Ubuntu\home\gilf\projects\chainlit-2023-september\backend\dist\chainlit-0.7.1-py3-none-any.whl
+poetry add --editable \\wsl.localhost\Ubuntu\home\gilf\projects\chainlit-2023-september\backend\dist\chainlit-0.7.2-py3-none-any.whl
 ```
 
 ## Running
