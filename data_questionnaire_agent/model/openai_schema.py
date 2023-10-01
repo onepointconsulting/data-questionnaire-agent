@@ -57,3 +57,6 @@ class ConditionalAdvice(BaseModel):
             html += f'<li class="onepoint-blue">{advice}</li>'
         html += "</ul>"
         return html
+    
+    def __str__(self) -> str:
+        return "\n\n".join(self.advices) if self.advices is not None else ""

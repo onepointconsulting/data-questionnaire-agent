@@ -1,13 +1,16 @@
 from pathlib import Path
+from typing import List
+
+import tiktoken
+from langchain.vectorstores import FAISS
+from langchain.schema import Document
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.service.embedding_service import (
     generate_embeddings,
-    load_text,
+    load_text
 )
-
-from langchain.vectorstores import FAISS, Chroma
 
 
 def init_vector_search() -> FAISS:
@@ -28,16 +31,41 @@ def init_vector_search() -> FAISS:
             documents=documents, persist_directory=embedding_dir
         )
         return docsearch
-    
 
-def similarity_search(docsearch: FAISS, input: str, how_many=cfg.search_results_how_many) -> str:
-    doc_list = docsearch.similarity_search(input, k=how_many)
-    logger.info("Similarity search results: %s", len(doc_list))
+
+def join_pages(doc_list: List[Document]) -> str:
     return "\n\n".join([p.page_content for p in doc_list])
-    
+
+
+def similarity_search(
+    docsearch: FAISS, input: str, how_many=cfg.search_results_how_many
+) -> str:
+    token_count = 0
+    previous_res = ""
+    attempts = 0
+    max_attempts = 4
+    while attempts < max_attempts:
+        doc_list = docsearch.similarity_search(input, k=how_many + attempts)
+        logger.info("Similarity search results: %s", len(doc_list))
+        joined = join_pages(doc_list)
+        token_count = num_tokens_from_string(joined)
+        logger.info("Token count: %d", token_count)
+        attempts += 1
+        if token_count > cfg.token_limit:
+            return previous_res
+        previous_res = joined
+    return previous_res
+
+
+def num_tokens_from_string(string: str) -> int:
+    """Returns the number of tokens in a text string."""
+    encoding = tiktoken.encoding_for_model(cfg.model)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
+
 
 if __name__ == "__main__":
     docsearch = init_vector_search()
     search_res = similarity_search(docsearch, "Data Quality")
     print(search_res)
-
+    print(num_tokens_from_string(search_res))

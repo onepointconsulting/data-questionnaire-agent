@@ -57,7 +57,7 @@ async def process_send_email(
                 author=AVATAR["CHATBOT"],
             ).send()
     
-    extra_message = "" if has_replied else "We did nott hear from you... "
+    extra_message = "" if has_replied else "We did not hear from you... "
     await cl.Message(
         content=f"{extra_message}The questionnaire is complete. Please press the 'New Chat' button to restart.",
         author=AVATAR["CHATBOT"],

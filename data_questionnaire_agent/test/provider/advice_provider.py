@@ -21,3 +21,19 @@ is crucial for identifying areas where improvements can be made. Regularly monit
 enables you to detect issues early on and take corrective actions before they affect business operations.
 """
     ])
+
+
+def create_advice_2() -> ConditionalAdvice:
+    return ConditionalAdvice(has_advice=True, advices=[
+        """Given your concerns about invalid and duplicate data, it's crucial to enhance your data validation and deduplication processes. \
+Consider implementing more sophisticated data validation techniques, such as using advanced data profiling tools that can automatically detect and correct invalid entries.""",
+        """Your current method of using a simple rule engine for deduplication might not be sufficient for handling complex or large datasets. \
+Consider using automated deduplication tools that can identify and eliminate redundant records more efficiently and accurately.""",
+        """Your ETL jobs seem to be doing a good job at checking the validity of certain fields. \
+However, to improve the overall data quality, consider expanding these checks to other important fields as well.""",
+        """You mentioned that you are using a data warehouse with a single source of truth for customers. To ensure the consistency and accuracy of this data, \
+consider implementing a robust data governance policy. This policy should outline roles, responsibilities, standards, and processes related to data management.""",
+        """Lastly, consider implementing data observability practices. This involves continuously monitoring, tracking, and analyzing your data \
+as it flows through various stages of processing, storage, and transformation. This can help you maintain data integrity, detect anomalies, and troubleshoot issues in real-time or near-real-time.
+"""
+    ])

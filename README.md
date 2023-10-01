@@ -20,7 +20,7 @@ poetry init
 
 ```
 poetry install
-poetry add --editable \\wsl.localhost\Ubuntu\home\gilf\projects\chainlit-2023-september\backend\dist\chainlit-0.7.2-py3-none-any.whl
+poetry add --editable \\wsl.localhost\Ubuntu\home\gilf\projects\chainlit-2023-september\backend\dist\chainlit-0.7.4-py3-none-any.whl
 ```
 
 ## Running
@@ -82,5 +82,8 @@ SEARCH_RESULTS_HOW_MANY=4
 
 # Question generation related
 QUESTIONS_PER_BATCH=2
+
+# Token limit for chatgpt 4. Important to extend the context as much as possible using the vector DB search
+TOKEN_LIMIT=6000
 
 ```

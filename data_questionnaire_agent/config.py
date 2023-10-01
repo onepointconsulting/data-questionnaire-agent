@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.llms import OpenAI
 
 load_dotenv()
 
@@ -28,6 +29,10 @@ class Config:
         cache=has_langchain_cache,
         streaming=True,
     )
+
+    image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))
+    image_llm =  OpenAI(temperature=image_llm_temperature)
+
     verbose_llm = os.getenv("VERBOSE_LLM") == "true"
     ui_timeout = int(os.getenv("UI_TIMEOUT"))
     project_root = Path(os.getenv("PROJECT_ROOT"))
@@ -52,6 +57,7 @@ class Config:
     chunk_size = int(os.getenv("EMBEDDINGS_CHUNK_SIZE"))
     embeddings = OpenAIEmbeddings(chunk_size=chunk_size)
     search_results_how_many = int(os.getenv("SEARCH_RESULTS_HOW_MANY"))
+    token_limit = int(os.getenv("TOKEN_LIMIT"))
 
     # Questions
     questions_per_batch = int(os.getenv("QUESTIONS_PER_BATCH"))

@@ -59,7 +59,7 @@
 }
 /* End Avatar */
 
-/* Hide Ggithub button */
+/* Hide Github button */
 a[href*='https://onepointltd.com'].css-1deacqj {
     display: none
 }
