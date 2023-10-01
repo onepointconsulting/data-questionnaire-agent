@@ -46,7 +46,12 @@ from data_questionnaire_agent.ui.pdf_processor import generate_display_pdf
 from data_questionnaire_agent.toml_support import prompts
 
 
-docsearch = init_vector_search()
+@cl.cache
+def instantiate_doc_search():
+    return init_vector_search()
+
+
+docsearch = instantiate_doc_search()
 
 
 async def initial_message():
