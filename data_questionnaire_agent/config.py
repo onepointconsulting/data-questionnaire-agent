@@ -48,7 +48,6 @@ class Config:
     pdf_folder = Path(os.getenv("PDF_FOLDER"))
     create_if_not_exists(pdf_folder)
     use_tasklist = os.getenv("TASKLIST") == "true"
-    knowledge_base_path = Path(os.getenv("KNOWLEDGE_BASE_PATH"))
     show_chain_of_thought = os.getenv("SHOW_CHAIN_OF_THOUGHT") == 'true'
 
     # Embedding related

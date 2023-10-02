@@ -26,8 +26,6 @@ poetry add --editable \\wsl.localhost\Ubuntu\home\gilf\projects\chainlit-2023-se
 ## Running
 
 
-Coming soon:
-
 ```
 chainlit run .\data_questionnaire_agent\ui\data_questionnaire_chainlit.py --port 8080
 ```
@@ -67,9 +65,6 @@ PDF_FOLDER=C:/tmp/data_integration_questionnaire/pdfs
 
 # Whether to show the task list or not
 TASKLIST=false
-
-# The knowledge base path
-KNOWLEDGE_BASE_PATH=C:/development/playground/langchain/data_integration_questionnaire/docs/knowledge_base.txt
 
 # UI
 SHOW_CHAIN_OF_THOUGHT=true
