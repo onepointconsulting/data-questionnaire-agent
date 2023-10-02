@@ -1,5 +1,9 @@
 import chainlit as cl
 from asyncer import asyncify
+
+from langchain.vectorstores import FAISS
+from langchain import LLMChain
+
 from data_questionnaire_agent.model.application_schema import Questionnaire
 
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
@@ -9,17 +13,16 @@ from data_questionnaire_agent.service.advice_service import (
 )
 from data_questionnaire_agent.service.similarity_search import similarity_search
 from data_questionnaire_agent.ui.avatar_factory import AVATAR
-from langchain.vectorstores import FAISS
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
 
 
 async def process_advice(
-    docsearch: FAISS, questionnaire: Questionnaire
+    docsearch: FAISS, questionnaire: Questionnaire, advice_chain: LLMChain
 ) -> ConditionalAdvice:
     questionnaire_str = str(questionnaire)
-    advice_chain = await asyncify(chain_factory_advice)()
+
     knowledge_base = await asyncify(similarity_search)(
         docsearch, questionnaire_str, how_many=cfg.search_results_how_many
     )
@@ -53,6 +56,8 @@ if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.questionnaire_provider import (
         create_questionnaire_2_questions,
     )
+
+    advice_chain = chain_factory_advice()
     questionnaire = create_questionnaire_2_questions()
     docsearch = init_vector_search()
-    asyncio.run(process_advice(docsearch, questionnaire))
+    asyncio.run(process_advice(docsearch, questionnaire, advice_chain))

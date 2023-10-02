@@ -1,9 +1,6 @@
 from typing import List
 import chainlit as cl
 from asyncer import asyncify
-from data_questionnaire_agent.cli.data_questionnaire_agent_cli import (
-    process_clarifications,
-)
 
 from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
@@ -14,6 +11,7 @@ from data_questionnaire_agent.model.openai_schema import (
     ConditionalAdvice,
     ResponseQuestions,
 )
+from data_questionnaire_agent.service.advice_service import chain_factory_advice
 from data_questionnaire_agent.service.initial_question_service import (
     chain_factory_initial_question,
     prepare_initial_question,
@@ -51,7 +49,28 @@ def instantiate_doc_search():
     return init_vector_search()
 
 
+@cl.cache
+def instantiate_initial_question_chain():
+    return chain_factory_initial_question()
+
+
+@cl.cache
+def instantiate_secondary_question_chain():
+    return chain_factory_secondary_question()
+
+
+@cl.cache
+def instantiate_advice_chain():
+    return chain_factory_advice()
+
+
 docsearch = instantiate_doc_search()
+
+initial_question_chain = instantiate_initial_question_chain()
+
+secondary_question_chain = instantiate_secondary_question_chain()
+
+advice_chain = instantiate_advice_chain()
 
 
 async def initial_message():
@@ -119,7 +138,7 @@ async def process_questionnaire(settings: cl.ChatSettings) -> bool:
         await loop_questions(generated_questions, questionnaire)
         if len(questionnaire) > minimum_number_of_questions:
             conditional_advice: ConditionalAdvice = await process_advice(
-                docsearch, questionnaire
+                docsearch, questionnaire, advice_chain
             )
             has_advice = conditional_advice.has_advice
             if has_advice:
@@ -166,7 +185,6 @@ async def process_initial_question(
 ) -> List[QuestionAnswer]:
     question = questionnaire.questions[-1]
     answer = question.answer
-    initial_question_chain = await asyncify(chain_factory_initial_question)()
     knowledge_base = await asyncify(similarity_search)(
         docsearch, answer, how_many=cfg.search_results_how_many
     )
@@ -186,7 +204,6 @@ async def process_secondary_questions(
     knowledge_base = similarity_search(
         docsearch, questionnaire.answers_str(), how_many=cfg.search_results_how_many
     )
-    secondary_question_chain = await asyncify(chain_factory_secondary_question)()
     secondary_question_input = prepare_secondary_question(
         questionnaire, knowledge_base, question_per_batch
     )
