@@ -65,7 +65,18 @@ a[href*='https://onepointltd.com'].css-1deacqj {
 }
 
 /* Medium devices (tablets, 768px and up) */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+
+    /* Mobile title */
+    .css-17yvo7f {
+        font-size: 74%;
+        padding: 0 0.5em;
+    }
+ }
+
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 1200px) {
 
     /* Mobile title */
     .css-17yvo7f {
@@ -76,7 +87,7 @@ a[href*='https://onepointltd.com'].css-1deacqj {
 
 
 /* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) { 
+@media (min-width: 1400px) { 
 
     .image-banner {
         min-height: 15em;
