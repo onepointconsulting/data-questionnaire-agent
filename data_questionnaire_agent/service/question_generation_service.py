@@ -54,12 +54,15 @@ if __name__ == "__main__":
         provide_data_quality_ops,
     )
     from data_questionnaire_agent.log_init import logger
+    from langchain.callbacks import get_openai_callback
 
     questionnaire = create_questionnaire_2_questions()
     knowledge_base = provide_data_quality_ops()
     input = prepare_secondary_question(questionnaire, knowledge_base)
-    chain = chain_factory_secondary_question()
-    res: ResponseQuestions = chain.run(input)
+    with get_openai_callback() as cb:
+        chain = chain_factory_secondary_question()
+        res: ResponseQuestions = chain.run(input)
+        logger.info('total cost: %s', cb)
     assert isinstance(res, ResponseQuestions)
     logger.info("response questions: %s", res)
 

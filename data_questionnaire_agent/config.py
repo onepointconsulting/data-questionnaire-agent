@@ -21,13 +21,14 @@ class Config:
     model = os.getenv("OPENAI_MODEL")
     request_timeout = int(os.getenv("REQUEST_TIMEOUT"))
     has_langchain_cache = os.getenv("LANGCHAIN_CACHE") == "true"
+    streaming = os.getenv("CHATGPT_STREAMING") == "true"
     llm = ChatOpenAI(
         openai_api_key=os.getenv("OPENAI_API_KEY"),
         model=model,
         temperature=0,
         request_timeout=request_timeout,
         cache=has_langchain_cache,
-        streaming=True,
+        streaming=streaming,
     )
 
     image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))
@@ -61,6 +62,9 @@ class Config:
     # Questions
     questions_per_batch = int(os.getenv("QUESTIONS_PER_BATCH"))
     minimum_questionnaire_size = int(os.getenv("MINIMUM_QUESTIONNAIRE_SIZE"))
+
+    # Session cost
+    show_session_cost = os.getenv("SHOW_SESSION_COST") == "true"
 
 cfg = Config()
 

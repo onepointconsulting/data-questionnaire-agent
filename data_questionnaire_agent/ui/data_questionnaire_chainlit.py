@@ -2,6 +2,9 @@ from typing import List
 import chainlit as cl
 from asyncer import asyncify
 
+from langchain.callbacks import get_openai_callback
+from langchain.callbacks.openai_info import OpenAICallbackHandler
+
 from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
@@ -42,7 +45,6 @@ from data_questionnaire_agent.ui.clarifications_chainlit import (
 from data_questionnaire_agent.ui.mail_processor import process_send_email
 from data_questionnaire_agent.ui.pdf_processor import generate_display_pdf
 from data_questionnaire_agent.toml_support import prompts
-
 
 @cl.cache
 def instantiate_doc_search():
@@ -99,11 +101,12 @@ async def init():
 async def run_agent(settings: cl.ChatSettings):
     logger.info("Settings: %s", settings)
 
-    advice_sent = await process_questionnaire(settings)
-    if not advice_sent:
-        await cl.Message(
-            content="Session ended. Please restart the chat by pressing the 'New Chat' button."
-        ).send()
+    with get_openai_callback() as cb:
+        advice_sent = await process_questionnaire(settings, cb)
+        if not advice_sent:
+            await cl.Message(
+                content=f"Session ended. Please restart the chat by pressing the 'New Chat' button."
+            ).send()
 
 
 @cl.on_settings_update
@@ -111,7 +114,7 @@ async def setup_agent(settings: cl.ChatSettings):
     await run_agent(settings)
 
 
-async def process_questionnaire(settings: cl.ChatSettings) -> bool:
+async def process_questionnaire(settings: cl.ChatSettings, cb: OpenAICallbackHandler) -> bool:
     minimum_number_of_questions: int = int(settings[MINIMUM_NUMBER_OF_QUESTIONS])
     question_per_batch: int = int(settings[QUESTION_PER_BATCH])
     initial_question: str = settings[INITIAL_QUESTION]
@@ -128,6 +131,7 @@ async def process_questionnaire(settings: cl.ChatSettings) -> bool:
     generated_questions = await process_initial_question(
         questionnaire, question_per_batch
     )
+    logger.info(f"process_initial_question cost: {cb.total_cost}")
     await loop_questions(generated_questions, questionnaire)
 
     has_advice = False
@@ -135,14 +139,17 @@ async def process_questionnaire(settings: cl.ChatSettings) -> bool:
         generated_questions = await process_secondary_questions(
             questionnaire, question_per_batch
         )
+        logger.info(f"process_secondary_questions cost: {cb.total_cost}")
         await loop_questions(generated_questions, questionnaire)
         if len(questionnaire) > minimum_number_of_questions:
             conditional_advice: ConditionalAdvice = await process_advice(
                 docsearch, questionnaire, advice_chain
             )
+            logger.info(f"process_advice cost: {cb.total_cost}")
             has_advice = conditional_advice.has_advice
             if has_advice:
                 await display_advice(conditional_advice)
+                await session_cost(cb)
                 await generate_display_pdf(conditional_advice, questionnaire)
                 await process_send_email(questionnaire, conditional_advice)
                 return True
@@ -211,3 +218,9 @@ async def process_secondary_questions(
         secondary_question_input
     )
     return convert_to_question_answers(response_questions)
+
+
+
+async def session_cost(cb: OpenAICallbackHandler):
+    if cfg.show_session_cost:
+        await cl.Message(content=f"Total session cost: {cb.total_cost:.2f} $").send()
