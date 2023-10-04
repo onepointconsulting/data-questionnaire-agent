@@ -83,6 +83,9 @@ QUESTIONS_PER_BATCH=2
 # Token limit for chatgpt 4. Important to extend the context as much as possible using the vector DB search
 TOKEN_LIMIT=6000
 
+# Show session cost
+SHOW_SESSION_COST=true
+
 ```
 
 Here is the content of the `config.toml` file in the `.chainlit` folder:

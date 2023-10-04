@@ -77,7 +77,7 @@ advice_chain = instantiate_advice_chain()
 
 async def initial_message():
     initial_message = f"""
-### Hello! I will ask you a few questions about your data ecosystem. At the end, you will get recommendations and suggested courses of action.
+### Hello! I will ask you a few questions (around {cfg.minimum_questionnaire_size}) about your data ecosystem. At the end, you will get recommendations and suggested courses of action.
 
 - Onepoint’s Data & Analytics Body of Knowledge is the basis for the diagnostics and recommendations.
 - If you’d like, you can ask for a copy of the results to be emailed to you.
