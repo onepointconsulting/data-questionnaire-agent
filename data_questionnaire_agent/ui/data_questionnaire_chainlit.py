@@ -222,5 +222,7 @@ async def process_secondary_questions(
 
 
 async def session_cost(cb: OpenAICallbackHandler):
+    cost_message = f"Total session cost: {cb.total_cost:.2f} $"
+    logger.warn(cost_message)
     if cfg.show_session_cost:
-        await cl.Message(content=f"Total session cost: {cb.total_cost:.2f} $").send()
+        await cl.Message(content=cost_message).send()
