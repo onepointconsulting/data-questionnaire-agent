@@ -1,7 +1,15 @@
+from data_questionnaire_agent.model.application_schema import (
+    Questionnaire,
+    QuestionAnswer,
+)
 
 
-
-from data_questionnaire_agent.model.application_schema import Questionnaire, QuestionAnswer
+def create_questionnaire_initial_question(answer: str) -> Questionnaire:
+    question_answer = QuestionAnswer.question_answer_factory(
+        "Which area of your data ecosystem are you most concerned about?",
+        answer,
+    )
+    return Questionnaire(questions=[question_answer])
 
 
 def create_questionnaire_2_questions() -> Questionnaire:

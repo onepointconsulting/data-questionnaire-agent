@@ -46,7 +46,7 @@ def prompt_factory_sentiment() -> ChatPromptTemplate:
 
 def sentiment_chain_factory() -> LLMChain:
     return create_tagging_chain_pydantic(
-        ResponseTags, cfg.llm, prompt_factory_sentiment()
+        ResponseTags, cfg.llm, prompt_factory_sentiment(), verbose=cfg.verbose_llm
     )
 
 

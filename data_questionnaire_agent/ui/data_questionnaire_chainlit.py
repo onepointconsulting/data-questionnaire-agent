@@ -1,6 +1,10 @@
 from typing import List
 import chainlit as cl
 from asyncer import asyncify
+from data_questionnaire_agent.service.clarifications_agent import (
+    create_clarification_agent,
+)
+from data_questionnaire_agent.service.tagging_service import sentiment_chain_factory
 
 from langchain.callbacks import get_openai_callback
 from langchain.callbacks.openai_info import OpenAICallbackHandler
@@ -46,6 +50,7 @@ from data_questionnaire_agent.ui.mail_processor import process_send_email
 from data_questionnaire_agent.ui.pdf_processor import generate_display_pdf
 from data_questionnaire_agent.toml_support import prompts
 
+
 @cl.cache
 def instantiate_doc_search():
     return init_vector_search()
@@ -66,6 +71,16 @@ def instantiate_advice_chain():
     return chain_factory_advice()
 
 
+@cl.cache
+def instantiate_sentiment_chain():
+    return sentiment_chain_factory()
+
+
+@cl.cache
+def instantiate_clarification_agent():
+    return create_clarification_agent()
+
+
 docsearch = instantiate_doc_search()
 
 initial_question_chain = instantiate_initial_question_chain()
@@ -73,6 +88,10 @@ initial_question_chain = instantiate_initial_question_chain()
 secondary_question_chain = instantiate_secondary_question_chain()
 
 advice_chain = instantiate_advice_chain()
+
+has_questions_chain = instantiate_sentiment_chain()
+
+clarification_agent = instantiate_clarification_agent()
 
 
 async def initial_message():
@@ -114,7 +133,9 @@ async def setup_agent(settings: cl.ChatSettings):
     await run_agent(settings)
 
 
-async def process_questionnaire(settings: cl.ChatSettings, cb: OpenAICallbackHandler) -> bool:
+async def process_questionnaire(
+    settings: cl.ChatSettings, cb: OpenAICallbackHandler
+) -> bool:
     minimum_number_of_questions: int = int(settings[MINIMUM_NUMBER_OF_QUESTIONS])
     question_per_batch: int = int(settings[QUESTION_PER_BATCH])
     initial_question: str = settings[INITIAL_QUESTION]
@@ -184,7 +205,9 @@ async def loop_questions(questions: List[QuestionAnswer], questionnaire: Questio
         logger.info("", response)
         question.answer = response["content"]
     questionnaire.questions.extend(questions)
-    await process_clarifications_chainlit(questionnaire, len(questions))
+    await process_clarifications_chainlit(
+        questionnaire, len(questions), has_questions_chain, clarification_agent
+    )
 
 
 async def process_initial_question(
@@ -218,7 +241,6 @@ async def process_secondary_questions(
         secondary_question_input
     )
     return convert_to_question_answers(response_questions)
-
 
 
 async def session_cost(cb: OpenAICallbackHandler):

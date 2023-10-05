@@ -37,6 +37,10 @@ class ResponseTags(BaseModel):
         ...,
         description="If the text with the answers contains questions, these are the questions.",
     )
+    questions_related_to_data_analytics: bool = Field(
+        ...,
+        description="True only if any questions are related to data analytics, data governance or data systems."
+    )
 
 
 class ConditionalAdvice(BaseModel):

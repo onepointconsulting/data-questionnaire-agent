@@ -64,6 +64,10 @@ a[href*='https://onepointltd.com'].css-1deacqj {
     display: none
 }
 
+svg[data-testid=KeyboardDoubleArrowUpIcon] {
+    display: none;
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (max-width: 1200px) {
 
