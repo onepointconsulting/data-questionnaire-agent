@@ -1,3 +1,5 @@
+from tenacity import AsyncRetrying
+
 import chainlit as cl
 from asyncer import asyncify
 
@@ -29,11 +31,13 @@ async def process_advice(
     advice_input = prepare_conditional_advice(
         knowledge_base=knowledge_base, questions_answers=questionnaire_str
     )
-    conditional_advice: ConditionalAdvice = await advice_chain.arun(advice_input)
-    if conditional_advice.has_advice:
-        for advice in conditional_advice.advices:
-            logger.info(advice)
-    return conditional_advice
+    async for attempt in AsyncRetrying(cfg.retry_args):
+        with attempt:
+            conditional_advice: ConditionalAdvice = await advice_chain.arun(advice_input)
+            if conditional_advice.has_advice:
+                for advice in conditional_advice.advices:
+                    logger.info(advice)
+            return conditional_advice
 
 
 async def display_advice(conditional_advice: ConditionalAdvice):

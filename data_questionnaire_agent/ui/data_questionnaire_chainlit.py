@@ -1,10 +1,15 @@
 from typing import List
 import chainlit as cl
+from enum import Enum
 from asyncer import asyncify
+
+from tenacity import AsyncRetrying
+
 from data_questionnaire_agent.service.clarifications_agent import (
     create_clarification_agent,
 )
 from data_questionnaire_agent.service.tagging_service import sentiment_chain_factory
+from data_questionnaire_agent.ui.model.session_number_container import SessionNumberContainer
 
 from langchain.callbacks import get_openai_callback
 from langchain.callbacks.openai_info import OpenAICallbackHandler
@@ -50,6 +55,11 @@ from data_questionnaire_agent.ui.mail_processor import process_send_email
 from data_questionnaire_agent.ui.pdf_processor import generate_display_pdf
 from data_questionnaire_agent.toml_support import prompts
 
+
+class APP_STATE(Enum):
+    PROCESSED = 1
+    RESTARTED = 2
+    EMPTY_ADVICE = 3
 
 @cl.cache
 def instantiate_doc_search():
@@ -112,6 +122,7 @@ async def init():
     Main entry point for the application.
     This application will ask you questions about your data integration strategy and at the end give you some evaluation.
     """
+    cl.user_session.set("session_counter", SessionNumberContainer())
     await initial_message()
     settings = await create_chat_settings()
     await run_agent(settings)
@@ -121,11 +132,13 @@ async def run_agent(settings: cl.ChatSettings):
     logger.info("Settings: %s", settings)
 
     with get_openai_callback() as cb:
+        
         advice_sent = await process_questionnaire(settings, cb)
-        if not advice_sent:
+        if advice_sent == APP_STATE.EMPTY_ADVICE:
             await cl.Message(
                 content=f"Session ended. Please restart the chat by pressing the 'New Chat' button."
             ).send()
+        
 
 
 @cl.on_settings_update
@@ -135,10 +148,12 @@ async def setup_agent(settings: cl.ChatSettings):
 
 async def process_questionnaire(
     settings: cl.ChatSettings, cb: OpenAICallbackHandler
-) -> bool:
+) -> APP_STATE:
     minimum_number_of_questions: int = int(settings[MINIMUM_NUMBER_OF_QUESTIONS])
     question_per_batch: int = int(settings[QUESTION_PER_BATCH])
     initial_question: str = settings[INITIAL_QUESTION]
+
+    current_counter = cl.user_session.get("session_counter").increment_and_get()
 
     await setup_avatar()
 
@@ -147,13 +162,17 @@ async def process_questionnaire(
     ]
     questionnaire = Questionnaire([])
 
-    await loop_questions(questions, questionnaire)
+    looped = await loop_questions(questions, questionnaire, current_counter)
+    if not looped:
+        return APP_STATE.RESTARTED
 
     generated_questions = await process_initial_question(
         questionnaire, question_per_batch
     )
     logger.info(f"process_initial_question cost: {cb.total_cost}")
-    await loop_questions(generated_questions, questionnaire)
+    looped = await loop_questions(generated_questions, questionnaire, current_counter)
+    if not looped:
+        return APP_STATE.RESTARTED
 
     has_advice = False
     while len(questionnaire) <= minimum_number_of_questions or not has_advice:
@@ -161,7 +180,9 @@ async def process_questionnaire(
             questionnaire, question_per_batch
         )
         logger.info(f"process_secondary_questions cost: {cb.total_cost}")
-        await loop_questions(generated_questions, questionnaire)
+        looped = await loop_questions(generated_questions, questionnaire, current_counter)
+        if not looped:
+            return APP_STATE.RESTARTED
         if len(questionnaire) > minimum_number_of_questions:
             conditional_advice: ConditionalAdvice = await process_advice(
                 docsearch, questionnaire, advice_chain
@@ -173,8 +194,8 @@ async def process_questionnaire(
                 await session_cost(cb)
                 await generate_display_pdf(conditional_advice, questionnaire)
                 await process_send_email(questionnaire, conditional_advice)
-                return True
-    return False
+                return APP_STATE.PROCESSED
+    return APP_STATE.EMPTY_ADVICE
 
 
 def process_special_question(question: str) -> str:
@@ -193,10 +214,16 @@ The graphic below may help with your response — it captures some of the most c
     return question
 
 
-async def loop_questions(questions: List[QuestionAnswer], questionnaire: Questionnaire):
+async def loop_questions(questions: List[QuestionAnswer], questionnaire: Questionnaire, current_counter: int) -> bool:
     for question in questions:
         response = None
         while response is None:
+            latest_counter = cl.user_session.get("session_counter").current()
+            if latest_counter != current_counter:
+                # This means that the current session needs to be terminated
+                logger.warn("%s != %s", type(latest_counter), type(current_counter))
+                logger.warn("%s != %s", latest_counter, current_counter)
+                return False
             response = await cl.AskUserMessage(
                 content=process_special_question(question.question),
                 timeout=cfg.ui_timeout,
@@ -208,6 +235,7 @@ async def loop_questions(questions: List[QuestionAnswer], questionnaire: Questio
     await process_clarifications_chainlit(
         questionnaire, len(questions), has_questions_chain, clarification_agent
     )
+    return True
 
 
 async def process_initial_question(
@@ -224,8 +252,12 @@ async def process_initial_question(
         questions_per_batch=question_per_batch,
         knowledge_base=knowledge_base,
     )
-    response_questions: ResponseQuestions = await initial_question_chain.arun(input)
-    return convert_to_question_answers(response_questions)
+    
+    async for attempt in AsyncRetrying(cfg.retry_args):
+        with attempt:
+            response_questions: ResponseQuestions = await initial_question_chain.arun(input)
+            return convert_to_question_answers(response_questions)
+    
 
 
 async def process_secondary_questions(
@@ -237,10 +269,13 @@ async def process_secondary_questions(
     secondary_question_input = prepare_secondary_question(
         questionnaire, knowledge_base, question_per_batch
     )
-    response_questions: ResponseQuestions = await secondary_question_chain.arun(
-        secondary_question_input
-    )
-    return convert_to_question_answers(response_questions)
+
+    async for attempt in AsyncRetrying(**cfg.retry_args):
+        with attempt:
+            response_questions: ResponseQuestions = await secondary_question_chain.arun(
+                secondary_question_input
+            )
+            return convert_to_question_answers(response_questions)
 
 
 async def session_cost(cb: OpenAICallbackHandler):

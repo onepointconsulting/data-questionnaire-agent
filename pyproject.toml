@@ -19,6 +19,7 @@ duckduckgo-search = "^3.8.5"
 pdfkit = "^1.0.0"
 opencv-python = "^4.8.1.78"
 scikit-image = "^0.21.0"
+tenacity = "^8.2.3"
 
 
 [tool.poetry.group.dev.dependencies]

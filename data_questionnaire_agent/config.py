@@ -2,6 +2,8 @@ from pathlib import Path
 import os
 
 from dotenv import load_dotenv
+from tenacity import stop_after_attempt
+import tenacity
 
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -10,6 +12,7 @@ from langchain.llms import OpenAI
 load_dotenv()
 
 from data_questionnaire_agent.log_init import logger
+
 
 def create_if_not_exists(folder):
     if not folder.exists():
@@ -32,7 +35,7 @@ class Config:
     )
 
     image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))
-    image_llm =  OpenAI(temperature=image_llm_temperature)
+    image_llm = OpenAI(temperature=image_llm_temperature)
 
     verbose_llm = os.getenv("VERBOSE_LLM") == "true"
     ui_timeout = int(os.getenv("UI_TIMEOUT"))
@@ -49,7 +52,7 @@ class Config:
     pdf_folder = Path(os.getenv("PDF_FOLDER"))
     create_if_not_exists(pdf_folder)
     use_tasklist = os.getenv("TASKLIST") == "true"
-    show_chain_of_thought = os.getenv("SHOW_CHAIN_OF_THOUGHT") == 'true'
+    show_chain_of_thought = os.getenv("SHOW_CHAIN_OF_THOUGHT") == "true"
 
     # Embedding related
     raw_text_folder = Path(os.getenv("RAW_TEXT_FOLDER"))
@@ -65,6 +68,11 @@ class Config:
 
     # Session cost
     show_session_cost = os.getenv("SHOW_SESSION_COST") == "true"
+    openai_retry_attempts = int(os.getenv("OPENAI_RETRY_ATTEMPTS"))
+    wait_fixed = int(os.getenv("OPENAI_WAIT_FIXED"))
+
+    retry_args = {'stop': stop_after_attempt(openai_retry_attempts), 'wait': tenacity.wait_fixed(wait_fixed)}
+
 
 cfg = Config()
 
