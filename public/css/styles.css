@@ -64,7 +64,7 @@ a[href*='https://onepointltd.com'].css-1deacqj {
     display: none
 }
 
-svg[data-testid=KeyboardDoubleArrowUpIcon] {
+button:has(> svg[data-testid=KeyboardDoubleArrowUpIcon]) {
     display: none;
 }
 
