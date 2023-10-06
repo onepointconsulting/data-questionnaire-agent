@@ -18,13 +18,13 @@ VST = TypeVar("VST", bound="VectorStore")
 def load_text(path: Path) -> List[Document]:
     """
     Loads the text files and extracts chunks of a pre-defined size.
-    The page details are added to the extracted metadata
+    It simply loads whole documents without any splitting.
 
     Parameters:
     path (Path): The path where the documents are saved.
 
     Returns:
-    List[Document]: Returns a list of values
+    List[Document]: Returns a list of documents
     """
     assert path.exists()
     all_pages = []
@@ -41,6 +41,12 @@ def load_text(path: Path) -> List[Document]:
 
 
 def log_stats(documents: List[Document]):
+    """
+    Logs statistics about a list of documents.
+
+    Parameters:
+    documents (List[Document]): The list of documents with the knowledge base.
+    """
     logger.info(f"Total number of documents {len(documents)}")
     counts = []
     for d in documents:

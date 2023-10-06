@@ -58,7 +58,15 @@ def similarity_search(
 
 
 def num_tokens_from_string(string: str) -> int:
-    """Returns the number of tokens in a text string."""
+    """
+    Returns the number of tokens in a text string.
+
+    Parameters:
+    string (str): The string for which the tiktokens are to be counted.
+    
+    Returns:
+    int: Recturs the number of tokens generated using tiktoken.
+    """
     encoding = tiktoken.encoding_for_model(cfg.model)
     num_tokens = len(encoding.encode(string))
     return num_tokens
