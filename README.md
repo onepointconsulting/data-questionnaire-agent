@@ -3,6 +3,8 @@
 This is a reverse chatbot that asks the users questions about data integration practices and then gives advice based on a body of knowledge.
 This version operates a bit like an agent which tries to gather enough information to be able to give advice. So it may ask an unspecified number of questions.
 
+We have used a specially changed version of the [Chainlit][https://chainlit.io] library that you can install from the wheels folder.
+
 ## Setup
 
 We suggest to use [Conda](https://docs.conda.io/en/latest/) to manage the virtual environment and then install poetry.
@@ -29,8 +31,6 @@ poetry add --editable \\wsl.localhost\Ubuntu\home\gilf\projects\chainlit-2023-se
 ```
 chainlit run .\data_questionnaire_agent\ui\data_questionnaire_chainlit.py --port 8080
 ```
-
-This is not yet implemented.
 
 
 ## Configuration
