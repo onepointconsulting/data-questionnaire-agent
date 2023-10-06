@@ -218,7 +218,7 @@ async def loop_questions(questions: List[QuestionAnswer], questionnaire: Questio
     for question in questions:
         response = None
         while response is None:
-            latest_counter = cl.user_session.get("session_counter").current()
+            latest_counter = cl.user_session.get("session_counter").current() if cl.user_session.get("session_counter") is not None else 0
             if latest_counter != current_counter:
                 # This means that the current session needs to be terminated
                 logger.warn("%s != %s", type(latest_counter), type(current_counter))
