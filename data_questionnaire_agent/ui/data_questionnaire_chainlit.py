@@ -9,7 +9,9 @@ from data_questionnaire_agent.service.clarifications_agent import (
     create_clarification_agent,
 )
 from data_questionnaire_agent.service.tagging_service import sentiment_chain_factory
-from data_questionnaire_agent.ui.model.session_number_container import SessionNumberContainer
+from data_questionnaire_agent.ui.model.session_number_container import (
+    SessionNumberContainer,
+)
 
 from langchain.callbacks import get_openai_callback
 from langchain.callbacks.openai_info import OpenAICallbackHandler
@@ -60,6 +62,7 @@ class APP_STATE(Enum):
     PROCESSED = 1
     RESTARTED = 2
     EMPTY_ADVICE = 3
+
 
 @cl.cache
 def instantiate_doc_search():
@@ -132,13 +135,11 @@ async def run_agent(settings: cl.ChatSettings):
     logger.info("Settings: %s", settings)
 
     with get_openai_callback() as cb:
-        
         advice_sent = await process_questionnaire(settings, cb)
         if advice_sent == APP_STATE.EMPTY_ADVICE:
             await cl.Message(
                 content=f"Session ended. Please restart the chat by pressing the 'New Chat' button."
             ).send()
-        
 
 
 @cl.on_settings_update
@@ -180,7 +181,9 @@ async def process_questionnaire(
             questionnaire, question_per_batch
         )
         logger.info(f"process_secondary_questions cost: {cb.total_cost}")
-        looped = await loop_questions(generated_questions, questionnaire, current_counter)
+        looped = await loop_questions(
+            generated_questions, questionnaire, current_counter
+        )
         if not looped:
             return APP_STATE.RESTARTED
         if len(questionnaire) > minimum_number_of_questions:
@@ -214,11 +217,17 @@ The graphic below may help with your response — it captures some of the most c
     return question
 
 
-async def loop_questions(questions: List[QuestionAnswer], questionnaire: Questionnaire, current_counter: int) -> bool:
+async def loop_questions(
+    questions: List[QuestionAnswer], questionnaire: Questionnaire, current_counter: int
+) -> bool:
     for question in questions:
         response = None
         while response is None:
-            latest_counter = cl.user_session.get("session_counter").current() if cl.user_session.get("session_counter") is not None else 0
+            latest_counter = (
+                cl.user_session.get("session_counter").current()
+                if cl.user_session.get("session_counter") is not None
+                else 0
+            )
             if latest_counter != current_counter:
                 # This means that the current session needs to be terminated
                 logger.warn("%s != %s", type(latest_counter), type(current_counter))
@@ -252,12 +261,13 @@ async def process_initial_question(
         questions_per_batch=question_per_batch,
         knowledge_base=knowledge_base,
     )
-    
+
     async for attempt in AsyncRetrying(cfg.retry_args):
         with attempt:
-            response_questions: ResponseQuestions = await initial_question_chain.arun(input)
+            response_questions: ResponseQuestions = await initial_question_chain.arun(
+                input
+            )
             return convert_to_question_answers(response_questions)
-    
 
 
 async def process_secondary_questions(

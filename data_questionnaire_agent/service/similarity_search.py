@@ -40,6 +40,18 @@ def join_pages(doc_list: List[Document]) -> str:
 def similarity_search(
     docsearch: FAISS, input: str, how_many=cfg.search_results_how_many
 ) -> str:
+    """
+    Performs multiple searches until it reaches the maximum amount of tokens below a specified threshold.
+    When the threshold of tokens is reached it stops and returns the search results.
+
+    Parameters:
+    docsearch FAISS: The object used to access the vector database.
+    input str: The input of the search.
+    how_many int: The initial number of results to be retrieved.
+
+    Returns:
+    str: The maximum amount of text with the number of tokens below the threshold specified in the configuration.
+    """
     token_count = 0
     previous_res = ""
     attempts = 0
