@@ -1,4 +1,4 @@
-# Data Integration Questionnaire Agent
+# Data Wellness Q&A Chatbot
 
 This is a reverse chatbot that asks the users questions about data integration practices and then gives advice based on a body of knowledge.
 This version operates a bit like an agent which tries to gather enough information to be able to give advice. So it may ask an unspecified number of questions.
@@ -22,7 +22,7 @@ poetry init
 
 ```
 poetry install
-poetry add --editable ./wheels/chainlit-0.7.4-py3-none-any.whl
+poetry add --editable ./wheels/chainlit-0.7.5-py3-none-any.whl
 ```
 
 ## Running

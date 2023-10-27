@@ -132,6 +132,12 @@ async def init():
 
 
 async def run_agent(settings: cl.ChatSettings):
+    """
+    Asks questions and anawers questios until it gives advice if the user does not give up.
+
+    Parameters:
+    settings cl.ChatSettings: The document list with one page per document.
+    """
     logger.info("Settings: %s", settings)
 
     with get_openai_callback() as cb:
