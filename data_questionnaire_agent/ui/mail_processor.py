@@ -15,9 +15,7 @@ from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import cfg
 
 
-async def process_send_email(
-    questionnaire: Questionnaire, advices: ConditionalAdvice
-):
+async def process_send_email(questionnaire: Questionnaire, advices: ConditionalAdvice):
     response = await cl.AskUserMessage(
         content="Would you like to receive an email with the recommendations? If so please write your email in the chat.",
         timeout=cfg.ui_timeout,
@@ -56,7 +54,7 @@ async def process_send_email(
                 content=f"Sorry, '{response_content}' does not seem to be an email address",
                 author=AVATAR["CHATBOT"],
             ).send()
-    
+
     extra_message = "" if has_replied else "We did not hear from you... "
     await cl.Message(
         content=f"{extra_message}The questionnaire is complete. Please press the 'New Chat' button to restart.",

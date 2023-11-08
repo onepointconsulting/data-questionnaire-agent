@@ -15,6 +15,7 @@ from data_questionnaire_agent.config import cfg
 
 from data_questionnaire_agent.toml_support import prompts
 
+
 def prompt_factory_generic(
     section: dict, input_variables: List[str]
 ) -> ChatPromptTemplate:

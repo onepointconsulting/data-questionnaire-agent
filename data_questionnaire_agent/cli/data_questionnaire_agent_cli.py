@@ -1,6 +1,12 @@
 from enum import Enum
-from data_questionnaire_agent.service.advice_service import chain_factory_advice, prepare_conditional_advice
-from data_questionnaire_agent.service.question_generation_service import chain_factory_secondary_question, prepare_secondary_question
+from data_questionnaire_agent.service.advice_service import (
+    chain_factory_advice,
+    prepare_conditional_advice,
+)
+from data_questionnaire_agent.service.question_generation_service import (
+    chain_factory_secondary_question,
+    prepare_secondary_question,
+)
 
 from prompt_toolkit import prompt
 from prompt_toolkit.formatted_text import HTML
@@ -20,7 +26,11 @@ from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
 )
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice, ResponseQuestions, ResponseTags
+from data_questionnaire_agent.model.openai_schema import (
+    ConditionalAdvice,
+    ResponseQuestions,
+    ResponseTags,
+)
 from data_questionnaire_agent.service.clarifications_agent import (
     create_clarification_agent,
 )
@@ -124,7 +134,7 @@ if __name__ == "__main__":
                 process_clarifications(
                     has_questions_chain, clarification_agent, content
                 )
-                
+
                 workflow_step = WorkflowState.SECONDARY_QUESTION
 
             case WorkflowState.SECONDARY_QUESTION:
@@ -151,18 +161,29 @@ if __name__ == "__main__":
 
             case WorkflowState.ADVICE:
                 questionnaire_str = str(questionnaire)
-                knowledge_base = similarity_search(docsearch, questionnaire_str, how_many=2)
+                knowledge_base = similarity_search(
+                    docsearch, questionnaire_str, how_many=2
+                )
                 logger.info("Search result: %s", knowledge_base[:100])
-                advice_input = prepare_conditional_advice(knowledge_base=knowledge_base, questions_answers=questionnaire_str)
+                advice_input = prepare_conditional_advice(
+                    knowledge_base=knowledge_base, questions_answers=questionnaire_str
+                )
                 conditional_advice: ConditionalAdvice = advice_chain.run(advice_input)
-                if conditional_advice.has_advice and len(questionnaire) >= cfg.minimum_questionnaire_size:
+                if (
+                    conditional_advice.has_advice
+                    and len(questionnaire) >= cfg.minimum_questionnaire_size
+                ):
                     # We have advice
                     for i, advice in enumerate(conditional_advice.advices):
                         logger.info("%d. %s", i + 1, advice)
                     break
                 # Generate more questions
-                secondary_question_input = prepare_secondary_question(questionnaire, knowledge_base)
-                response_questions: ResponseQuestions = secondary_question_chain.run(secondary_question_input)
+                secondary_question_input = prepare_secondary_question(
+                    questionnaire, knowledge_base
+                )
+                response_questions: ResponseQuestions = secondary_question_chain.run(
+                    secondary_question_input
+                )
                 workflow_step = WorkflowState.SECONDARY_QUESTION
 
             case _:

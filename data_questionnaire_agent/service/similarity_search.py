@@ -9,7 +9,7 @@ from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.service.embedding_service import (
     generate_embeddings,
-    load_text
+    load_text,
 )
 
 
@@ -75,7 +75,7 @@ def num_tokens_from_string(string: str) -> int:
 
     Parameters:
     string (str): The string for which the tiktokens are to be counted.
-    
+
     Returns:
     int: Recturs the number of tokens generated using tiktoken.
     """

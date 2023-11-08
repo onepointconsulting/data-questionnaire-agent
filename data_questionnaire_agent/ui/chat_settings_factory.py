@@ -6,9 +6,12 @@ MINIMUM_NUMBER_OF_QUESTIONS = "Minimum number of questions"
 QUESTION_PER_BATCH = "Questions per batch"
 INITIAL_QUESTION = "Initial question"
 
+
 async def create_chat_settings() -> cl.ChatSettings:
     questions_per_batch = prompts["general_settings"]["questions_per_batch"]
-    minimum_number_of_questions = prompts["general_settings"]["minimum_number_of_questions"]
+    minimum_number_of_questions = prompts["general_settings"][
+        "minimum_number_of_questions"
+    ]
     initial_question = prompts["questionnaire"]["initial"]["question"]
     settings = await cl.ChatSettings(
         [

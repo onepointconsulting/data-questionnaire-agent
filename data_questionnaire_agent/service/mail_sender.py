@@ -49,8 +49,10 @@ Subject: {quizz_title}
 
 
 if __name__ == "__main__":
-    from data_questionnaire_agent.test.provider.questionnaire_provider import create_questionnaire_2_questions
-    
+    from data_questionnaire_agent.test.provider.questionnaire_provider import (
+        create_questionnaire_2_questions,
+    )
+
     recipient = "gil.fernandes@gmail.com"
     assert validate_address(recipient)
     questionnaire = create_questionnaire_2_questions()

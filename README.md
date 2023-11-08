@@ -15,7 +15,6 @@ conda remove -n data_integration_questionnaire_agent --all
 conda create -n data_integration_questionnaire_agent python=3.11
 conda activate data_integration_questionnaire_agent
 pip install poetry
-poetry init
 ```
 
 ## Installation

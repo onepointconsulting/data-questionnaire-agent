@@ -61,9 +61,7 @@ def count_words(document: Document) -> int:
     return len(splits)
 
 
-def generate_embeddings(
-    documents: List[Document], persist_directory: str
-) -> VST:
+def generate_embeddings(documents: List[Document], persist_directory: str) -> VST:
     """
     Receives a list of documents and generates the embeddings via OpenAI API.
 

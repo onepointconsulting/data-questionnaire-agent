@@ -24,9 +24,7 @@ def generate_html(questionnaire: Questionnaire, advices: ConditionalAdvice) -> s
     return template.render(context)
 
 
-def generate_pdf_from(
-    questionnaire: Questionnaire, advices: ConditionalAdvice
-) -> Path:
+def generate_pdf_from(questionnaire: Questionnaire, advices: ConditionalAdvice) -> Path:
     if questionnaire is None:
         return None
     html = generate_html(questionnaire, advices)

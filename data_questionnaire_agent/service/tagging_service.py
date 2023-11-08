@@ -52,6 +52,7 @@ def sentiment_chain_factory() -> LLMChain:
 
 chain = create_tagging_chain_pydantic(ResponseTags, cfg.llm, prompt_factory_sentiment())
 
+
 def prepare_sentiment_input(question: str) -> dict:
     return {"answer": question}
 
@@ -84,4 +85,8 @@ if __name__ == "__main__":
         )
     )
     process_answer(tag_response("Almost we never finish integrations before that."))
-    process_answer(tag_response("Which is the meaning of dark data? What is CDC (Change Data Capture)?"))
+    process_answer(
+        tag_response(
+            "Which is the meaning of dark data? What is CDC (Change Data Capture)?"
+        )
+    )

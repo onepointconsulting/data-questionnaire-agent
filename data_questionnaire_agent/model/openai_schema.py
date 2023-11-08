@@ -39,7 +39,7 @@ class ResponseTags(BaseModel):
     )
     questions_related_to_data_analytics: bool = Field(
         ...,
-        description="True only if any questions are related to data analytics, data governance or data systems."
+        description="True only if any questions are related to data analytics, data governance or data systems.",
     )
 
 
@@ -61,6 +61,6 @@ class ConditionalAdvice(BaseModel):
             html += f'<li class="onepoint-blue">{advice}</li>'
         html += "</ul>"
         return html
-    
+
     def __str__(self) -> str:
         return "\n\n".join(self.advices) if self.advices is not None else ""

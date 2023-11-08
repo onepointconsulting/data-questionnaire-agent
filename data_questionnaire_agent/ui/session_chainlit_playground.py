@@ -7,7 +7,9 @@ from chainlit import context
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.ui.chat_settings_factory import create_chat_settings
-from data_questionnaire_agent.ui.model.session_number_container import SessionNumberContainer
+from data_questionnaire_agent.ui.model.session_number_container import (
+    SessionNumberContainer,
+)
 
 
 @cl.on_chat_start

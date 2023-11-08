@@ -34,15 +34,15 @@ def chain_factory_secondary_question() -> LLMChain:
 
 
 def prepare_secondary_question(
-    questionnaire: Questionnaire, 
+    questionnaire: Questionnaire,
     knowledge_base: str,
-    questions_per_batch: int = cfg.questions_per_batch
+    questions_per_batch: int = cfg.questions_per_batch,
 ) -> dict:
     return {
         "knowledge_base": knowledge_base,
         "questions_answers": str(questionnaire),
         "answers": questionnaire.answers_str(),
-        "questions_per_batch": questions_per_batch
+        "questions_per_batch": questions_per_batch,
     }
 
 
@@ -63,7 +63,6 @@ if __name__ == "__main__":
     with get_openai_callback() as cb:
         chain = chain_factory_secondary_question()
         res: ResponseQuestions = asyncio.run(chain.arun(input))
-        logger.info('total cost: %s', cb)
+        logger.info("total cost: %s", cb)
     assert isinstance(res, ResponseQuestions)
     logger.info("response questions: %s", res)
-

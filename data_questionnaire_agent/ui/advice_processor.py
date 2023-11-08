@@ -33,7 +33,9 @@ async def process_advice(
     )
     async for attempt in AsyncRetrying(cfg.retry_args):
         with attempt:
-            conditional_advice: ConditionalAdvice = await advice_chain.arun(advice_input)
+            conditional_advice: ConditionalAdvice = await advice_chain.arun(
+                advice_input
+            )
             if conditional_advice.has_advice:
                 for advice in conditional_advice.advices:
                     logger.info(advice)

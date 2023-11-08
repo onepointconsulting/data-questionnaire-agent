@@ -71,7 +71,10 @@ class Config:
     openai_retry_attempts = int(os.getenv("OPENAI_RETRY_ATTEMPTS"))
     wait_fixed = int(os.getenv("OPENAI_WAIT_FIXED"))
 
-    retry_args = {'stop': stop_after_attempt(openai_retry_attempts), 'wait': tenacity.wait_fixed(wait_fixed)}
+    retry_args = {
+        "stop": stop_after_attempt(openai_retry_attempts),
+        "wait": tenacity.wait_fixed(wait_fixed),
+    }
 
 
 cfg = Config()

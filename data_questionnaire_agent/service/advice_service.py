@@ -29,6 +29,3 @@ def chain_factory_advice() -> LLMChain:
 
 def prepare_conditional_advice(knowledge_base: str, questions_answers: str) -> dict:
     return {"knowledge_base": knowledge_base, "questions_answers": questions_answers}
-
-
-

@@ -2,6 +2,7 @@ import chainlit as cl
 
 AVATAR = {"CHATBOT": "Chatbot", "USER": "User"}
 
+
 async def setup_avatar():
     await cl.Avatar(
         name=AVATAR["CHATBOT"],

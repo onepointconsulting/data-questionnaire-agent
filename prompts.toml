@@ -1,7 +1,7 @@
 [general_messages]
 tip_correct_format = "Tip: Make sure to answer in the correct format"
 tip_language = "Tip: Please make sure that you write all your answers in British English."
-tool_name = "Data & Analytics Self-Assessment"
+tool_name = "Data Wellness Q&A Chatbot"
 
 [general_settings]
 questions_per_batch = 1

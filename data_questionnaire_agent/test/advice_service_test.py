@@ -1,10 +1,17 @@
-
-
-
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.service.advice_service import chain_factory_advice, prepare_conditional_advice, prompt_factory_conditional_advice
-from data_questionnaire_agent.test.provider.knowledge_base_provider import provide_data_quality_ops
-from data_questionnaire_agent.test.provider.question_answers_provider import provide_data_silo_questionnaire, provide_incomplete_questionnaire
+from data_questionnaire_agent.service.advice_service import (
+    chain_factory_advice,
+    prepare_conditional_advice,
+    prompt_factory_conditional_advice,
+)
+from data_questionnaire_agent.test.provider.knowledge_base_provider import (
+    provide_data_quality_ops,
+)
+from data_questionnaire_agent.test.provider.question_answers_provider import (
+    provide_data_silo_questionnaire,
+    provide_incomplete_questionnaire,
+)
+
 
 def create_chain():
     chain = chain_factory_advice()

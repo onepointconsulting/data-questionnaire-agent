@@ -27,7 +27,7 @@ class QuestionAnswer:
     @staticmethod
     def question_answer_factory(question: str, answer: dict):
         return QuestionAnswer(question=question, answer=answer, clarification="")
-    
+
     @staticmethod
     def question_factory(question: str):
         return QuestionAnswer(question=question, answer="", clarification="")
@@ -50,7 +50,7 @@ class Questionnaire:
                 for qa in self.questions
             ]
         )
-    
+
     def to_html(self) -> str:
         html = """<table>       
 """
@@ -69,7 +69,9 @@ class Questionnaire:
 """
         html += "</table>"
         return html
-    
 
-def convert_to_question_answers(response_questions: ResponseQuestions) -> List[QuestionAnswer]:
+
+def convert_to_question_answers(
+    response_questions: ResponseQuestions,
+) -> List[QuestionAnswer]:
     return [QuestionAnswer.question_factory(q) for q in response_questions.questions]

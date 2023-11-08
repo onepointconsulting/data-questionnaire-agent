@@ -31,15 +31,15 @@ class DuckDuckGoTool(BaseTool):
         """
         search_res = text_search("".join(search_terms), limit=RESULT_LIMIT)
         return "\n".join([r["body"] for r in search_res])
-    
-    args_schema: Optional[Type[BaseModel]] = SearchTermsInput
 
+    args_schema: Optional[Type[BaseModel]] = SearchTermsInput
 
 
 def create_clarification_agent() -> AgentExecutor:
     tools = [DuckDuckGoTool()]
-    return initialize_agent(tools, cfg.llm, agent=AgentType.OPENAI_FUNCTIONS, verbose=True)
-    
+    return initialize_agent(
+        tools, cfg.llm, agent=AgentType.OPENAI_FUNCTIONS, verbose=True
+    )
 
 
 def text_search(input: str, limit: int = 10) -> List[dict]:
@@ -71,11 +71,11 @@ if __name__ == "__main__":
         name="search_duck_duck_go",
         description="Used to find answers and explanations based on keywords",
     )
-    res = tool.run({'search_terms': ["Weather in London tomorrow"]})
+    res = tool.run({"search_terms": ["Weather in London tomorrow"]})
     from data_questionnaire_agent.log_init import logger
 
     logger.info(res)
     agent_executor = create_clarification_agent()
     response = agent_executor.run("What is dark data?")
-    logger.info('Agent response: %s', response)
-    logger.info('Agent response type: %s', type(response))
+    logger.info("Agent response: %s", response)
+    logger.info("Agent response type: %s", type(response))

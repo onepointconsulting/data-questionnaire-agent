@@ -8,7 +8,9 @@ from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 
 
-async def generate_display_pdf(advices: ConditionalAdvice, questionnaire: Questionnaire):
+async def generate_display_pdf(
+    advices: ConditionalAdvice, questionnaire: Questionnaire
+):
     pdf_path = await asyncify(generate_pdf_from)(questionnaire, advices)
     logger.info("PDF path: %s", pdf_path)
     elements = [
