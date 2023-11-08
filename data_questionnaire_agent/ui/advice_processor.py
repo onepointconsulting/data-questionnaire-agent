@@ -31,7 +31,7 @@ async def process_advice(
     advice_input = prepare_conditional_advice(
         knowledge_base=knowledge_base, questions_answers=questionnaire_str
     )
-    async for attempt in AsyncRetrying(cfg.retry_args):
+    async for attempt in AsyncRetrying(**cfg.retry_args):
         with attempt:
             conditional_advice: ConditionalAdvice = await advice_chain.arun(
                 advice_input
