@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from pydantic import Field
 
@@ -33,7 +33,7 @@ class ResponseTags(BaseModel):
         ...,
         description="Whether the text with the answers suggests that the user is confused.",
     )
-    extracted_questions: Optional[List[str]] = Field(
+    extracted_questions: Union[List[str], None] = Field(
         ...,
         description="If the text with the answers contains questions, these are the questions.",
     )
