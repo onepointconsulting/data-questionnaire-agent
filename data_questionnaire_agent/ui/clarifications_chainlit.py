@@ -27,7 +27,7 @@ async def process_clarifications_chainlit(
     questions = questionnaire.questions[-questions_to_process:]
     content = "\n".join([q.answer for q in questions])
 
-    async for attempt in AsyncRetrying(cfg.retry_args):
+    async for attempt in AsyncRetrying(**cfg.retry_args):
         with attempt:
             response_tags: ResponseTags = await has_questions_chain.arun(
                 prepare_sentiment_input(content)

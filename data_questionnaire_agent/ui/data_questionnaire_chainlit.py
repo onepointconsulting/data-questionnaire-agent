@@ -268,7 +268,7 @@ async def process_initial_question(
         knowledge_base=knowledge_base,
     )
 
-    async for attempt in AsyncRetrying(cfg.retry_args):
+    async for attempt in AsyncRetrying(**cfg.retry_args):
         with attempt:
             response_questions: ResponseQuestions = await initial_question_chain.arun(
                 input
