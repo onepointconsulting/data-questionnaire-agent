@@ -68,6 +68,11 @@ button:has(> svg[data-testid=KeyboardDoubleArrowUpIcon]) {
     display: none;
 }
 
+/** Hide the side menu */
+.side-menu {
+    display: none
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (max-width: 1200px) {
 
