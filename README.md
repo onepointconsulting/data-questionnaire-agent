@@ -21,7 +21,7 @@ pip install poetry
 
 ```
 poetry install
-poetry add --editable ./wheels/chainlit-0.7.5-py3-none-any.whl
+poetry add --editable ./wheels/chainlit-0.7.8-py3-none-any.whl
 ```
 
 ## Running
@@ -37,32 +37,33 @@ chainlit run .\data_questionnaire_agent\ui\data_questionnaire_chainlit.py --port
 This is the content of the `.env` file
 
 ```
-OPENAI_API_KEY=<open_ai_key>
-# OPENAI_MODEL=gpt-3.5-turbo-0613
+OPENAI_API_KEY=<open-api-key>
+# This model does not seem to perform too well.
+# OPENAI_MODEL=gpt-4-1106-preview
 OPENAI_MODEL=gpt-4-0613
-# OPENAI_MODEL=gpt-4-32k-0613
-REQUEST_TIMEOUT=140
+REQUEST_TIMEOUT=300
 
 VERBOSE_LLM=true
 LANGCHAIN_CACHE=false
+CHATGPT_STREAMING=false
 
-UI_TIMEOUT = 2400
+UI_TIMEOUT = 60
 
 # Email related
-MAIL_FROM_PERSON=Gil Fernandes
-MAIL_USER=<email>
-MAIL_PASSWORD=<password>
-MAIL_FROM=<email>
+MAIL_FROM_PERSON=<mail sender>
+MAIL_USER=<some valid email id>
+MAIL_PASSWORD=<mail password>
+MAIL_FROM=<some valid email sender>
 MAIL_SERVER=smtp.gmail.com:587
 
 # General stuff
-PROJECT_ROOT=C:/development/playground/langchain/data_integration_questionnaire
-QUESTION_CACHE_FOLDER=c:/tmp/data_integration_questionnaire/cache
+PROJECT_ROOT=/development/playground/langchain/data_questionnaire_agent
+QUESTION_CACHE_FOLDER=c:/tmp/data_questionnaire_agent/cache
 
 # PDF Related
-WKHTMLTOPDF_BINARY=C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe
-TEMPLATE_LOCATION=C:/development/playground/langchain/data_integration_questionnaire/templates
-PDF_FOLDER=C:/tmp/data_integration_questionnaire/pdfs
+WKHTMLTOPDF_BINARY=/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe
+TEMPLATE_LOCATION=/development/playground/langchain/data_questionnaire_agent/templates
+PDF_FOLDER=/tmp/data_questionnaire_agent/pdfs
 
 # Whether to show the task list or not
 TASKLIST=false
@@ -71,19 +72,26 @@ TASKLIST=false
 SHOW_CHAIN_OF_THOUGHT=true
 
 # Embedding related
-RAW_TEXT_FOLDER=C:\development\playground\langchain\data_integration_questionnaire\docs\raw_text
-EMBEDDINGS_PERSISTENCE_DIR=C:\development\playground\langchain\data_integration_questionnaire\embeddings
+# The following property is where your knowledge base is located
+RAW_TEXT_FOLDER=/development/playground/langchain/data_questionnaire_agent/docs/raw_text
+EMBEDDINGS_PERSISTENCE_DIR=C:\development\playground\langchain\data_questionnaire_agent\embeddings
 EMBEDDINGS_CHUNK_SIZE=2500
-SEARCH_RESULTS_HOW_MANY=4
+SEARCH_RESULTS_HOW_MANY=2
 
 # Question generation related
-QUESTIONS_PER_BATCH=2
+QUESTIONS_PER_BATCH=1
+# Minimum questions asked before giving advice
+MINIMUM_QUESTIONNAIRE_SIZE=4
 
 # Token limit for chatgpt 4. Important to extend the context as much as possible using the vector DB search
+# This could be higher as the TPM increased on the 6th of November
 TOKEN_LIMIT=6000
 
+# Not in use
+IMAGE_LLM_TEMPERATURE=0.9
+
 # Show session cost
-SHOW_SESSION_COST=true
+SHOW_SESSION_COST=false
 OPENAI_RETRY_ATTEMPTS=3
 OPENAI_WAIT_FIXED=30
 
