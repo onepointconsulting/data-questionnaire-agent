@@ -58,7 +58,7 @@ MAIL_SERVER=smtp.gmail.com:587
 
 # General stuff
 PROJECT_ROOT=/development/playground/langchain/data_questionnaire_agent
-QUESTION_CACHE_FOLDER=c:/tmp/data_questionnaire_agent/cache
+QUESTION_CACHE_FOLDER=/tmp/data_questionnaire_agent/cache
 
 # PDF Related
 WKHTMLTOPDF_BINARY=/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe
@@ -74,7 +74,7 @@ SHOW_CHAIN_OF_THOUGHT=true
 # Embedding related
 # The following property is where your knowledge base is located
 RAW_TEXT_FOLDER=/development/playground/langchain/data_questionnaire_agent/docs/raw_text
-EMBEDDINGS_PERSISTENCE_DIR=C:\development\playground\langchain\data_questionnaire_agent\embeddings
+EMBEDDINGS_PERSISTENCE_DIR=/development/playground/langchain/data_questionnaire_agent/embeddings
 EMBEDDINGS_CHUNK_SIZE=2500
 SEARCH_RESULTS_HOW_MANY=2
 
