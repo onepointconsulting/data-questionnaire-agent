@@ -239,8 +239,6 @@ def process_special_question(question: str) -> str:
 ### {question}
 The image below may help with your response — it captures some of the most common data and analytics challenges our clients face.
 {display_options_non_mobile()}
-
-{display_options_mobile()}
 """
     return question
 

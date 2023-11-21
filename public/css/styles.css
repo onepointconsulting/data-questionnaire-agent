@@ -73,23 +73,6 @@ button:has(> svg[data-testid=KeyboardDoubleArrowUpIcon]) {
     display: none
 }
 
-div.MuiCollapse-root.MuiCollapse-vertical.MuiCollapse-entered.css-a3w4o5 > div > div > div > div > div > div:nth-child(3) > table {
-    display: none;
-}
-
-.MuiPaper-root > .css-1vwknu2 {
-    display: block;
-}
-
-@media (min-width: 768px) {
-    div.MuiCollapse-root.MuiCollapse-vertical.MuiCollapse-entered.css-a3w4o5 > div > div > div > div > div > div:nth-child(3) > table {
-        display: block;
-    }
-    .MuiPaper-root > .css-1vwknu2 {
-        display: none;
-    }
-}
-
 /* Medium devices (tablets, 768px and up) */
 @media (max-width: 1200px) {
 
