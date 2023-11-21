@@ -210,7 +210,7 @@ async def process_questionnaire(
 def process_special_question(question: str) -> str:
     original_question = prompts["questionnaire"]["initial"]["question"]
 
-    def display_image(image_path: str, alt: str, title: str):
+    def display_options_non_mobile():
         # return f'![{alt}](/public/images/{image_path} "{title}")'
         return f"""
 | ![Data quality](/assets/onepoint/poor_data_quality.png "data quality")|**Poor data quality** - Low-quality data can lead to incorrect insights and poor decision-making.|![Compliance risks](/assets/onepoint/compliance_risks.png "compliance risks")|**Compliance and security** risks - Mishandling data can lead to legal troubles and reputational damage.|
@@ -219,13 +219,28 @@ def process_special_question(question: str) -> str:
 | ![Data overload](/assets/onepoint/data_overload.png "data overload")|**Data overload** - "Data glut" can slow down processes and make it difficult to identify what data is actually useful.|![Cost and complexity](/assets/onepoint/cost_and_complexity.png "cost and complexity")|**Cost and complexity** A robust data analytics infrastructure requires significant investment of resources.|
 | ![Inconsistent data strategies](/assets/onepoint/inconsistent_data_strategies.png "inconsistent data strategies")|**Inconsistent data strategies** - Difficult to align with modern concepts like Data Fabric, Mesh and Generative AI.|![Resistence to change](/assets/onepoint/resistence_to_change.png "resistence to change")|**Resistence to change** Employees need to adapt to new ways of operating to make data-driven transformation work.|
 """
+    
+    def display_options_mobile():
+        return f"""
+| ![Data quality](/assets/onepoint/poor_data_quality.png "data quality")|**Poor data quality** - Low-quality data can lead to incorrect insights and poor decision-making.|
+|---:|:---|
+| ![Compliance risks](/assets/onepoint/compliance_risks.png "compliance risks")|**Compliance and security** risks - Mishandling data can lead to legal troubles and reputational damage.|
+| ![Data silos](/assets/onepoint/data_silos.png "data silos")|**Data Silos** - Data trapped in departmental silos can be inaccessible to other parts.|
+| ![Lack of skilled personnel](/assets/onepoint/lack_of_skilled_personnel.png "compliance risks")|**Lack of skilled personnel** risks - Missing skills in data science, analytics, AI and ML can impede the effective use of data.|
+| ![Data overload](/assets/onepoint/data_overload.png "data overload")|**Data overload** - "Data glut" can slow down processes and make it difficult to identify what data is actually useful.|
+| ![Cost and complexity](/assets/onepoint/cost_and_complexity.png "cost and complexity")|**Cost and complexity** A robust data analytics infrastructure requires significant investment of resources.|
+| ![Inconsistent data strategies](/assets/onepoint/inconsistent_data_strategies.png "inconsistent data strategies")| **Inconsistent data strategies** - Difficult to align with modern concepts like Data Fabric, Mesh and Generative AI.
+|![Resistence to change](/assets/onepoint/resistence_to_change.png "resistence to change")|**Resistence to change** Employees need to adapt to new ways of operating to make data-driven transformation work.|
+"""
 
     tool_name = prompts["general_messages"]["tool_name"]
     if question == original_question:
         return f"""
 ### {question}
 The image below may help with your response — it captures some of the most common data and analytics challenges our clients face.
-{display_image('data_ecosystem_areas.png', tool_name, tool_name)}
+{display_options_non_mobile()}
+
+{display_options_mobile()}
 """
     return question
 
