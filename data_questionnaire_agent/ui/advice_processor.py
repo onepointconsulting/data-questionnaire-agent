@@ -52,7 +52,7 @@ async def display_advice(conditional_advice: ConditionalAdvice):
         ).send()
         advice_markdown = "\n- ".join(conditional_advice.advices)
         await cl.Message(
-            content="\n- " + advice_markdown, author=AVATAR["CHATBOT"],
+            content="\n- " + advice_markdown, 
             author=AVATAR["CHATBOT"],
         ).send()
 
