@@ -63,6 +63,11 @@ svg[data-testid=TuneIcon] {
     display: none;
 }
 
+/* Hiding the message date */
+.message-date {
+    display: none;
+}
+
 /* Hiding the settings button */
 .MuiInputAdornment-root .settings-button {
     display: none;
