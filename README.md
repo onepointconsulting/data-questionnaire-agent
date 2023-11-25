@@ -21,7 +21,7 @@ pip install poetry
 
 ```
 poetry install
-poetry add --editable ./wheels/chainlit-0.7.8-py3-none-any.whl
+poetry add --editable ./wheels/chainlit-0.7.8.3-py3-none-any.whl
 ```
 
 ## Running

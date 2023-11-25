@@ -6,6 +6,7 @@ from asyncer import asyncify
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
+from data_questionnaire_agent.ui.avatar_factory import AVATAR
 
 
 async def generate_display_pdf(
@@ -21,5 +22,7 @@ async def generate_display_pdf(
         ),
     ]
     await cl.Message(
-        content="Please download the advices in the pdf!", elements=elements
+        content="So you can download a copy, here’s a PDF with the recommendations:", 
+        elements=elements,
+        author=AVATAR["CHATBOT"]
     ).send()

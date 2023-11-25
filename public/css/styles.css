@@ -1,5 +1,6 @@
 :root {
     --text_blue: #0066A4;
+    --experimental-blue: #0087d3
   }
 
 .markdown-body img {
@@ -34,6 +35,14 @@
     min-height: 10em;
 }
 
+.image-banner h1 {
+    margin: 0.5em 0 0 0;
+}
+
+.image-banner h2 {
+    margin: 0.2em 0 0.5em 0;
+}
+
 .logo-box img {
     position: relative;
     right: -1em;
@@ -46,6 +55,16 @@
 
 /* Hiding chat button */
 .logo-box + .MuiStack-root.css-1mzerio {
+    display: none;
+}
+
+/* Hiding the settings button */
+svg[data-testid=TuneIcon] {
+    display: none;
+}
+
+/* Hiding the settings button */
+.message .message-date {
     display: none;
 }
 
@@ -69,8 +88,9 @@ button:has(> svg[data-testid=KeyboardDoubleArrowUpIcon]) {
 }
 
 /** Hide the side menu */
-.side-menu {
-    display: none
+.experimental {
+    background-color: var(--experimental-blue);
+    padding: 0.3em 0.1em
 }
 
 /* Medium devices (tablets, 768px and up) */
@@ -102,3 +122,62 @@ button:has(> svg[data-testid=KeyboardDoubleArrowUpIcon]) {
         min-height: 15em;
     }
 }
+
+/* Areas of concern */
+.markdown-body .init-options-row  {
+    font-size: small;
+}
+
+.markdown-body .img-cell > img {
+    max-width: 4em;
+    display: block;
+    margin: 0 auto
+}
+
+/* Micro framework for responsive layout */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-2 {
+    width: 16.667%
+}
+
+.col-3 {
+    width: 25%
+}
+
+.col-9 {
+    width: 75%
+}
+
+.col-10 {
+    width: 75%
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+
+    /* Tablet  */
+
+    .col-md-1 {
+        width: 8.33%
+    }
+
+    .col-md-2 {
+        width: 16.667%
+    }
+
+    .col-md-4 {
+        width: 33.333%
+    }
+
+    .col-md-5 {
+        width: 41.667%
+    }
+ }
+ /* End micro framework */
+
+
+

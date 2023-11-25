@@ -6,9 +6,9 @@ AVATAR = {"CHATBOT": "Chatbot", "USER": "User"}
 async def setup_avatar():
     await cl.Avatar(
         name=AVATAR["CHATBOT"],
-        url="/public/images/natural-language-processing.png",
+        url="/public/images/companion_icon.png",
     ).send()
     await cl.Avatar(
         name=AVATAR["USER"],
-        url="/public/images/User_icon_512.png",
+        url="/public/images/user.png",
     ).send()
