@@ -64,7 +64,7 @@ svg[data-testid=TuneIcon] {
 }
 
 /* Hiding the settings button */
-.message .message-date {
+.MuiInputAdornment-root .settings-button {
     display: none;
 }
 
@@ -90,7 +90,7 @@ button:has(> svg[data-testid=KeyboardDoubleArrowUpIcon]) {
 /** Hide the side menu */
 .experimental {
     background-color: var(--experimental-blue);
-    padding: 0.3em 0.1em
+    padding: 0.2em 0.1em
 }
 
 /* Medium devices (tablets, 768px and up) */
