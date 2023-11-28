@@ -22,7 +22,7 @@ async def generate_display_pdf(
         ),
     ]
     await cl.Message(
-        content="So you can download a copy, here’s a PDF with the recommendations:", 
+        content="So you can download a copy, here’s a PDF with the recommendations:",
         elements=elements,
-        author=AVATAR["CHATBOT"]
+        author=AVATAR["CHATBOT"],
     ).send()

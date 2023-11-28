@@ -5,6 +5,7 @@ from asyncer import asyncify
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.ui.avatar_factory import AVATAR
+from data_questionnaire_agent.service.mail_sender import create_mail_body
 
 from data_questionnaire_agent.service.mail_sender import (
     send_email,
@@ -32,22 +33,7 @@ async def process_send_email(questionnaire: Questionnaire, advices: ConditionalA
                 "Dear customer",
                 response_content,
                 "Onepoint Data Integration Questionnaire",
-                f"""
-    <p>A big thank you for completing the <b>{cfg.product_title}</b>.</p>
-
-    <h2>Transcript</h2>
-    {questionnaire.to_html()}
-
-    <h2>Advice</h2>
-    {advices.to_html()}
-
-    <p>We would love your feedback: <a href="mailto:{feedback_email}">{feedback_email}</a>.</p>
-
-    <p>For more information, please visit us at Onepoint Data Wellness.</p>
-
-    For more information, please visit our <a href="https://onepointltd.com">webpage</a>.
-
-    """,
+                create_mail_body(questionnaire, advices, feedback_email),
             )
             await cl.Message(
                 content=f"Thank you for submitting the query. We really appreciate that you have taken time to do this.",

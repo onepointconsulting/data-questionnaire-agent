@@ -30,7 +30,9 @@ Subject: {quizz_title}
 
 {questionnaire_summary}
 
-""".encode("utf-8")
+""".encode(
+        "utf-8"
+    )
     # Send the message via local SMTP server.
     with smtplib.SMTP(mail_config.mail_server) as server:
         logger.info("Before starttls to %s", mail_config.mail_server)
@@ -44,6 +46,18 @@ Subject: {quizz_title}
         send_mail_res = server.sendmail(mail_config.mail_from, target_email, message)
         logger.info("send_mail_res %s", send_mail_res)
         server.quit()
+
+
+def create_mail_body(questionnaire, advices, feedback_email):
+    return f"""
+    <p>A big thank you for completing the <b>{cfg.product_title}</b>.</p>
+    <h2>Transcript</h2>
+    {questionnaire.to_html()}
+    <h2>Advice</h2>
+    {advices.to_html() if advices is not None else ""}
+    <p>We would love your feedback: <a href="mailto:{feedback_email}">{feedback_email}</a>.</p>
+    <p>For more information, please visit us at <a href="https://www.onepointltd.com/data-wellness/">Onepoint Data Wellness</a>.</p>
+    """
 
 
 if __name__ == "__main__":
@@ -60,7 +74,6 @@ if __name__ == "__main__":
         recipient,
         cfg.product_title,
         f"""
-<h2>Transcript</h2>
-{questionnaire.to_html()}
+{create_mail_body(questionnaire, None, "feedback@onepointltd.com")}
 """,
     )
