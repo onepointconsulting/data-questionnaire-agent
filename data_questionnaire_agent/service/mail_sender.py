@@ -6,6 +6,8 @@ from email.utils import parseaddr
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import mail_config
 
+from data_questionnaire_agent.config import cfg
+
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 
 
@@ -61,7 +63,6 @@ def create_mail_body(questionnaire, advices, feedback_email):
 
 
 if __name__ == "__main__":
-    from data_questionnaire_agent.config import cfg
     from data_questionnaire_agent.test.provider.questionnaire_provider import (
         create_questionnaire_2_questions,
     )
