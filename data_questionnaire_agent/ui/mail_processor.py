@@ -32,7 +32,7 @@ async def process_send_email(questionnaire: Questionnaire, advices: ConditionalA
                 response_content,
                 "Onepoint Data Integration Questionnaire",
                 f"""
-    <p>Big thank you for completing the <b>{cfg.product_title}</b>.</p>
+    <p>A big thank you for completing the <b>{cfg.product_title}</b>.</p>
 
     <h2>Transcript</h2>
     {questionnaire.to_html()}
