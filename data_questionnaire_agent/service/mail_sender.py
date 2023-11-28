@@ -30,7 +30,7 @@ Subject: {quizz_title}
 
 {questionnaire_summary}
 
-"""
+""".encode("utf-8")
     # Send the message via local SMTP server.
     with smtplib.SMTP(mail_config.mail_server) as server:
         logger.info("Before starttls to %s", mail_config.mail_server)
@@ -47,6 +47,7 @@ Subject: {quizz_title}
 
 
 if __name__ == "__main__":
+    from data_questionnaire_agent.config import cfg
     from data_questionnaire_agent.test.provider.questionnaire_provider import (
         create_questionnaire_2_questions,
     )
@@ -57,9 +58,9 @@ if __name__ == "__main__":
     send_email(
         "Gil Fernandeds",
         recipient,
-        "Onepoint Data Integration Questionnaire",
+        cfg.product_title,
         f"""
-<h2>Questionnaire</h2>
+<h2>Transcript</h2>
 {questionnaire.to_html()}
 """,
     )
