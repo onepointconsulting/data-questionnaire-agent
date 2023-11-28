@@ -26,9 +26,7 @@ MIME-Version: 1.0
 Content-type: text/html
 Subject: {quizz_title}
 
-<a href="https://www.onepointltd.com"><img src="https://www.onepointltd.com/wp-content/uploads/2020/06/logo-one-point.png" alt="Onepoint Consulting Ltd" /></a>
-
-<img src="https://healthcheck.onepointltd.ai/public/images/banner_with_titles.png" style="width: 100%;" />
+<img src="https://healthcheck.onepointltd.ai/public/images/Hero_Image_with_Logo_and_Titles.jpg" style="width: 100%;" />
 
 {questionnaire_summary}
 

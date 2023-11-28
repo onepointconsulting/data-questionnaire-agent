@@ -232,7 +232,7 @@ def process_special_question(question: str) -> str:
         {
             "img_src": "lack_of_skilled_personnel.png",
             "img_alt": "Lack of skilled personnel",
-            "title": "Lack of skilled personne",
+            "title": "Lack of skilled personnel",
             "text": "Missing skills in data science, analytics, AI and ML can impede the effective use of data."
         },
         {
@@ -249,8 +249,8 @@ def process_special_question(question: str) -> str:
         },
         {
             "img_src": "inconsistent_data_strategies.png",
-            "img_alt": "inconsistent data strategies",
-            "title": "inconsistent data strategies",
+            "img_alt": "Inconsistent data strategies",
+            "title": "Inconsistent data strategies",
             "text": 'Difficult to align with modern concepts like Data Fabric, Mesh and Generative AI.'
         },
         {

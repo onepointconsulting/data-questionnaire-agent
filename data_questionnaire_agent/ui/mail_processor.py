@@ -32,13 +32,17 @@ async def process_send_email(questionnaire: Questionnaire, advices: ConditionalA
                 response_content,
                 "Onepoint Data Integration Questionnaire",
                 f"""
-    <p>Big thank you for completing the <b>Onepoint's Data Integration Assessment Quiz</b>.</p>
+    <p>Big thank you for completing the <b>{cfg.product_title}</b>.</p>
 
-    <h2>Questionnaire</h2>
+    <h2>Transcript</h2>
     {questionnaire.to_html()}
 
     <h2>Advice</h2>
     {advices.to_html()}
+
+    <p>We would love your feedback: <a href="">feedback@onepointltd.ai</a>.</p>
+
+    <p>For more information, please visit us at Onepoint Data Wellness.</p>
 
     For more information, please visit our <a href="https://onepointltd.com">webpage</a>.
 

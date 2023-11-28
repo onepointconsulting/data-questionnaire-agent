@@ -28,7 +28,7 @@ def generate_pdf_from(questionnaire: Questionnaire, advices: ConditionalAdvice) 
     if questionnaire is None:
         return None
     html = generate_html(questionnaire, advices)
-    file_name = cfg.pdf_folder / f"Advice from the Onepoint Data Wellness Companion™_{generate_iso()}.pdf"
+    file_name = cfg.pdf_folder / f"Advice from the {cfg.product_title}_{generate_iso()}.pdf"
     config = pdfkit.configuration(wkhtmltopdf=cfg.wkhtmltopdf_binary.as_posix())
     pdfkit.from_string(html, file_name, configuration=config)
     logger.info("Created PDF: %s", file_name)

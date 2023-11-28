@@ -76,6 +76,8 @@ class Config:
         "wait": tenacity.wait_fixed(wait_fixed),
     }
 
+    product_title = "Onepoint Data Wellness Companion™"
+
 
 cfg = Config()
 
