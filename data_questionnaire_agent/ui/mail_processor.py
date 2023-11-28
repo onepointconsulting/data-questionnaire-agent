@@ -26,6 +26,7 @@ async def process_send_email(questionnaire: Questionnaire, advices: ConditionalA
         has_replied = True
         response_content = response["content"]
         if validate_address(response_content):
+            feedback_email = "feedback@onepointltd.ai"
             logger.info("Sending email to %s", response_content)
             await asyncify(send_email)(
                 "Dear customer",
@@ -40,7 +41,7 @@ async def process_send_email(questionnaire: Questionnaire, advices: ConditionalA
     <h2>Advice</h2>
     {advices.to_html()}
 
-    <p>We would love your feedback: <a href="">feedback@onepointltd.ai</a>.</p>
+    <p>We would love your feedback: <a href="mailto:{feedback_email}">{feedback_email}</a>.</p>
 
     <p>For more information, please visit us at Onepoint Data Wellness.</p>
 
