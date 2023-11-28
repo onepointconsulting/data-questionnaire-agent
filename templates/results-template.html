@@ -18,6 +18,14 @@
             margin: 1em 1em;
         }
 
+        h2 {
+            color: #7d7d7d;
+        }
+
+        h2.questionnaire {
+            margin-bottom: -1em;
+        }
+
         .container {
             margin: 0em 1em;
             box-sizing: border-box;
@@ -47,10 +55,6 @@
             font-size: small;
         }
 
-        .questionnaire {
-            color: #7d7d7d;
-        }
-
         .onepoint-blue {
             color: #0084D7
         }
@@ -63,29 +67,25 @@
 
 <body>
     <img src="https://healthcheck.onepointltd.ai/public/images/Hero_Image_with_Logo_and_Titles.jpg" class="banner"/>
-    <div class="image-banner">
-        <div>
-            <h1>Onepoint Data Wellness Companion™</h1>
-            <h3>Powered by Onepoint's Data & Analytics Body of Knowledge and ChatGPT</h3>
-        </div>
-    </div>
     <div class="container">
         
         <p class="date-produced">Produced on: {{timestamp}}</p>
-        <p>Big thank you for completing the&nbsp;<strong><a title="Onepoint Consulting Ltd"
-                    href="https://www.onepointltd.com/" target="_blank">Onepoint</a>'s Data & Analytics Self-Assessment!</strong></p>
+        <p>A big thank you for completing a session with the&nbsp;<strong><a title="Onepoint Consulting Ltd"
+                    href="https://www.onepointltd.com/" target="_blank">Onepoint</a> Data Wellness Companion™!</strong></p>
         <p>Here you have the questions we asked and the answers you gave, followed by the recommendations and suggested courses of action. </p>
-        <h2 class="questionnaire">Questionnaire</h2>
+        <h2 class="questionnaire">Transcript</h2>
         <table>
             <tbody>
                 {{questionnaire}}
             </tbody>
         </table>
-        <h2 class="questionnaire">Recommendations and suggested courses of action</h2>
+        <h2 class="recommendations">Recommendations and suggested courses of action</h2>
         <ul>
             {{advices}}
         </ul>
         <p>&nbsp;</p>
+        <p>We would love your feedback: <a href="feedback@onepointltd.ai">feedback@onepointltd.ai</a>.</p>
+        <p>For more information, please visit us at <a href="https://www.onepointltd.com/data-wellness/">Onepoint Data Wellness</a>.</p>
     </div>
 </body>
 
