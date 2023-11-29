@@ -52,4 +52,4 @@ if __name__ == "__main__":
 
     questionnaire: Questionnaire = create_questionnaire_2_questions()
     advices: ConditionalAdvice = create_simple_advice()
-    generate_pdf_from(questionnaire, advices)
+    logger.info("PDF Path: %s", generate_pdf_from(questionnaire, advices))

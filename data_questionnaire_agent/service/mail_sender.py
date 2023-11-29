@@ -28,8 +28,6 @@ MIME-Version: 1.0
 Content-type: text/html
 Subject: {quizz_title}
 
-<img src="https://healthcheck.onepointltd.ai/public/images/Hero_Image_with_Logo_and_Titles.jpg" style="width: 100%;" />
-
 {questionnaire_summary}
 
 """.encode(
@@ -51,7 +49,12 @@ Subject: {quizz_title}
 
 
 def create_mail_body(questionnaire, advices, feedback_email):
-    return f"""
+    mail_template = cfg.template_location/'mail-template.html'
+    mail_template_text = mail_template.read_text(encoding="utf-8")
+    content = f"""
+
+    <img src="https://healthcheck.onepointltd.ai/public/images/Hero_Image_with_Logo_and_Titles.jpg" style="width: 100%;" />
+
     <p>A big thank you for completing the <b>{cfg.product_title}</b>.</p>
     <h2>Transcript</h2>
     {questionnaire.to_html()}
@@ -60,6 +63,7 @@ def create_mail_body(questionnaire, advices, feedback_email):
     <p>We would love your feedback: <a href="mailto:{feedback_email}">{feedback_email}</a>.</p>
     <p>For more information, please visit us at <a href="https://www.onepointltd.com/data-wellness/">Onepoint Data Wellness</a>.</p>
     """
+    return mail_template_text.format(content, text=content)
 
 
 if __name__ == "__main__":

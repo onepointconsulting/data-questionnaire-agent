@@ -471,12 +471,12 @@ pycparser = "*"
 
 [[package]]
 name = "chainlit"
-version = "0.7.8.7"
+version = "0.7.8.8"
 description = "A faster way to build chatbot UIs."
 optional = false
 python-versions = ">=3.8.1,<4.0.0"
 files = [
-    {file = "chainlit-0.7.8.7-py3-none-any.whl", hash = "sha256:764596419ac31e64a22230fa2cf87def3b739f758024b9fcb930cfa683f1ff5e"},
+    {file = "chainlit-0.7.8.8-py3-none-any.whl", hash = "sha256:aaf4d32462a234da060d189038b9a320abd8880ec033e3f686317e70b55a1c45"},
 ]
 
 [package.dependencies]
@@ -506,7 +506,7 @@ watchfiles = ">=0.20.0,<0.21.0"
 
 [package.source]
 type = "file"
-url = "wheels/chainlit-0.7.8.7-py3-none-any.whl"
+url = "wheels/chainlit-0.7.8.8-py3-none-any.whl"
 
 [[package]]
 name = "charset-normalizer"
@@ -3219,4 +3219,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3c6673ad9069dd20e46b91b1e60faf0544188923629bac061ad1a32882e25a9a"
+content-hash = "937de410e479fc7c5c6628d74ee2921596fb369b0acf09860cd20729b2b068a1"
