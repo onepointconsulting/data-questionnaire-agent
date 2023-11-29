@@ -5,6 +5,10 @@ This version operates a bit like an agent which tries to gather enough informati
 
 We have used a specially changed version of the [Chainlit][https://chainlit.io] library that you can install from the wheels folder.
 
+The source code for the hacked chainlit version is from this repo:
+
+https://github.com/onepointconsulting/chainlit-data-wellness-agent.git
+
 ## Setup
 
 We suggest to use [Conda](https://docs.conda.io/en/latest/) to manage the virtual environment and then install poetry.
@@ -21,7 +25,7 @@ pip install poetry
 
 ```
 poetry install
-poetry add --editable ./wheels/chainlit-0.7.8.6-py3-none-any.whl
+poetry add --editable ./wheels/chainlit-0.7.8.7-py3-none-any.whl
 ```
 
 ## Running
@@ -169,3 +173,27 @@ watermark_text = "Built by"
 [meta]
 generated_by = "0.7.1"
 ```
+
+## Note on sqllite3 on Windows
+
+If you have a hard time installing sqllite3 on Windows follow these instructions:
+
+https://zeljic.com/blog/sqlite-lib-windows-10/
+
+1. Download source from [source](https://www.sqlite.org/download.html)
+
+	For example: [source](https://www.sqlite.org/2023/sqlite-amalgamation-3430100.zip) `https://www.sqlite.org/2023/sqlite-amalgamation-3430100.zip`
+2. Download binary from [binary](https://www.sqlite.org/download.html)
+
+	For example: [binary](https://www.sqlite.org/2023/sqlite-dll-win64-x64-3430100.zip) `https://www.sqlite.org/2023/sqlite-dll-win64-x64-3430100.zip`
+    
+3. Extract both archives to the same directory
+    
+4. Open **Developer Command Prompt for VS 2017** by typing *Developer Command* in Windows Search
+
+5. Go to directory where you've extracted **source code** and **binary** files (via opened cmd)
+6. Run 
+	```lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64```
+7. Copy all of the files including `sqlite3.h` into one of the include folders used by `cl.exe` like e.g. `-IC:\Users\gilfe\miniconda3\envs\data_integration_questionnaire_agent\Include`
+	
+[Blog post](https://zeljic.com/blog/sqlite-lib-windows-10/)

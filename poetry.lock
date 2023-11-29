@@ -471,12 +471,12 @@ pycparser = "*"
 
 [[package]]
 name = "chainlit"
-version = "0.7.8.6"
+version = "0.7.8.7"
 description = "A faster way to build chatbot UIs."
 optional = false
 python-versions = ">=3.8.1,<4.0.0"
 files = [
-    {file = "chainlit-0.7.8.6-py3-none-any.whl", hash = "sha256:907f7a2f55a3ecb8220c51cef9e9a46ab2d452c003d229fcf784bde1cb6bb2fd"},
+    {file = "chainlit-0.7.8.7-py3-none-any.whl", hash = "sha256:764596419ac31e64a22230fa2cf87def3b739f758024b9fcb930cfa683f1ff5e"},
 ]
 
 [package.dependencies]
@@ -494,6 +494,7 @@ packaging = ">=23.1,<24.0"
 prisma = ">=0.10.0,<0.11.0"
 pydantic = ">=1,<3"
 pyjwt = ">=2.8.0,<3.0.0"
+pysqlite3 = ">=0.5.2,<0.6.0"
 python-dotenv = ">=1.0.0,<2.0.0"
 python-graphql-client = ">=0.4.3,<0.5.0"
 python-multipart = ">=0.0.6,<0.0.7"
@@ -505,7 +506,7 @@ watchfiles = ">=0.20.0,<0.21.0"
 
 [package.source]
 type = "file"
-url = "wheels/chainlit-0.7.8.6-py3-none-any.whl"
+url = "wheels/chainlit-0.7.8.7-py3-none-any.whl"
 
 [[package]]
 name = "charset-normalizer"
@@ -2117,6 +2118,16 @@ docs = ["sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
 tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
+name = "pysqlite3"
+version = "0.5.2"
+description = "DB-API 2.0 interface for Sqlite 3.x"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pysqlite3-0.5.2.tar.gz", hash = "sha256:0abc1756e8b39bd51c303e8fac37497ccaccc7b237c89fe3cf47ee8e614c590b"},
+]
+
+[[package]]
 name = "pytest"
 version = "7.4.3"
 description = "pytest: simple powerful testing with Python"
@@ -3208,4 +3219,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "88f6fcee90f903c9a4db9d07fc133377ac1ad33c4e2026474791947f66d3a1a8"
+content-hash = "e37217f9c4c39ecd6f6c8f08e7f038e0431d6f962f290f46d9f5a54b7f835de4"
