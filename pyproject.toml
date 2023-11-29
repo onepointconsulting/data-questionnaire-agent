@@ -20,7 +20,7 @@ pdfkit = "^1.0.0"
 opencv-python = "^4.8.1.78"
 scikit-image = "^0.21.0"
 tenacity = "^8.2.3"
-chainlit = {path = "C:/development/playground/langchain/data_questionnaire_agent/wheels/chainlit-0.7.8.7-py3-none-any.whl", develop = true}
+chainlit = {path = "./wheels/chainlit-0.7.8.7-py3-none-any.whl", develop = true}
 
 
 [tool.poetry.group.dev.dependencies]
