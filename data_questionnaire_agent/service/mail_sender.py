@@ -60,6 +60,11 @@ def create_mail_body(questionnaire, advices, feedback_email):
     {questionnaire.to_html()}
     <h2>Advice</h2>
     {advices.to_html() if advices is not None else ""}
+
+    <h2 class="personalOffer">A personal offer for you</h2>
+    <p>We are offering a free results interpretation call to talk through the Companion's recommendations and suggested courses of action with a real human expert. 
+        If you are open to that, please email us at <a href="mailto:datawellness@onepointltd.com">datawellness@onepointltd.com</a> from your business email address with your request to schedule a call.</p>
+
     <p>We would love your feedback: <a href="mailto:{feedback_email}">{feedback_email}</a>.</p>
     <p>For more information, please visit us at <a href="https://www.onepointltd.com/data-wellness/">Onepoint Data Wellness</a>.</p>
     """
