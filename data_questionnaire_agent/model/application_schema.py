@@ -64,7 +64,7 @@ class Questionnaire:
     </td>
 </tr>
 <tr>
-    <td>A: {answer}</td>
+    <td class="onepoint-answer">A: {answer}</td>
 </tr>
 """
         html += "</table>"

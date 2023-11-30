@@ -11,7 +11,7 @@ minimum_number_of_questions = 4
 [questionnaire]
     [questionnaire.initial]
     question = "Which area of your data ecosystem are you most concerned about?"
-    system_message = "You are a data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems"
+    system_message = "You are a data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
     human_message = """Based on the best practices and knowledge base and on an answer to a question answered by a customer, \
 please generate {questions_per_batch} questions that are helpful to this customer to solve data integration and gouvernance issues.
 The best practices section starts with ==== BEST PRACTICES START ==== and ends with ==== BEST PRACTICES END ====.
@@ -29,7 +29,7 @@ The user answer provided by the customer starts with ==== ANSWER ==== and ends w
 ==== ANSWER END ====
 """
     [questionnaire.secondary]
-    system_message = "You are a British data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems"
+    system_message = "You are a British data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
     human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
 please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, gouvernance and quality issues.
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
@@ -61,7 +61,7 @@ human_message_extraction = """Given this input that starts with === INPUT START 
 can you extract question related to data analytics, data governance and strategies, if there is one?"""
 
 [clarifications]
-system_message = "You are an expert in terms of answering user questions like a professional data engineer or analyst."
+system_message = "You are an expert in terms of answering user questions like a professional data engineer or analyst. You use British English."
 human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
 === INPUT START ===
 {questions}
@@ -74,7 +74,7 @@ Do not reply with follow up questions like 'Would you like more information?'.""
 [advice]
 system_message = """You are a British data integration and gouvernance advisor \
 that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems \
-You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present."""
+You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present. You use British English."""
 human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
 please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
 if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
