@@ -13,7 +13,7 @@ from data_questionnaire_agent.service.mail_sender import (
 )
 
 from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.config import cfg, mail_config
 
 
 async def process_send_email(questionnaire: Questionnaire, advices: ConditionalAdvice):
@@ -32,7 +32,7 @@ async def process_send_email(questionnaire: Questionnaire, advices: ConditionalA
             await asyncify(send_email)(
                 "Dear customer",
                 response_content,
-                "Onepoint Data Integration Questionnaire",
+                mail_config.mail_subject,
                 create_mail_body(questionnaire, advices, feedback_email),
             )
             await cl.Message(

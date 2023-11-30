@@ -23,7 +23,7 @@ def send_email(
     # Create the base text message.
     mail_from = mail_config.mail_from
     message = f"""From: {mail_config.mail_from_person} <{mail_from}>
-To: {person_name} <{target_email}>
+To: {target_email}
 Return-Path: <{mail_from}>
 MIME-Version: 1.0
 Content-type: text/html
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     send_email(
         "Gil Fernandeds",
         recipient,
-        cfg.product_title,
+        mail_config.mail_subject,
         f"""
 {create_mail_body(questionnaire, None, "feedback@onepointltd.com")}
 """,
