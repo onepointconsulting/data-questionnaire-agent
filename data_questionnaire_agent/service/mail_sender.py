@@ -55,7 +55,7 @@ def create_mail_body(questionnaire, advices, feedback_email):
 
     <img src="https://healthcheck.onepointltd.ai/public/images/Hero_Image_with_Logo_and_Titles.jpg" style="width: 100%;" />
 
-    <p>A big thank you for completing the <b>{cfg.product_title}</b>.</p>
+    <p>A big thank you for completing a session with the <b>{cfg.product_title}</b>.</p>
     <h2>Transcript</h2>
     {questionnaire.to_html()}
     <h2>Advice</h2>
