@@ -21,9 +21,10 @@ def send_email(
     person_name: str, target_email: str, quizz_title: str, questionnaire_summary: str
 ):
     # Create the base text message.
-
-    message = f"""From: {mail_config.mail_from_person} <{mail_config.mail_user}>
+    mail_from = mail_config.mail_from
+    message = f"""From: {mail_config.mail_from_person} <{mail_from}>
 To: {person_name} <{target_email}>
+Return-Path: <{mail_from}>
 MIME-Version: 1.0
 Content-type: text/html
 Subject: {quizz_title}

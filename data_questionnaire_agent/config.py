@@ -88,6 +88,7 @@ class MailConfig:
     mail_from = os.getenv("MAIL_FROM")
     mail_server = os.getenv("MAIL_SERVER")
     mail_from_person = os.getenv("MAIL_FROM_PERSON")
+    mail_to_name = os.getenv("MAIL_TO_NAME")
 
 
 mail_config = MailConfig()
