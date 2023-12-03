@@ -30,11 +30,19 @@ poetry add --editable ./wheels/chainlit-0.7.8.8-py3-none-any.whl
 
 ## Running
 
+### Prepare the SQLLite database
+
+Before you run for the first time, please run this command from the command line to initiate the SQLLite database:
+
+```
+python .\data_questionnaire_agent\utils\tracker_db_init.py
+```
+
+### Running the main application
 
 ```
 chainlit run .\data_questionnaire_agent\ui\data_questionnaire_chainlit.py --port 8080
 ```
-
 
 ## Configuration
 
