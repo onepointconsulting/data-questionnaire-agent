@@ -35,7 +35,7 @@ poetry add --editable ./wheels/chainlit-0.7.8.8-py3-none-any.whl
 Before you run for the first time, please run this command from the command line to initiate the SQLLite database:
 
 ```
-python .\data_questionnaire_agent\utils\tracker_db_init.py
+python ./data_questionnaire_agent/utils/tracker_db_init.py
 ```
 
 ### Running the main application
@@ -106,6 +106,10 @@ IMAGE_LLM_TEMPERATURE=0.9
 SHOW_SESSION_COST=false
 OPENAI_RETRY_ATTEMPTS=3
 OPENAI_WAIT_FIXED=30
+
+# SQLLite DB related
+# Optional
+ONEPOINT_SQL_LITE_DB=/tmp/SQL_LITE_DB.db
 
 ```
 
