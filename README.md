@@ -25,7 +25,7 @@ pip install poetry
 
 ```
 poetry install
-poetry add --editable ./wheels/chainlit-0.7.8.8-py3-none-any.whl
+poetry add --editable ./wheels/chainlit-0.7.8.10-py3-none-any.whl
 ```
 
 ## Running
@@ -158,6 +158,9 @@ github = "https://onepointltd.com"
 # Specify a CSS file that can be used to customize the user interface.
 custom_css = '/public/css/styles.css'
 
+# Specify a JS file that can be used to customize the user interface.
+custom_js = '/public/js/onepoint.js'
+
 # The text
 watermark_text = "Built by"
 
@@ -212,4 +215,8 @@ https://zeljic.com/blog/sqlite-lib-windows-10/
 
 ## Listing the interactions
 
-If you want to list the interactions with the system from the database
+If you want to list the interactions with the system from the database you can run this command into a CSV file:
+
+```python
+
+```
