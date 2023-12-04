@@ -209,3 +209,7 @@ https://zeljic.com/blog/sqlite-lib-windows-10/
 7. Copy all of the files including `sqlite3.h` into one of the include folders used by `cl.exe` like e.g. `-IC:\Users\gilfe\miniconda3\envs\data_integration_questionnaire_agent\Include`
 	
 [Blog post](https://zeljic.com/blog/sqlite-lib-windows-10/)
+
+## Listing the interactions
+
+If you want to list the interactions with the system from the database

@@ -115,6 +115,7 @@ async def initial_message():
 - If you’d like, you can ask for a copy of the results to be emailed to you.
 - This is an experimental tool. Any feedback and improvement ideas are always welcome — thank you!
 Let’s get started.
+
 """
     await cl.Message(content=initial_message, author=AVATAR["CHATBOT"]).send()
 
@@ -268,9 +269,9 @@ def process_special_question(question: str) -> str:
         for r1, r2 in items:
             res += f"""
 <div class="row init-options-row">
-    <div class="col-3 col-md-1 img-cell"><img src="/assets/onepoint/{r1['img_src']}" alt="{r1['img_alt']}" title="{r1['img_alt']}"/></div>
+    <div class="col-3 col-md-1 img-cell"><img src="/assets/onepoint/{r1['img_src']}" alt="{r1['img_alt']}" title="{r1['img_alt']}" /></div>
     <div class="col-9 col-md-5"><b>{r1['title']}</b> - {r1['text']}</div>
-    <div class="col-3 col-md-1 img-cell"><img src="/assets/onepoint/{r2['img_src']}" alt="{r2['img_alt']}" title="{r2['img_alt']}"/></div>
+    <div class="col-3 col-md-1 img-cell"><img src="/assets/onepoint/{r2['img_src']}" alt="{r2['img_alt']}" title="{r2['img_alt']}" /></div>
     <div class="col-9 col-md-5"><b>{r2['title']}</b> - {r2['text']}</div>
 </div>
 """
