@@ -50,7 +50,7 @@ Subject: {quizz_title}
 
 
 def create_mail_body(questionnaire, advices, feedback_email):
-    mail_template = cfg.template_location/'mail-template.html'
+    mail_template = cfg.template_location / "mail-template.html"
     mail_template_text = mail_template.read_text(encoding="utf-8")
     content = f"""
 

@@ -111,6 +111,9 @@ OPENAI_WAIT_FIXED=30
 # Optional
 ONEPOINT_SQL_LITE_DB=/tmp/SQL_LITE_DB.db
 
+# Related to the tracker DB download
+TRACKER_DB_LOGS_PASSWORD=<pass>
+
 ```
 
 Here is the content of the `config.toml` file in the `.chainlit` folder:

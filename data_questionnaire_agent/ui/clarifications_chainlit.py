@@ -16,6 +16,9 @@ from data_questionnaire_agent.log_init import logger
 
 from data_questionnaire_agent.config import cfg
 
+# Activating REST interfaces
+import data_questionnaire_agent.utils.tracker_db_server
+
 
 async def process_clarifications_chainlit(
     questionnaire: Questionnaire,

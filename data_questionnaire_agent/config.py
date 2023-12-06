@@ -77,6 +77,7 @@ class Config:
     }
 
     product_title = "Onepoint Data Wellness Companion™"
+    tracker_db_logs_password = os.getenv("TRACKER_DB_LOGS_PASSWORD")
 
 
 cfg = Config()
