@@ -216,10 +216,23 @@ https://zeljic.com/blog/sqlite-lib-windows-10/
 	
 [Blog post](https://zeljic.com/blog/sqlite-lib-windows-10/)
 
+## Note on sqllite3 on Linux
+
+Make sure that `gcc` is installed.
+
+On Ubuntu these are the commands:
+
+```bash
+sudo apt update
+sudo apt install build-essential
+# Check if gcc is installed
+gcc --version
+```
+
 ## Listing the interactions
 
 If you want to list the interactions with the system from the database you can run this command into a CSV file:
 
 ```python
-
+python ./data_questionnaire_agent/utils/tracker_db_lister.py > temp.csv
 ```
