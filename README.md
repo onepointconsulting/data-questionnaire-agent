@@ -46,7 +46,7 @@ chainlit run .\data_questionnaire_agent\ui\data_questionnaire_chainlit.py --port
 
 ## Configuration
 
-This is the content of the `.env` file
+This is the content of the `.env` file, which needs to be saved in the project root folder.
 
 ```
 OPENAI_API_KEY=<open-api-key>
