@@ -226,7 +226,7 @@ def process_special_question(question: str) -> str:
         },
         {
             "img_src": "data_silos.png",
-            "img_alt": "Data overload",
+            "img_alt": "Data silos",
             "title": "Data silos",
             "text": "Data trapped in departmental silos can be inaccessible to other parts.",
         },
@@ -256,8 +256,8 @@ def process_special_question(question: str) -> str:
         },
         {
             "img_src": "resistence_to_change.png",
-            "img_alt": "Resistence to change",
-            "title": "Resistence to change",
+            "img_alt": "Resistance to change",
+            "title": "Resistance to change",
             "text": "Employees need to adapt to new ways of operating to make data-driven transformation work.",
         },
     ]
