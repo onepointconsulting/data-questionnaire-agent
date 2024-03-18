@@ -140,6 +140,10 @@ button:has(> svg[data-testid=KeyboardDoubleArrowUpIcon]) {
     cursor: pointer
 }
 
+.markdown-body .img-cell ~ div.col-9 {
+    cursor: pointer
+}
+
 /* Micro framework for responsive layout */
 .row {
     display: flex;

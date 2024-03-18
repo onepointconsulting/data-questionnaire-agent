@@ -19,21 +19,40 @@ function injectTextListener(e) {
 }
 
 
+function processEvent(e, injectFunc) {
+    if (typeof (e.onclick) == "undefined" || e.onclick == null) {
+        const listener = (e) => injectFunc(e)
+        e.addEventListener("click", listener)
+        e.onclick = listener
+        console.info("Added event listener.")
+    } else {
+        console.info("Skipped event listener")
+    }
+}
+
 function addImgOnepointEventListener() {
     [...document.querySelectorAll(".img-cell img")].forEach(e => {
+        processEvent(e, injectTextListener)
+    })
+}
+
+function injectInnerTextListener(e) {
+    const text = e.target.innerText
+    const textarea = document.querySelector("#chat-input")
+    setNativeValue(textarea, text)
+}
+
+function addImgOnepointTextEventListener() {
+    [...document.querySelectorAll(".img-cell ~ div.col-9")].forEach(e => {
         if (typeof (e.onclick) == "undefined" || e.onclick == null) {
-            const listener = (e) => injectTextListener(e)
-            e.addEventListener("click", listener)
-            e.onclick = listener
-            console.info("Added event listener.")
-        } else {
-            console.info("Skipped event listener")
+            processEvent(e, injectInnerTextListener)
         }
     })
 }
 
 function activateClickListeners(_records, _observer) {
     addImgOnepointEventListener()
+    addImgOnepointTextEventListener()
 }
 
 const observerOptions = {
