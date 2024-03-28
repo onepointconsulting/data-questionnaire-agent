@@ -1,0 +1,48 @@
+.node-container {
+  @apply flex flex-row items-center justify-center my-12;
+}
+
+.node {
+  width: 50px;
+  height: 50px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin: 0 -2px;
+  font-size: x-large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.node.active {
+  background-color: #0084d7;
+  color: white;
+}
+
+.connector {
+  width: 20px;
+  height: 20px;
+  background-color: #ccc;
+}
+
+@media (min-width: 768px) {
+  .connector {
+    width: 50px;
+    height: 20px;
+    background-color: #ccc;
+  }
+}
+
+@media (min-width: 1024px) {
+  .node {
+    width: 55px;
+    height: 55px;
+    font-size: x-large;
+  }
+
+  .connector {
+    width: 100px;
+    height: 20px;
+    background-color: #ccc;
+  }
+}
