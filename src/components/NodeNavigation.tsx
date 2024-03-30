@@ -3,33 +3,35 @@ import { AppContext } from "../context/AppContext.tsx";
 
 function SingleNode({
   i,
-  covered,
   expectedNodes,
 }: {
   i: number;
-  covered: boolean;
   expectedNodes: number;
 }) {
+  const {messages, currentMessage, setCurrentMessage} = useContext(AppContext);
+  const covered = messages.length > i;
+  const connectorCovered = messages.length > i + 1  ;
   return (
     <>
-      <div key={`node_${i}`} className={`node ${covered ? "active" : ""}`}>
-        {i}
+      <div className={`node ${covered ? "active" : ""} ${currentMessage === i ? "current" : ""}`}>
+        {i < messages.length ? <a href="#" onClick={e => {
+          e.preventDefault();
+          setCurrentMessage(i);
+        }}>{i}</a> : i}
       </div>
-      {i !== expectedNodes - 1 && <div className="connector"></div>}
+      {i !== expectedNodes - 1 && <div className={`connector ${connectorCovered ? "active" : ""}`}></div>}
     </>
   );
 }
 
 export default function NodeNavigation() {
-  const { expectedNodes, messages } = useContext(AppContext);
+  const { expectedNodes } = useContext(AppContext);
   return (
     <div className="node-container">
       {[...Array(expectedNodes).keys()].map((i) => {
-        const covered = messages.length > i;
         return (
           <SingleNode
             expectedNodes={expectedNodes}
-            covered={covered}
             i={i}
             key={`node_${i}`}
           />

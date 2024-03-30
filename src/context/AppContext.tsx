@@ -12,6 +12,10 @@ interface AppState {
   setConnected: (connected: boolean) => void;
   currentMessage: number;
   setCurrentMessage: (currentMessage: number) => void;
+  selectedSuggestion?: string;
+  setSelectedSuggestion: (selectedSuggestion: string) => void;
+  sending: boolean;
+  setSending: (sending: boolean) => void;
 }
 
 function createAppState(): AppState {
@@ -23,11 +27,14 @@ function createAppState(): AppState {
     messages,
     startSession: false,
     connected: false,
+    sending: false,
     currentMessage: 0,
     setStartSession: (_) => {},
     setConnected: (_) => {},
     setMessages: (_: Message[]) => {},
     setCurrentMessage: (_) => {},
+    setSelectedSuggestion: (_) => {},
+    setSending: (_) => {},
   };
 }
 
@@ -40,6 +47,8 @@ export const AppContextProvider = ({ children }: Props) => {
   const [startSession, setStartSession] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentMessage, setCurrentMessage] = useState(0);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<string>();
+  const [sending, setSending] = useState(false);
   return (
     <AppContext.Provider
       value={{
@@ -52,6 +61,10 @@ export const AppContextProvider = ({ children }: Props) => {
         setMessages,
         currentMessage,
         setCurrentMessage,
+        selectedSuggestion,
+        setSelectedSuggestion,
+        sending,
+        setSending
       }}
     >
       {" "}

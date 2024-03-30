@@ -14,9 +14,13 @@
   align-items: center;
 }
 
-.node.active {
+.node.active, .connector.active {
   background-color: #0084d7;
   color: white;
+}
+
+.node.current {
+  @apply bg-[#4DC48D] text-white;
 }
 
 .connector {

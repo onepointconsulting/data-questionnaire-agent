@@ -7,6 +7,12 @@ export function sendStartSession(socket: Socket<any, any> | null) {
   safeEmit(socket, WEBSOCKET_COMMAND.START_SESSION, session ? session.id : "");
 }
 
+export function sendClientMessage(socket: Socket<any, any> | null, answer: string) {
+  const session = getSession();
+  safeEmit(socket, WEBSOCKET_COMMAND.CLIENT_MESSAGE,
+    session ? session.id : "", answer);
+}
+
 function safeEmit(
   socket: Socket<any, any> | null,
   event: string,

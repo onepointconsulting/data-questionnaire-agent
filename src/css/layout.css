@@ -14,22 +14,57 @@
   @apply text-white text-base pt-1 pr-1;
 }
 
-#root .container {
+#root .container,
+#root .chat-input {
   @apply max-w-[1280px] mx-auto;
 }
 
 #root .question {
-  @apply text-2xl md:text-3xl font-bold mt-4 flex flex-row items-center justify-center px-4;
+  @apply text-xl md:text-2xl font-bold mt-4 flex flex-row justify-center px-4;
 }
 
-#root .question svg {
-  @apply hidden lg:block w-8 h-8 mr-2;
+#root .question svg, #root .question-answer svg {
+  @apply hidden lg:block min-w-8 h-8 mr-2 fill-[#0084d7];
 }
 
 #root .suggestions {
-  @apply flex flex-col md:flex-row md:flex-wrap pt-8 px-4;
+  @apply flex flex-col md:flex-row md:flex-wrap pt-8 lg:pt-20 px-4;
 }
 
 #root .suggestion {
-  @apply md:w-1/2 px-4 py-2 text-lg md:text-xl;
+  @apply flex flex-row flex-wrap md:w-1/2 px-4 py-2 text-lg md:text-xl cursor-pointer;
+}
+
+#root .suggestion .suggestion-img {
+  @apply w-1/12 lg:w-1/6 cursor-pointer;
+}
+
+#root .suggestion .suggestion-text {
+  @apply w-11/12 lg:w-5/6 px-2 flex items-center justify-center;
+}
+
+#root .chat-container {
+  @apply px-10;
+}
+
+#root .chat-input {
+  @apply w-full px-4 flex flex-row items-center justify-center;
+}
+
+#root .chat-input {
+  @apply outline rounded-lg outline-offset-2 outline-1 focus:outline-offset-2
+    focus:outline-2 outline-[#0084d7] mt-10 lg:mt-16;
+}
+
+#root .chat-input textarea.chat-textarea {
+  @apply lg:mx-0 overflow-hidden resize-none w-full outline-none
+    flex items-center justify-center h-12 my-4;
+}
+
+#root .chat-input button {
+  @apply w-8 h-8 cursor-pointer flex;
+}
+
+#root .question-answer {
+  @apply text-xl lg:text-2xl py-5
 }
