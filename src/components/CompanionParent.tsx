@@ -3,6 +3,8 @@ import { useWebsocket } from "../hooks/useWebsocket.ts";
 import { useContext, useEffect } from "react";
 import { AppContext } from "../context/AppContext.tsx";
 import InteractionPanel from "./InteractionPanel.tsx";
+import StartButton from "./StartButton.tsx";
+import RestartDialogue from "./dialogue/RestartDialogue.tsx";
 
 function ConnectionStatus() {
   const { connected } = useContext(AppContext);
@@ -21,10 +23,14 @@ export default function CompanionParent() {
   useWebsocket();
   return (
     <>
+      <RestartDialogue />
       <div className="header">
-        <div className="flex flex-row justify-between container">
+        <div className="header-container">
           <h1>Onepoint Data Wellness Companion™</h1>
-          <ConnectionStatus />
+          <div className="flex flex-col items-center">
+            <StartButton />
+            <ConnectionStatus />
+          </div>
         </div>
       </div>
       <NodeNavigation />

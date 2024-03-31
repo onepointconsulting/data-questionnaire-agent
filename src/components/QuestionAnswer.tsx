@@ -1,5 +1,5 @@
-import {useContext} from "react";
-import {AppContext} from "../context/AppContext.tsx";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext.tsx";
 import { AiFillMessage } from "react-icons/ai";
 
 /**
@@ -13,8 +13,8 @@ export default function QuestionAnswer() {
   return (
     <div className="chat-container">
       <div className="chat-input question-answer">
-        <AiFillMessage/> {message.answer}
+        <AiFillMessage /> {message.answer}
       </div>
     </div>
-  )
+  );
 }

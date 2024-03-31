@@ -33,7 +33,10 @@ export default function Suggestions({ message }: { message: Message }) {
                 <a
                   href={suggestion.title}
                   onClick={(e) =>
-                    handleSelectedSuggestion(e, `${suggestion.title} - ${suggestion.main_text}`)
+                    handleSelectedSuggestion(
+                      e,
+                      `${suggestion.title} - ${suggestion.main_text}`,
+                    )
                   }
                 >
                   <b>{suggestion.title}</b> - {suggestion.main_text}

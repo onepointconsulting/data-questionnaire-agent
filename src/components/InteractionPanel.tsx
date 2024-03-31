@@ -4,9 +4,10 @@ import Question from "./Question.tsx";
 import Suggestions from "./Suggestions.tsx";
 import ChatInput from "./ChatInput.tsx";
 import QuestionAnswer from "./QuestionAnswer.tsx";
+import Spinner from "./Spinner.tsx";
 
 export default function InteractionPanel() {
-  const { currentMessage, messages } = useContext(AppContext);
+  const { currentMessage, messages, sending } = useContext(AppContext);
   const message = messages[currentMessage];
   if (!message) return null;
   const isLast = currentMessage === messages.length - 1;
@@ -14,7 +15,8 @@ export default function InteractionPanel() {
     <>
       <Question message={message} />
       <Suggestions message={message} />
-      {isLast && <ChatInput/>}
+      {sending && <Spinner />}
+      {isLast && <ChatInput />}
       {!isLast && <QuestionAnswer />}
     </>
   );

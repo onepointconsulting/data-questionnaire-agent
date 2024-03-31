@@ -64,7 +64,7 @@ export const AppContextProvider = ({ children }: Props) => {
         selectedSuggestion,
         setSelectedSuggestion,
         sending,
-        setSending
+        setSending,
       }}
     >
       {" "}

@@ -6,6 +6,10 @@ export function saveSession(session: Session) {
   localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
+export function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+
 export function getSession(): Session | null {
   const session = localStorage.getItem(SESSION_KEY);
   if (session) {

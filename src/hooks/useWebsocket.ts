@@ -5,11 +5,11 @@ import { AppContext } from "../context/AppContext.tsx";
 import { sendStartSession } from "../lib/websocketFunctions.ts";
 import { saveSession } from "../lib/sessionFunctions.ts";
 import { WEBSOCKET_SERVER_COMMAND } from "../model/websocketCommands.ts";
-import {Message} from "../model/message.ts";
+import { Message } from "../model/message.ts";
 
 interface ServerMessage {
   session_id: string;
-  server_messages: Message[]
+  server_messages: Message[];
 }
 
 function adaptServerMessages(serverMessages: ServerMessage): Message[] {
@@ -29,14 +29,8 @@ function adaptServerMessages(serverMessages: ServerMessage): Message[] {
 
 export function useWebsocket() {
   const { socket, websocketUrl } = useContext(ChatContext);
-  const { setConnected, setMessages, setCurrentMessage, setSending } = useContext(AppContext);
-
-  // useEffect(() => {
-  //   if (!!startSession?.value) {
-  //     // Start the session after the configuration is finished.
-  //     sendStartSession(socket.current);
-  //   }
-  // }, [startSession?.value]);
+  const { setConnected, setMessages, setCurrentMessage, setSending } =
+    useContext(AppContext);
 
   useEffect(() => {
     socket.current = io(websocketUrl);
@@ -57,14 +51,14 @@ export function useWebsocket() {
       if (!value) return;
       const serverMessages = JSON.parse(value);
       setMessages(adaptServerMessages(serverMessages));
-      setCurrentMessage(serverMessages.server_messages.length - 1)
+      setCurrentMessage(serverMessages.server_messages.length - 1);
       saveSession({ id: serverMessages.session_id, timestamp: new Date() });
     }
 
     function onServerMessage(value: string) {
       const serverMessages = JSON.parse(value);
       setMessages(adaptServerMessages(serverMessages));
-      setCurrentMessage(serverMessages.server_messages.length - 1)
+      setCurrentMessage(serverMessages.server_messages.length - 1);
       setSending(false);
     }
 

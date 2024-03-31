@@ -7,11 +7,15 @@
 }
 
 #root .header {
-  @apply bg-[#0084d7] min-h-14 mt-0 pb-2 flex items-center;
+  @apply bg-[#0084d7]  min-h-14 mt-0 pt-2 md:pt-3 pb-2 flex items-center;
+}
+
+#root .header-container {
+  @apply flex flex-row justify-between container items-center pr-2 max-w-[1280px] mx-auto;
 }
 
 #root .connection-status {
-  @apply text-white text-base pt-1 pr-1;
+  @apply text-white text-sm;
 }
 
 #root .container,
@@ -23,7 +27,8 @@
   @apply text-xl md:text-2xl font-bold mt-4 flex flex-row justify-center px-4;
 }
 
-#root .question svg, #root .question-answer svg {
+#root .question svg,
+#root .question-answer svg {
   @apply hidden lg:block min-w-8 h-8 mr-2 fill-[#0084d7];
 }
 
@@ -44,16 +49,13 @@
 }
 
 #root .chat-container {
-  @apply px-10;
+  @apply px-10 pb-5;
 }
 
 #root .chat-input {
-  @apply w-full px-4 flex flex-row items-center justify-center;
-}
-
-#root .chat-input {
-  @apply outline rounded-lg outline-offset-2 outline-1 focus:outline-offset-2
-    focus:outline-2 outline-[#0084d7] mt-10 lg:mt-16;
+  @apply w-full px-4 flex flex-row items-center justify-center
+    outline rounded-lg outline-offset-2 outline-1 focus:outline-offset-2
+    focus:outline-2 outline-[#0084d7] mt-10 lg:mt-14;
 }
 
 #root .chat-input textarea.chat-textarea {
@@ -66,5 +68,5 @@
 }
 
 #root .question-answer {
-  @apply text-xl lg:text-2xl py-5
+  @apply text-xl lg:text-2xl py-5;
 }

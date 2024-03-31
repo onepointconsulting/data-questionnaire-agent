@@ -8,18 +8,32 @@ function SingleNode({
   i: number;
   expectedNodes: number;
 }) {
-  const {messages, currentMessage, setCurrentMessage} = useContext(AppContext);
+  const { messages, currentMessage, setCurrentMessage } =
+    useContext(AppContext);
   const covered = messages.length > i;
-  const connectorCovered = messages.length > i + 1  ;
+  const connectorCovered = messages.length > i + 1;
   return (
     <>
-      <div className={`node ${covered ? "active" : ""} ${currentMessage === i ? "current" : ""}`}>
-        {i < messages.length ? <a href="#" onClick={e => {
-          e.preventDefault();
-          setCurrentMessage(i);
-        }}>{i}</a> : i}
+      <div
+        className={`node ${covered ? "active" : ""} ${currentMessage === i ? "current" : ""}`}
+      >
+        {i < messages.length ? (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentMessage(i);
+            }}
+          >
+            {i + 1}
+          </a>
+        ) : (
+          i + 1
+        )}
       </div>
-      {i !== expectedNodes - 1 && <div className={`connector ${connectorCovered ? "active" : ""}`}></div>}
+      {i !== expectedNodes - 1 && (
+        <div className={`connector ${connectorCovered ? "active" : ""}`}></div>
+      )}
     </>
   );
 }
@@ -30,11 +44,7 @@ export default function NodeNavigation() {
     <div className="node-container">
       {[...Array(expectedNodes).keys()].map((i) => {
         return (
-          <SingleNode
-            expectedNodes={expectedNodes}
-            i={i}
-            key={`node_${i}`}
-          />
+          <SingleNode expectedNodes={expectedNodes} i={i} key={`node_${i}`} />
         );
       })}
     </div>
