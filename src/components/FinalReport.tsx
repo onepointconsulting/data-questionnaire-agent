@@ -1,6 +1,10 @@
 import Markdown from 'react-markdown';
 import {Message} from "../model/message.ts";
 import remarkGfm from 'remark-gfm';
+import { BsFileEarmarkPdf } from "react-icons/bs";
+import {useContext} from "react";
+import {ChatContext} from "../context/ChatContext.tsx";
+import {getSession} from "../lib/sessionFunctions.ts";
 
 /**
  * The final report of the conversation.
@@ -8,9 +12,18 @@ import remarkGfm from 'remark-gfm';
  * @constructor
  */
 export default function FinalReport({message}: {message: Message}) {
+
+  const {reportUrl} = useContext(ChatContext)
+  const sessionId = getSession()?.id
+  const reportPdf = `${reportUrl}/pdf/${sessionId}`
   return (
     <div className="final-report">
-
+      {sessionId && <div className="final-report-download">
+        <div className="final-report-pdf">
+          <a href={reportPdf} title="Download PDF"><BsFileEarmarkPdf/></a>
+          <a href={reportPdf}>Download PDF</a>
+        </div>
+      </div>}
       <Markdown
         className={`mt-1 text-gray-900 markdown-body`}
         remarkPlugins={[remarkGfm]}

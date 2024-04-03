@@ -73,9 +73,29 @@
 }
 
 #root .final-report {
-  @apply text-xl lg:text-2xl py-5 px-4;
+  @apply text-lg lg:text-xl py-5 px-4;
 }
 
 #root .final-report h1 {
   @apply text-black mb-4
+}
+
+#root .final-report li {
+  @apply mx-4 px-2;
+}
+
+#root .final-report-download {
+  @apply flex flex-row items-center justify-end;
+}
+
+#root .final-report-download svg {
+  @apply w-8 h-8 mr-2 md:w-10 md:h-10;
+}
+
+#root .final-report-pdf {
+  @apply flex flex-col items-center justify-center;
+}
+
+#root .final-report-pdf a {
+  @apply text-base underline;
 }
