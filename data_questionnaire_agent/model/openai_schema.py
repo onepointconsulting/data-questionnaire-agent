@@ -56,11 +56,18 @@ class ConditionalAdvice(BaseModel):
     )
     what_you_should_avoid: Optional[List[str]] = Field(
         default=[],
-        description="A list of advice about what you should not do and avoid.")
+        description="A list of advice about what you should not do and avoid.",
+    )
 
-    def to_html(self) -> str:
+    def to_advice_html(self) -> str:
+        return self.html_convert(self.advices)
+
+    def to_avoid_html(self) -> str:
+        return self.html_convert(self.what_you_should_avoid)
+
+    def html_convert(self, list: List[str]) -> str:
         html = "<ul>"
-        for advice in self.advices:
+        for advice in list:
             html += f'<li class="onepoint-blue onepoint-advice">{advice}</li>'
         html += "</ul>"
         return html

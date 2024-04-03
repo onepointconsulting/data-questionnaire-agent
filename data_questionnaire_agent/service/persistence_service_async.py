@@ -5,6 +5,7 @@ from psycopg import AsyncCursor, AsyncConnection
 
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.question_suggestion import QuestionSuggestion
+from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import db_cfg
 from data_questionnaire_agent.toml_support import prompts
@@ -13,14 +14,13 @@ from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
 )
 from data_questionnaire_agent.model.session_configuration import (
-    SessionConfigurationEntry,
-    SessionConfiguration,
-)
-from data_questionnaire_agent.model.session_configuration import (
     SESSION_STEPS_CONFIG_KEY,
     DEFAULT_SESSION_STEPS,
 )
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.model.session_configuration import (
+    SessionConfigurationEntry,
+    SessionConfiguration,
+)
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -73,7 +73,7 @@ LIMIT 1
         return res[0][0]
 
 
-async def select_questionnaire(session_id: str) -> List[QuestionnaireStatus]:
+async def select_questionnaire_statuses(session_id: str) -> List[QuestionnaireStatus]:
     res = await select_from(
         """select id, session_id, question, answer, final_report, created_at, updated_at from tb_questionnaire_status
 where session_id = %(session_id)s order by id asc""",
@@ -88,18 +88,38 @@ where session_id = %(session_id)s order by id asc""",
     FINAL_REPORT = 4
     CREATED_AT = 5
     UPDATED_AT = 6
-    return [
-        QuestionnaireStatus(
-            id=r[ID],
-            session_id=r[SESSION_ID],
-            question=r[QUESTION],
-            answer=r[ANSWER],
-            final_report=r[FINAL_REPORT],
-            created_at=r[CREATED_AT],
-            updated_at=r[UPDATED_AT],
+    final_res = []
+    for r in res:
+        final_report = r[FINAL_REPORT]
+        question = r[QUESTION]
+        if final_report:
+            conditional_advice = ConditionalAdvice.parse_raw(question)
+            question = conditional_advice.to_markdown()
+        final_res.append(
+            QuestionnaireStatus(
+                id=r[ID],
+                session_id=r[SESSION_ID],
+                question=question,
+                answer=r[ANSWER],
+                final_report=final_report,
+                created_at=r[CREATED_AT],
+                updated_at=r[UPDATED_AT],
+            )
         )
-        for r in res
-    ]
+    return final_res
+
+
+async def select_advice(session_id: str) -> str:
+    res = await select_from(
+        """select question from public.tb_questionnaire_status 
+where session_id = %(session_id)s and final_report = true""",
+        {
+            "session_id": session_id,
+        },
+    )
+    if len(res) == 0:
+        return ""
+    return res[0][0]
 
 
 async def update_answer(session_id: str, answer: str) -> Union[int, None]:
@@ -121,20 +141,51 @@ RETURNING ID
     return await create_cursor(process_save, True)
 
 
-async def select_answers(session_id: str) -> Questionnaire:
+async def select_questionnaire(
+    session_id: str, include_last: bool = True
+) -> Questionnaire:
+    include_last_sql = "" if include_last else " AND FINAL_REPORT != true "
     res = await select_from(
-        """SELECT QUESTION, ANSWER
+        f"""SELECT QUESTION, ANSWER, FINAL_REPORT
 FROM TB_QUESTIONNAIRE_STATUS
-WHERE SESSION_ID = %(session_id)s  ORDER BY ID""",
+WHERE SESSION_ID = %(session_id)s {include_last_sql} ORDER BY ID""",
         {
             "session_id": session_id,
         },
     )
-    return Questionnaire(
-        questions=[
-            QuestionAnswer(question=r[0], answer=r[1], clarification=None) for r in res
-        ]
+    questions = []
+    for r in res:
+        is_final_report = r[2]
+        if not is_final_report:
+            questions.append(
+                QuestionAnswer(question=r[0], answer=r[1], clarification=None)
+            )
+        else:
+            conditional_advice = ConditionalAdvice.parse_raw(r[0])
+            questions.append(
+                QuestionAnswer(
+                    question=conditional_advice.to_markdown(),
+                    answer=r[1],
+                    clarification=None,
+                )
+            )
+
+    return Questionnaire(questions=questions)
+
+
+async def select_report(session_id: str) -> Union[ConditionalAdvice, None]:
+    res = await select_from(
+        f"""SELECT QUESTION
+FROM TB_QUESTIONNAIRE_STATUS
+WHERE SESSION_ID = %(session_id)s AND FINAL_REPORT = true limit 1""",
+        {
+            "session_id": session_id,
+        },
     )
+    if len(res) == 0:
+        return None
+    advice_json = res[0][0]
+    return ConditionalAdvice.parse_raw(advice_json)
 
 
 async def insert_questionnaire_status(
@@ -283,7 +334,7 @@ WHERE SESSION_ID = %(session_id)s
 
 
 async def save_report(session_id: str, conditional_advice: ConditionalAdvice) -> int:
-    markdown = conditional_advice.to_markdown()
+    conditional_advice_json = conditional_advice.json()
 
     async def process_save(cur: AsyncCursor):
         await cur.execute(
@@ -293,7 +344,7 @@ VALUES (%(session_id)s, %(question)s, TRUE, NOW(), NOW()) RETURNING ID
             """,
             {
                 "session_id": session_id,
-                "question": markdown,
+                "question": conditional_advice_json,
             },
         )
         created_row = await cur.fetchone()
@@ -358,7 +409,7 @@ if __name__ == "__main__":
         test_answer = "Some answer whatsoever"
         id = await update_answer(session_id, test_answer)
         assert id is not None
-        check_answers = await select_answers(session_id)
+        check_answers = await select_questionnaire(session_id)
         assert len(check_answers.questions) > 0
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
@@ -386,13 +437,13 @@ if __name__ == "__main__":
         from data_questionnaire_agent.test.provider.advice_provider import (
             create_simple_advice,
         )
+
         advice = create_simple_advice()
         dummy_session = "12321231231231"
         id = await save_report(dummy_session, advice)
         assert id is not None
         deleted = await delete_questionnaire_status(id)
         assert deleted == 1
-
 
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial())

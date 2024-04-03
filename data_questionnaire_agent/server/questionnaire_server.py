@@ -10,7 +10,7 @@ from data_questionnaire_agent.server.agent_session import AgentSession, agent_se
 from data_questionnaire_agent.model.server_model import (
     ServerMessage,
     ServerMessages,
-    server_messages_factory
+    server_messages_factory,
 )
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.session_configuration import (
@@ -26,11 +26,13 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_initial_question,
     select_suggestions,
     update_answer,
-    select_answers,
+    select_questionnaire,
+    select_questionnaire_statuses,
+    select_report,
     save_session_configuration,
     select_session_configuration,
     select_current_session_steps,
-    save_report
+    save_report,
 )
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.similarity_search import (
@@ -42,6 +44,7 @@ from data_questionnaire_agent.ui.data_questionnaire_chainlit import (
 from data_questionnaire_agent.ui.advice_processor import process_advice
 from data_questionnaire_agent.service.advice_service import chain_factory_advice
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.service.html_generator import generate_pdf_from
 
 
 docsearch = init_vector_search()
@@ -80,7 +83,7 @@ async def start_session(sid: str, client_session: str, session_steps: int = 6):
     """
     agent_session = AgentSession(sid, client_session)
     session_id = agent_session.session_id
-    questionnaire_messages = await select_questionnaire(session_id)
+    questionnaire_messages = await select_questionnaire_statuses(session_id)
     server_messages = None
     question = None
 
@@ -120,21 +123,24 @@ async def client_message(sid: str, session_id: str, answer: str):
                 sid, session_id, "Failed to update the answer in database."
             )
             return
-        questionnaire = await select_answers(session_id)
+        questionnaire = await select_questionnaire(session_id)
         current_session_steps = await select_current_session_steps(session_id)
         if current_session_steps - 1 > len(questionnaire):
             await handle_secondary_question(sid, session_id, questionnaire)
         else:
-            # Generate the report.
-            conditional_advice: ConditionalAdvice = await process_advice(
-                docsearch, questionnaire, advice_chain
-            )
-            report_id = await save_report(session_id, conditional_advice)
-            assert report_id is not None, "Report ID is not available."
-            questionnaire_messages = await select_questionnaire(session_id)
-            server_messages = server_messages_factory(
-                questionnaire_messages
-            )
+            # Check if report is available
+            report = await select_report(session_id)
+
+            if report is None:
+                # Generate the report.
+                conditional_advice: ConditionalAdvice = await process_advice(
+                    docsearch, questionnaire, advice_chain
+                )
+                report_id = await save_report(session_id, conditional_advice)
+                assert report_id is not None, "Report ID is not available."
+
+            questionnaire_messages = await select_questionnaire_statuses(session_id)
+            server_messages = server_messages_factory(questionnaire_messages)
             await append_suggestions_and_send(
                 sid, server_messages, questionnaire_messages
             )
@@ -155,7 +161,7 @@ async def handle_secondary_question(
     if qs_res.id is None:
         await send_error(sid, session_id, "Failed to insert question in database.")
         return
-    questionnaire_messages = await select_questionnaire(session_id)
+    questionnaire_messages = await select_questionnaire_statuses(session_id)
     server_messages = server_messages_factory(questionnaire_messages)
 
     await append_suggestions_and_send(sid, server_messages, questionnaire_messages)
@@ -229,4 +235,23 @@ async def send_error(sid: str, session_id: str, error_message: str):
             suggestions=[],
         ).json(),
         room=sid,
+    )
+
+
+@routes.get("/pdf/{session_id}")
+async def get_pdf(request: web.Request) -> web.Response:
+    session_id = request.match_info.get("session_id", None)
+    logger.info("PDF session_id: %s", session_id)
+    if session_id is None:
+        raise web.HTTPNotFound(text="No session id specified")
+    questionnaire = await select_questionnaire(session_id, False)
+    advices = await select_report(session_id)
+    report_path = generate_pdf_from(questionnaire, advices)
+    logger.info("PDF report_path: %s", report_path)
+    content_disposition = "attachment"
+    return web.FileResponse(
+        report_path,
+        headers={
+            "CONTENT-DISPOSITION": f'{content_disposition}; filename="{report_path.name}"'
+        },
     )

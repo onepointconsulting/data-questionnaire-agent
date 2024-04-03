@@ -15,7 +15,8 @@ def generate_html(questionnaire: Questionnaire, advices: ConditionalAdvice) -> s
     timestamp = datetime.today().strftime("%A, %b %d %Y")
     context = {
         "questionnaire": questionnaire.to_html(),
-        "advices": advices.to_html(),
+        "advices": advices.to_advice_html(),
+        "avoids": advices.to_avoid_html(),
         "timestamp": timestamp,
     }
     template_loader = jinja2.FileSystemLoader(cfg.template_location)
