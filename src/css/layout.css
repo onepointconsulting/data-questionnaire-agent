@@ -19,7 +19,8 @@
 }
 
 #root .container,
-#root .chat-input {
+#root .chat-input,
+#root .final-report {
   @apply max-w-[1280px] mx-auto;
 }
 
@@ -69,4 +70,12 @@
 
 #root .question-answer {
   @apply text-xl lg:text-2xl py-5;
+}
+
+#root .final-report {
+  @apply text-xl lg:text-2xl py-5 px-4;
+}
+
+#root .final-report h1 {
+  @apply text-black mb-4
 }

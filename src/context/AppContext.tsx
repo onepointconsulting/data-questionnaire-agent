@@ -4,6 +4,7 @@ import { Props } from "./commonModel.ts";
 
 interface AppState {
   expectedNodes: number;
+  setExpectedNodes: (expectedNodes: number) => void;
   messages: Message[];
   setMessages: (messages: Message[]) => void;
   startSession: boolean;
@@ -18,9 +19,11 @@ interface AppState {
   setSending: (sending: boolean) => void;
 }
 
+const DEFAULT_EXPECTED_NODES = 6;
+
 function createAppState(): AppState {
   const messages: Message[] = [];
-  const expectedNodes = 6;
+  const expectedNodes = DEFAULT_EXPECTED_NODES;
 
   return {
     expectedNodes,
@@ -35,6 +38,7 @@ function createAppState(): AppState {
     setCurrentMessage: (_) => {},
     setSelectedSuggestion: (_) => {},
     setSending: (_) => {},
+    setExpectedNodes: (_) => {},
   };
 }
 
@@ -49,10 +53,13 @@ export const AppContextProvider = ({ children }: Props) => {
   const [currentMessage, setCurrentMessage] = useState(0);
   const [selectedSuggestion, setSelectedSuggestion] = useState<string>();
   const [sending, setSending] = useState(false);
+  const [expectedNodes, setExpectedNodes] = useState(DEFAULT_EXPECTED_NODES);
   return (
     <AppContext.Provider
       value={{
         ...initial,
+        expectedNodes,
+        setExpectedNodes,
         connected,
         setConnected,
         startSession,

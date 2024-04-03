@@ -1,15 +1,11 @@
-import { useContext } from "react";
-import { AppContext } from "../context/AppContext.tsx";
-import { AiFillMessage } from "react-icons/ai";
+import {AiFillMessage} from "react-icons/ai";
+import {Message} from "../model/message.ts";
 
 /**
  * Used to display the answer to a question.
  * @constructor
  */
-export default function QuestionAnswer() {
-  const { currentMessage, messages } = useContext(AppContext);
-  const message = messages[currentMessage];
-  if (!message) return null;
+export default function QuestionAnswer({ message }: { message: Message }) {
   return (
     <div className="chat-container">
       <div className="chat-input question-answer">

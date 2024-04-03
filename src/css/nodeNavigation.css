@@ -24,6 +24,10 @@
   @apply bg-[#4DC48D] text-white;
 }
 
+.node a {
+  @apply block w-full text-center;
+}
+
 .connector {
   width: 20px;
   height: 20px;

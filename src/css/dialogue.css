@@ -6,6 +6,14 @@
   @apply px-6 py-6;
 }
 
+.companion-dialogue-config {
+  @apply flex flex-row align-middle px-6;
+}
+
+.companion-dialogue-config input {
+  @apply ml-1 pl-3 border-solid border-2 border-[#0084d7] rounded-lg;
+}
+
 .companion-dialogue-buttons {
   @apply flex flex-row justify-end gap-4 px-4 py-3;
 }

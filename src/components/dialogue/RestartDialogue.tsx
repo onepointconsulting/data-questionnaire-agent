@@ -1,7 +1,8 @@
-import { useContext } from "react";
+import {useContext, useState} from "react";
 import { clearSession } from "../../lib/sessionFunctions.ts";
 import { sendStartSession } from "../../lib/websocketFunctions.ts";
 import { ChatContext } from "../../context/ChatContext.tsx";
+import {AppContext} from "../../context/AppContext.tsx";
 
 export const RESTART_DIALOGUE_ID = "restart-dialogue";
 
@@ -14,10 +15,12 @@ function onClose() {
 
 export default function RestartDialogue() {
   const { socket } = useContext(ChatContext);
+  const { expectedNodes } = useContext(AppContext);
+  const [expectedInteviewSteps, setExpectedInterviewSteps] = useState(expectedNodes);
 
   function onOk() {
     clearSession();
-    sendStartSession(socket.current);
+    sendStartSession(socket.current, expectedInteviewSteps);
     onClose();
   }
 
@@ -29,6 +32,11 @@ export default function RestartDialogue() {
     >
       <div className="companion-dialogue-content">
         Would you like to restart the companion?
+      </div>
+      <div className="companion-dialogue-config">
+        <label htmlFor="expectedInteviewSteps">Interview Steps: </label>
+        <input id="expectedInteviewSteps" type="number" min={4} max={7} value={expectedInteviewSteps}
+               onChange={(e) => setExpectedInterviewSteps(parseInt(e.target.value))} />
       </div>
       <div className="companion-dialogue-buttons">
         <button

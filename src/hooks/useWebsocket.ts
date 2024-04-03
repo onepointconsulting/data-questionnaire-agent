@@ -27,9 +27,22 @@ function adaptServerMessages(serverMessages: ServerMessage): Message[] {
   }));
 }
 
+function extractInterviewSteps(serverMessages: any, setExpectedNodes: (expectedNodes: number) => void) {
+  if (serverMessages.session_configuration) {
+    if (serverMessages.session_configuration.configuration_entries) {
+      const entries = serverMessages.session_configuration.configuration_entries;
+      for (const entry of entries) {
+        if (entry.config_key === "session-steps" && entry.config_value && !isNaN(entry.config_value)) {
+          setExpectedNodes(parseInt(entry.config_value));
+        }
+      }
+    }
+  }
+}
+
 export function useWebsocket() {
   const { socket, websocketUrl } = useContext(ChatContext);
-  const { setConnected, setMessages, setCurrentMessage, setSending } =
+  const { setConnected, setMessages, setCurrentMessage, setSending, setExpectedNodes } =
     useContext(AppContext);
 
   useEffect(() => {
@@ -39,7 +52,7 @@ export function useWebsocket() {
       console.info("connected");
       setConnected(true);
       // Handle session
-      sendStartSession(socket.current);
+      sendStartSession(socket.current, null);
     };
 
     const onDisconnect = () => {
@@ -52,6 +65,7 @@ export function useWebsocket() {
       const serverMessages = JSON.parse(value);
       setMessages(adaptServerMessages(serverMessages));
       setCurrentMessage(serverMessages.server_messages.length - 1);
+      extractInterviewSteps(serverMessages, setExpectedNodes);
       saveSession({ id: serverMessages.session_id, timestamp: new Date() });
     }
 
