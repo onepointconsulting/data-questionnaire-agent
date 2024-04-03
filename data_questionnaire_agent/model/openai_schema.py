@@ -54,6 +54,9 @@ class ConditionalAdvice(BaseModel):
         ...,
         description="In case there is enough information to give advice, this list will contain advice to give to the user",
     )
+    what_you_should_avoid: Optional[List[str]] = Field(
+        default=[],
+        description="A list of advice about what you should not do and avoid.")
 
     def to_html(self) -> str:
         html = "<ul>"
@@ -61,6 +64,19 @@ class ConditionalAdvice(BaseModel):
             html += f'<li class="onepoint-blue onepoint-advice">{advice}</li>'
         html += "</ul>"
         return html
+
+    def to_markdown(self) -> str:
+        markdown = "# What you should do ...\n\n"
+
+        for advice in self.advices:
+            markdown += f"- {advice}\n\n"
+
+        if self.what_you_should_avoid is not None:
+            markdown += "# What you should avoid ... \n\n"
+            for avoid in self.what_you_should_avoid:
+                markdown += f"- {avoid}\n\n"
+
+        return markdown
 
     def __str__(self) -> str:
         return "\n\n".join(self.advices) if self.advices is not None else ""

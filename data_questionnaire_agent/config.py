@@ -95,6 +95,43 @@ class MailConfig:
 
 mail_config = MailConfig()
 
+
+class WebsocketConfig:
+    websocket_server = os.getenv("WEBSOCKET_SERVER", "0.0.0.0")
+    websocket_port = int(os.getenv("WEBSOCKET_PORT", 8080))
+    websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
+
+
+websocket_cfg = WebsocketConfig()
+
+
+class WebServerConfig:
+    ui_folder = Path(os.getenv("UI_FOLDER", "./web/ui"))
+    if not ui_folder.exists():
+        ui_folder.mkdir(parents=True, exist_ok=True)
+
+
+web_server_cfg = WebServerConfig()
+
+
+class DBConfig:
+    db_name = os.getenv("DB_NAME")
+    assert db_name is not None
+    db_user = os.getenv("DB_USER")
+    assert db_user is not None
+    db_host = os.getenv("DB_HOST")
+    assert db_host is not None
+    db_port = os.getenv("DB_PORT")
+    assert db_port is not None
+    db_port = int(db_port)
+    db_password = os.getenv("DB_PASSWORD")
+    assert db_password is not None
+
+    db_conn_str = f"dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}"
+
+
+db_cfg = DBConfig()
+
 if __name__ == "__main__":
     logger.info("Model: %s", cfg.model)
     logger.info("Verbose: %s", cfg.verbose_llm)

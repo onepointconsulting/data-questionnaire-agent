@@ -79,6 +79,7 @@ human_message = """Based on the best practices and knowledge base and answers to
 please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
 if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
 or are not related to the questions you should refrain from giving advice.
+Also include 3 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
 
 Make sure not to enumerate the advices if you decide to give them.
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.

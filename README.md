@@ -114,6 +114,21 @@ ONEPOINT_SQL_LITE_DB=/tmp/SQL_LITE_DB.db
 # Related to the tracker DB download
 TRACKER_DB_LOGS_PASSWORD=<pass>
 
+# Database related
+DB_NAME=data_wellness_companion
+DB_USER=postgres
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_PASSWORD=<pwd>
+
+# Websocket server related
+WEBSOCKET_SERVER=0.0.0.0
+WEBSOCKET_PORT=8085
+WEBSOCKET_CORS_ALLOWED_ORIGINS=*
+
+# Webserver related
+UI_FOLDER=/development/playground/langchain/data_questionnaire_agent/web/ui
+
 ```
 
 Here is the content of the `config.toml` file in the `.chainlit` folder:
@@ -235,4 +250,12 @@ If you want to list the interactions with the system from the database you can r
 
 ```python
 python ./data_questionnaire_agent/utils/tracker_db_lister.py > temp.csv
+```
+
+## Running Tests
+
+You can run tests like this:
+
+```bash
+pytest
 ```
