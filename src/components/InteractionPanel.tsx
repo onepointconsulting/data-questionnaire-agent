@@ -17,7 +17,11 @@ export default function InteractionPanel() {
   if (!message.final_report) {
     return (
       <>
-        <Question message={message} />
+        <Question
+          message={message}
+          currentMessage={currentMessage}
+          messagesLength={messages.length}
+        />
         <Suggestions message={message} />
         {sending && <Spinner />}
         {sending && displayReportGenerationMessage && (

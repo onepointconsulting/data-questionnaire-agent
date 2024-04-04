@@ -8,6 +8,10 @@ import ButtonPanel from "./ButtonPanel.tsx";
 
 export const RESTART_DIALOGUE_ID = "restart-dialogue";
 
+const MIN_STEPS = 4;
+
+const MAX_STEPS = 8;
+
 function onClose() {
   onCloseDialogue(RESTART_DIALOGUE_ID);
 }
@@ -38,8 +42,8 @@ export default function RestartDialogue() {
         <input
           id="expectedInteviewSteps"
           type="number"
-          min={4}
-          max={7}
+          min={MIN_STEPS}
+          max={MAX_STEPS}
           value={expectedInteviewSteps}
           onChange={(e) => setExpectedInterviewSteps(parseInt(e.target.value))}
         />
