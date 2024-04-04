@@ -1,21 +1,22 @@
-import {useContext, useState} from "react";
+import { useContext, useState } from "react";
 import { clearSession } from "../../lib/sessionFunctions.ts";
 import { sendStartSession } from "../../lib/websocketFunctions.ts";
 import { ChatContext } from "../../context/ChatContext.tsx";
-import {AppContext} from "../../context/AppContext.tsx";
+import { AppContext } from "../../context/AppContext.tsx";
 import onCloseDialogue from "../../lib/dialogFunctions.ts";
 import ButtonPanel from "./ButtonPanel.tsx";
 
 export const RESTART_DIALOGUE_ID = "restart-dialogue";
 
 function onClose() {
-  onCloseDialogue(RESTART_DIALOGUE_ID)
+  onCloseDialogue(RESTART_DIALOGUE_ID);
 }
 
 export default function RestartDialogue() {
   const { socket } = useContext(ChatContext);
   const { expectedNodes } = useContext(AppContext);
-  const [expectedInteviewSteps, setExpectedInterviewSteps] = useState(expectedNodes);
+  const [expectedInteviewSteps, setExpectedInterviewSteps] =
+    useState(expectedNodes);
 
   function onOk() {
     clearSession();
@@ -34,10 +35,16 @@ export default function RestartDialogue() {
       </div>
       <div className="companion-dialogue-config">
         <label htmlFor="expectedInteviewSteps">Interview Steps: </label>
-        <input id="expectedInteviewSteps" type="number" min={4} max={7} value={expectedInteviewSteps}
-               onChange={(e) => setExpectedInterviewSteps(parseInt(e.target.value))} />
+        <input
+          id="expectedInteviewSteps"
+          type="number"
+          min={4}
+          max={7}
+          value={expectedInteviewSteps}
+          onChange={(e) => setExpectedInterviewSteps(parseInt(e.target.value))}
+        />
       </div>
-      <ButtonPanel onOk={onOk} onClose={onClose} okText="OK" />
+      <ButtonPanel onOk={onOk} onClose={onClose} okText="OK" disabled={false} />
     </dialog>
   );
 }

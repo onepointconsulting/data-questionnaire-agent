@@ -27,12 +27,20 @@ function adaptServerMessages(serverMessages: ServerMessage): Message[] {
   }));
 }
 
-function extractInterviewSteps(serverMessages: any, setExpectedNodes: (expectedNodes: number) => void) {
+function extractInterviewSteps(
+  serverMessages: any,
+  setExpectedNodes: (expectedNodes: number) => void,
+) {
   if (serverMessages.session_configuration) {
     if (serverMessages.session_configuration.configuration_entries) {
-      const entries = serverMessages.session_configuration.configuration_entries;
+      const entries =
+        serverMessages.session_configuration.configuration_entries;
       for (const entry of entries) {
-        if (entry.config_key === "session-steps" && entry.config_value && !isNaN(entry.config_value)) {
+        if (
+          entry.config_key === "session-steps" &&
+          entry.config_value &&
+          !isNaN(entry.config_value)
+        ) {
           setExpectedNodes(parseInt(entry.config_value));
         }
       }
@@ -42,8 +50,13 @@ function extractInterviewSteps(serverMessages: any, setExpectedNodes: (expectedN
 
 export function useWebsocket() {
   const { socket, websocketUrl } = useContext(ChatContext);
-  const { setConnected, setMessages, setCurrentMessage, setSending, setExpectedNodes } =
-    useContext(AppContext);
+  const {
+    setConnected,
+    setMessages,
+    setCurrentMessage,
+    setSending,
+    setExpectedNodes,
+  } = useContext(AppContext);
 
   useEffect(() => {
     socket.current = io(websocketUrl);

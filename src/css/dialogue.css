@@ -1,8 +1,10 @@
-.companion-dialogue, .email-dialogue {
+.companion-dialogue,
+.email-dialogue {
   @apply rounded-2xl w-11/12 md:w-8/12 bg-white shadow-lg max-w-6xl outline-0;
 }
 
-.companion-dialogue-content, .email-dialogue-content {
+.companion-dialogue-content,
+.email-dialogue-content {
   @apply px-6 py-6;
 }
 
@@ -19,7 +21,7 @@
 }
 
 .companion-dialogue-buttons button {
-  @apply w-32
+  @apply w-32;
 }
 
 .email-dialogue-form {

@@ -24,7 +24,8 @@ export const ChatContext = createContext<ConfigState>({
 
 export const ConfigContextProvider = ({ children }: Props) => {
   const { dataWellnessConfig } = window;
-  const { websocketUrl, reportUrl } = dataWellnessConfig || DEFAULT_WEBSOCKET_URL;
+  const { websocketUrl, reportUrl } =
+    dataWellnessConfig || DEFAULT_WEBSOCKET_URL;
   const socket: React.MutableRefObject<Socket | null> = useRef<Socket | null>(
     null,
   );

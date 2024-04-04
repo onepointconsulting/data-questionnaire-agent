@@ -1,5 +1,5 @@
-import {AiFillMessage} from "react-icons/ai";
-import {Message} from "../model/message.ts";
+import { AiFillMessage } from "react-icons/ai";
+import { Message } from "../model/message.ts";
 
 /**
  * Used to display the answer to a question.

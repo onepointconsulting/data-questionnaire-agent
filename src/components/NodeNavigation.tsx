@@ -1,28 +1,22 @@
-import {useContext} from "react";
-import {AppContext} from "../context/AppContext.tsx";
-import {FaFlagCheckered} from "react-icons/fa";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext.tsx";
+import { FaFlagCheckered } from "react-icons/fa";
 
-function OutputNode({i, totalNodes}: { i: number; totalNodes: number }) {
+function OutputNode({ i, totalNodes }: { i: number; totalNodes: number }) {
   if (i === totalNodes - 1) {
-    return (
-      <FaFlagCheckered className="mx-auto"/>
-    );
+    return <FaFlagCheckered className="mx-auto" />;
   }
-  return (
-    <>
-      {i + 1}
-    </>
-  );
+  return <>{i + 1}</>;
 }
 
 function SingleNode({
-                      i,
-                      expectedNodes,
-                    }: {
+  i,
+  expectedNodes,
+}: {
   i: number;
   expectedNodes: number;
 }) {
-  const {messages, currentMessage, setCurrentMessage} =
+  const { messages, currentMessage, setCurrentMessage } =
     useContext(AppContext);
   const length = messages.length;
   const covered = length > i;
@@ -40,10 +34,10 @@ function SingleNode({
               setCurrentMessage(i);
             }}
           >
-            <OutputNode i={i} totalNodes={expectedNodes}/>
+            <OutputNode i={i} totalNodes={expectedNodes} />
           </a>
         ) : (
-          <OutputNode i={i} totalNodes={expectedNodes}/>
+          <OutputNode i={i} totalNodes={expectedNodes} />
         )}
       </div>
       {i !== expectedNodes - 1 && (
@@ -54,12 +48,12 @@ function SingleNode({
 }
 
 export default function NodeNavigation() {
-  const {expectedNodes} = useContext(AppContext);
+  const { expectedNodes } = useContext(AppContext);
   return (
     <div className="node-container">
       {[...Array(expectedNodes).keys()].map((i) => {
         return (
-          <SingleNode expectedNodes={expectedNodes} i={i} key={`node_${i}`}/>
+          <SingleNode expectedNodes={expectedNodes} i={i} key={`node_${i}`} />
         );
       })}
     </div>

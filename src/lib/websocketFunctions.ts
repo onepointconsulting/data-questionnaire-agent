@@ -2,9 +2,17 @@ import { Socket } from "socket.io-client";
 import { WEBSOCKET_COMMAND } from "../model/websocketCommands.ts";
 import { getSession } from "./sessionFunctions.ts";
 
-export function sendStartSession(socket: Socket<any, any> | null, expectedInteviewSteps: number | null) {
+export function sendStartSession(
+  socket: Socket<any, any> | null,
+  expectedInteviewSteps: number | null,
+) {
   const session = getSession();
-  safeEmit(socket, WEBSOCKET_COMMAND.START_SESSION, session ? session.id : "", expectedInteviewSteps);
+  safeEmit(
+    socket,
+    WEBSOCKET_COMMAND.START_SESSION,
+    session ? session.id : "",
+    expectedInteviewSteps,
+  );
 }
 
 export function sendClientMessage(

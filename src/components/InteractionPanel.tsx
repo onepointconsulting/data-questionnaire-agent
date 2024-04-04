@@ -8,7 +8,8 @@ import Spinner from "./Spinner.tsx";
 import FinalReport from "./FinalReport.tsx";
 
 export default function InteractionPanel() {
-  const { currentMessage, messages, sending, expectedNodes } = useContext(AppContext);
+  const { currentMessage, messages, sending, expectedNodes } =
+    useContext(AppContext);
   const message = messages[currentMessage];
   if (!message) return null;
   const isLast = currentMessage === messages.length - 1;
@@ -16,16 +17,19 @@ export default function InteractionPanel() {
   if (!message.final_report) {
     return (
       <>
-        <Question message={message}/>
-        <Suggestions message={message}/>
-        {sending && <Spinner/>}
-        {sending && displayReportGenerationMessage &&
-          <div className="final-report-message">Generating final report. This might take 2 to 3 minutes.</div>}
-        {isLast && <ChatInput/>}
-        {!isLast && <QuestionAnswer message={message}/>}
+        <Question message={message} />
+        <Suggestions message={message} />
+        {sending && <Spinner />}
+        {sending && displayReportGenerationMessage && (
+          <div className="final-report-message">
+            Generating final report. This might take 2 to 3 minutes.
+          </div>
+        )}
+        {isLast && <ChatInput />}
+        {!isLast && <QuestionAnswer message={message} />}
       </>
     );
   } else {
-    return <FinalReport message={message} />
+    return <FinalReport message={message} />;
   }
 }
