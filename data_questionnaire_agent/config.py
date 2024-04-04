@@ -91,6 +91,7 @@ class MailConfig:
     mail_from_person = os.getenv("MAIL_FROM_PERSON")
     mail_to_name = os.getenv("MAIL_TO_NAME")
     mail_subject = os.getenv("MAIL_SUBJECT")
+    feedback_email = os.getenv("FEEDBACK_EMAIL", "feedback@onepointltd.com")
 
 
 mail_config = MailConfig()

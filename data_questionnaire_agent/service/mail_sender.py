@@ -1,8 +1,12 @@
+from typing import Union
 import re
 import smtplib
 
 from email.utils import parseaddr
 
+from data_questionnaire_agent.model.application_schema import Questionnaire
+from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.config import mail_config
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import mail_config
 
@@ -18,12 +22,15 @@ def validate_address(target_email: str) -> bool:
 
 
 def send_email(
-    person_name: str, target_email: str, quizz_title: str, questionnaire_summary: str
+    person_name: Union[str, None],
+    target_email: str,
+    quizz_title: str,
+    questionnaire_summary: str,
 ):
     # Create the base text message.
     mail_from = mail_config.mail_from
-    message = f"""From: {mail_config.mail_from_person} <{mail_from}>
-To: {target_email}
+    message = f"""From: {encode_name_and_mail(mail_config.mail_from_person, mail_from)}
+To: {encode_name_and_mail(person_name, target_email)}
 Return-Path: <{mail_from}>
 MIME-Version: 1.0
 Content-type: text/html
@@ -49,7 +56,13 @@ Subject: {quizz_title}
         server.quit()
 
 
-def create_mail_body(questionnaire, advices, feedback_email):
+def encode_name_and_mail(name: Union[str, None], email: str) -> str:
+    if name is None:
+        return email
+    return f"{name} <{email}>"
+
+
+def create_mail_body(questionnaire: Questionnaire, advices: ConditionalAdvice, feedback_email: str = mail_config.feedback_email) -> str:
     mail_template = cfg.template_location / "mail-template.html"
     mail_template_text = mail_template.read_text(encoding="utf-8")
     content = f"""
@@ -85,6 +98,6 @@ if __name__ == "__main__":
         recipient,
         mail_config.mail_subject,
         f"""
-{create_mail_body(questionnaire, None, "feedback@onepointltd.com")}
+{create_mail_body(questionnaire, None, mail_config.feedback_email)}
 """,
     )

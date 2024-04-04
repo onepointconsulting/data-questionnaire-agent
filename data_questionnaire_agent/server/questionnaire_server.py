@@ -1,10 +1,12 @@
-from typing import List
+from typing import List, Any, Tuple, Union
 from enum import StrEnum
 
 import socketio
+import json
 from aiohttp import web
+from asyncer import asyncify
 
-from data_questionnaire_agent.config import websocket_cfg
+from data_questionnaire_agent.config import websocket_cfg, mail_config
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
 from data_questionnaire_agent.model.server_model import (
@@ -19,6 +21,7 @@ from data_questionnaire_agent.model.session_configuration import (
     DEFAULT_SESSION_STEPS,
     SessionConfiguration,
 )
+from data_questionnaire_agent.model.mail_data import MailData
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.service.persistence_service_async import (
     insert_questionnaire_status,
@@ -45,7 +48,14 @@ from data_questionnaire_agent.ui.advice_processor import process_advice
 from data_questionnaire_agent.service.advice_service import chain_factory_advice
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
+from data_questionnaire_agent.service.mail_sender import send_email
+from data_questionnaire_agent.service.mail_sender import create_mail_body
 
+
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*"
+}
 
 docsearch = init_vector_search()
 
@@ -240,12 +250,8 @@ async def send_error(sid: str, session_id: str, error_message: str):
 
 @routes.get("/pdf/{session_id}")
 async def get_pdf(request: web.Request) -> web.Response:
-    session_id = request.match_info.get("session_id", None)
-    logger.info("PDF session_id: %s", session_id)
-    if session_id is None:
-        raise web.HTTPNotFound(text="No session id specified")
-    questionnaire = await select_questionnaire(session_id, False)
-    advices = await select_report(session_id)
+    session_id = extract_session(request)
+    questionnaire, advices = await query_questionnaire_advices(session_id)
     report_path = generate_pdf_from(questionnaire, advices)
     logger.info("PDF report_path: %s", report_path)
     content_disposition = "attachment"
@@ -255,3 +261,49 @@ async def get_pdf(request: web.Request) -> web.Response:
             "CONTENT-DISPOSITION": f'{content_disposition}; filename="{report_path.name}"'
         },
     )
+
+@routes.options("/email/{session_id}")
+async def send_email_options(_: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+
+
+@routes.post("/email/{session_id}")
+async def send_email_request(request: web.Request) -> web.Response:
+    session_id = extract_session(request)
+    questionnaire, advices = await query_questionnaire_advices(session_id)
+    if len(questionnaire.questions) == 0:
+        return web.Response(
+            text=json.dumps({"error": f"Invalid Session: {session_id}"}),
+            status=400,
+            content_type="application/json",
+            headers=CORS_HEADERS
+        )
+    try:
+        data: Any = await request.json()
+        mail_data = MailData.parse_obj(data)
+        mail_body = create_mail_body(questionnaire, advices)
+        # Respond with a JSON message indicating success
+        await asyncify(send_email)(mail_data.person_name, mail_data.email, mail_config.mail_subject, mail_body)
+        return web.json_response({"message": "Mail sent successfully."}, headers=CORS_HEADERS)
+    except json.JSONDecodeError:
+        # In case of a JSON parsing error, return an error response
+        return web.Response(
+            text=json.dumps({"error": "Invalid JSON"}),
+            status=400,
+            content_type="application/json", 
+            headers=CORS_HEADERS
+        )
+
+
+def extract_session(request):
+    session_id = request.match_info.get("session_id", None)
+    logger.info("PDF session_id: %s", session_id)
+    if session_id is None:
+        raise web.HTTPNotFound(text="No session id specified")
+    return session_id
+
+
+async def query_questionnaire_advices(session_id: str) -> Tuple[Questionnaire,  Union[ConditionalAdvice, None]]:
+    questionnaire = await select_questionnaire(session_id, False)
+    advices = await select_report(session_id)
+    return questionnaire, advices

@@ -59,6 +59,13 @@ class ConditionalAdvice(BaseModel):
         description="A list of advice about what you should not do and avoid.",
     )
 
+    def to_html(self) -> str:
+        return f"""{self.to_advice_html()}
+
+<h2>What to avoid</h2>
+{self.to_avoid_html()}
+"""
+
     def to_advice_html(self) -> str:
         return self.html_convert(self.advices)
 
