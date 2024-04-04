@@ -56,6 +56,7 @@ class Config:
 
     # Embedding related
     raw_text_folder = Path(os.getenv("RAW_TEXT_FOLDER"))
+    create_if_not_exists(raw_text_folder)
     embeddings_persistence_dir = Path(os.getenv("EMBEDDINGS_PERSISTENCE_DIR"))
     chunk_size = int(os.getenv("EMBEDDINGS_CHUNK_SIZE"))
     embeddings = OpenAIEmbeddings(chunk_size=chunk_size)

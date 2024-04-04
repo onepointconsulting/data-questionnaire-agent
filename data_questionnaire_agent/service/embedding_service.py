@@ -26,7 +26,7 @@ def load_text(path: Path) -> List[Document]:
     Returns:
     List[Document]: Returns a list of documents
     """
-    assert path.exists()
+    assert path.exists(), f"Path {path} does not exist"
     all_pages = []
     for text_file in path.glob("*.txt"):
         loader = TextLoader(text_file.as_posix(), encoding="utf-8")
