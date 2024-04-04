@@ -85,17 +85,29 @@
 }
 
 #root .final-report-download {
-  @apply flex flex-row items-center justify-end;
+  @apply flex flex-row items-center justify-center md:justify-end pb-8;
 }
 
 #root .final-report-download svg {
   @apply w-8 h-8 mr-2 md:w-10 md:h-10;
 }
 
-#root .final-report-pdf {
+#root .final-report-email svg {
+  @apply mr-0;
+}
+
+#root .final-report-pdf, .final-report-email {
   @apply flex flex-col items-center justify-center;
 }
 
-#root .final-report-pdf a {
+#root .final-report-pdf a, .final-report-email a {
   @apply text-base underline;
+}
+
+#root .final-report-email {
+  @apply mx-4;
+}
+
+.final-report-message {
+  @apply text-lg lg:text-xl flex flex-row items-center justify-center;
 }

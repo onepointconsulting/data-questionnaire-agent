@@ -5,6 +5,7 @@ import { AppContext } from "../context/AppContext.tsx";
 import InteractionPanel from "./InteractionPanel.tsx";
 import StartButton from "./StartButton.tsx";
 import RestartDialogue from "./dialogue/RestartDialogue.tsx";
+import EmailDialogue from "./dialogue/EmailDialogue.tsx";
 
 function ConnectionStatus() {
   const { connected } = useContext(AppContext);
@@ -24,6 +25,7 @@ export default function CompanionParent() {
   return (
     <>
       <RestartDialogue />
+      <EmailDialogue />
       <div className="header">
         <div className="header-container">
           <h1>Onepoint Data Wellness Companion™</h1>

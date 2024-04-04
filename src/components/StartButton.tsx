@@ -2,12 +2,10 @@ import { ImSwitch } from "react-icons/im";
 import { RESTART_DIALOGUE_ID } from "./dialogue/RestartDialogue.tsx";
 import {useContext} from "react";
 import {AppContext} from "../context/AppContext.tsx";
+import {showDialogue} from "../lib/dialogFunctions.ts";
 
 function showStartDialogue() {
-  const myDialog: any | null = document.getElementById(RESTART_DIALOGUE_ID);
-  if (myDialog) {
-    myDialog.showModal();
-  }
+  showDialogue(RESTART_DIALOGUE_ID);
 }
 
 export default function StartButton() {

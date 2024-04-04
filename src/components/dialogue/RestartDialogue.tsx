@@ -3,14 +3,13 @@ import { clearSession } from "../../lib/sessionFunctions.ts";
 import { sendStartSession } from "../../lib/websocketFunctions.ts";
 import { ChatContext } from "../../context/ChatContext.tsx";
 import {AppContext} from "../../context/AppContext.tsx";
+import onCloseDialogue from "../../lib/dialogFunctions.ts";
+import ButtonPanel from "./ButtonPanel.tsx";
 
 export const RESTART_DIALOGUE_ID = "restart-dialogue";
 
 function onClose() {
-  const myDialog: any | null = document.getElementById(RESTART_DIALOGUE_ID);
-  if (myDialog) {
-    myDialog.close();
-  }
+  onCloseDialogue(RESTART_DIALOGUE_ID)
 }
 
 export default function RestartDialogue() {
@@ -38,18 +37,7 @@ export default function RestartDialogue() {
         <input id="expectedInteviewSteps" type="number" min={4} max={7} value={expectedInteviewSteps}
                onChange={(e) => setExpectedInterviewSteps(parseInt(e.target.value))} />
       </div>
-      <div className="companion-dialogue-buttons">
-        <button
-          data-close-modal={true}
-          onClick={onClose}
-          className="button-cancel"
-        >
-          Close
-        </button>
-        <button data-close-modal={true} onClick={onOk} className="button-ok">
-          OK
-        </button>
-      </div>
+      <ButtonPanel onOk={onOk} onClose={onClose} okText="OK" />
     </dialog>
   );
 }

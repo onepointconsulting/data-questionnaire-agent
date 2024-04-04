@@ -1,10 +1,20 @@
 import Markdown from 'react-markdown';
 import {Message} from "../model/message.ts";
 import remarkGfm from 'remark-gfm';
-import { BsFileEarmarkPdf } from "react-icons/bs";
+import {BsFileEarmarkPdf} from "react-icons/bs";
+import {MdOutlineAlternateEmail} from "react-icons/md";
 import {useContext} from "react";
 import {ChatContext} from "../context/ChatContext.tsx";
 import {getSession} from "../lib/sessionFunctions.ts";
+import {showDialogue} from "../lib/dialogFunctions.ts";
+import {EMAIL_DIALOGUE_ID} from "./dialogue/EmailDialogue.tsx";
+
+const MAIL_TEXT = 'Send report as email';
+
+function showEmailDialogue(e: React.MouseEvent<HTMLAnchorElement>) {
+  e.preventDefault()
+  showDialogue(EMAIL_DIALOGUE_ID);
+}
 
 /**
  * The final report of the conversation.
@@ -19,6 +29,10 @@ export default function FinalReport({message}: {message: Message}) {
   return (
     <div className="final-report">
       {sessionId && <div className="final-report-download">
+        <div className="final-report-email">
+          <a href="#" onClick={showEmailDialogue} title={MAIL_TEXT}><MdOutlineAlternateEmail/></a>
+          <a href="#" onClick={showEmailDialogue}>{MAIL_TEXT}</a>
+        </div>
         <div className="final-report-pdf">
           <a href={reportPdf} title="Download PDF"><BsFileEarmarkPdf/></a>
           <a href={reportPdf}>Download PDF</a>
