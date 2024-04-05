@@ -12,7 +12,7 @@ export default function StartButton() {
   const { connected } = useContext(AppContext);
   return (
     <ImSwitch
-      className="fill-white h-6 w-6 mr-2"
+      className="fill-white h-6 w-6"
       title="Restart"
       onClick={
         !connected
