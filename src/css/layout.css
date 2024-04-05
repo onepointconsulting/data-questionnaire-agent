@@ -34,11 +34,16 @@
 }
 
 #root .suggestions {
-  @apply flex flex-col md:flex-row md:flex-wrap pt-8 lg:pt-20 px-4;
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4 pt-8 lg:pt-20 px-8 lg:px-8 xl:px-6 mb-4;
 }
 
 #root .suggestion {
-  @apply flex flex-row flex-wrap md:w-1/2 px-4 py-2 text-lg md:text-xl cursor-pointer;
+  @apply flex flex-row px-4 py-2 text-lg md:text-xl cursor-pointer
+    bg-[#f1f4f8] rounded-2xl hover:bg-[#c1d9f9] transition duration-200;
+}
+
+#root .suggestion.active {
+  @apply bg-[#0084d7] text-white;
 }
 
 #root .suggestion .suggestion-img {
@@ -46,7 +51,7 @@
 }
 
 #root .suggestion .suggestion-text {
-  @apply w-11/12 lg:w-5/6 px-2 flex items-center justify-center no-underline hover:underline;
+  @apply w-11/12 lg:w-5/6 px-2 flex items-center justify-center no-underline;
 }
 
 #root .chat-container {
