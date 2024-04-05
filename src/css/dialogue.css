@@ -8,6 +8,14 @@
   @apply px-6 py-6;
 }
 
+label[for=expectedInteviewSteps] {
+  @apply py-1 pr-2;
+}
+
+#expectedInteviewSteps {
+    @apply border-solid border-2 border-[#e6e6e6] rounded-lg w-24 pl-2 py-1;
+}
+
 .companion-dialogue-config {
   @apply flex flex-row align-middle px-6;
 }

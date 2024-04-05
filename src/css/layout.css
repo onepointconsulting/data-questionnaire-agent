@@ -111,5 +111,5 @@
 }
 
 .final-report-message {
-  @apply text-lg lg:text-xl flex flex-row items-center justify-center;
+  @apply text-lg lg:text-xl w-full text-center;
 }
