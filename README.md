@@ -15,33 +15,170 @@ We suggest to use [Conda](https://docs.conda.io/en/latest/) to manage the virtua
 
 ```
 conda activate base
-conda remove -n data_integration_questionnaire_agent --all
-conda create -n data_integration_questionnaire_agent python=3.11
-conda activate data_integration_questionnaire_agent
+conda remove -n data_wellness_agent --all
+conda create -n data_wellness_agent python=3.11
+conda activate data_wellness_agent
 pip install poetry
 ```
 
 ## Installation
 
-```
+```cd 
 poetry install
-poetry add --editable ./wheels/chainlit-0.7.8.10-py3-none-any.whl
+```
+
+## UI Installation
+
+You have to download the UI files (a React app from Github)
+
+```
+mkdir ~/projects/data-wellness-companion-ui
+cd ~/projects/data-wellness-companion-ui
+wget https://github.com/onepointconsulting/data-wellness-companion-ui/releases/download/v0.1/companion_ui.zip
+
+cd ~/projects/data-wellness-companion
+mkdir ui
+cd ui
+unzip ~/projects/data-wellness-companion-ui/companion_ui.zip
+# Change the port to the port you are going to use. Here we change from 8085 to 8086
+sed -i -e 's/8085/8086/g' ./index.html
+sed -i -e 's/127\.0\.0\.1/<some_ip_address>/g' ./index.html
 ```
 
 ## Running
 
-### Prepare the SQLLite database
+### Prepare the Postgres DB
 
-Before you run for the first time, please run this command from the command line to initiate the SQLLite database:
+Before you run for the first time, you will need to create the Postgres database. Execute this command to start psql (make sure Postgres is installed)
 
 ```
-python ./data_questionnaire_agent/utils/tracker_db_init.py
+sudo -u postgres psql
 ```
+
+Then create the database:
+
+```
+CREATE DATABASE data_wellness_companion
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+```
+
+and add the initial tables with some data after exiting psql:
+
+Run on the console:
+
+```
+sudo -u postgres psql data_wellness_companion
+```
+
+And run the script below:
+
+```
+DROP TABLE IF EXISTS PUBLIC.TB_SESSION_CONFIGURATION;
+DROP TABLE IF EXISTS PUBLIC.TB_QUESTION_SUGGESTIONS;
+DROP TABLE IF EXISTS PUBLIC.TB_QUESTION;
+DROP TABLE IF EXISTS PUBLIC.TB_QUESTIONNAIRE_STATUS_SUGGESTIONS;
+DROP TABLE IF EXISTS PUBLIC.TB_QUESTIONNAIRE_STATUS;
+
+CREATE TABLE PUBLIC.TB_QUESTIONNAIRE_STATUS (
+	ID serial NOT NULL,
+	SESSION_ID CHARACTER VARYING(36) NOT NULL,
+	QUESTION CHARACTER VARYING(65535) NOT NULL,
+	ANSWER CHARACTER VARYING(4096) NULL,
+	FINAL_REPORT boolean, 
+	CREATED_AT TIMESTAMP DEFAULT NOW(),
+	UPDATED_AT TIMESTAMP DEFAULT NOW(),
+	PRIMARY KEY (ID)
+);
+
+CREATE TABLE PUBLIC.TB_QUESTION (
+	ID serial NOT NULL,
+	QUESTION CHARACTER VARYING(1024) NOT NULL,
+	PREFERRED_QUESTION_ORDER int NULL,
+	PRIMARY KEY (ID)
+);
+
+CREATE TABLE PUBLIC.TB_QUESTION_SUGGESTIONS(
+	ID serial NOT NULL,
+	IMG_SRC CHARACTER VARYING(100) NOT NULL,
+	IMG_ALT CHARACTER VARYING(256) NOT NULL,
+	TITLE CHARACTER VARYING(256) NOT NULL,
+	MAIN_TEXT CHARACTER VARYING(1024) NOT NULL,
+	QUESTION_ID integer NOT NULL,
+	PRIMARY KEY (ID),
+	CONSTRAINT QUESTION_ID
+		FOREIGN KEY (QUESTION_ID) REFERENCES PUBLIC.TB_QUESTION (ID) 
+		MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION NOT VALID
+);
+
+CREATE TABLE PUBLIC.TB_SESSION_CONFIGURATION(
+	ID serial NOT NULL,
+	SESSION_ID CHARACTER VARYING(36) NOT NULL,
+	CONFIG_KEY CHARACTER VARYING(36) NOT NULL,
+	CONFIG_VALUE CHARACTER VARYING(255) NOT NULL
+);
+
+CREATE TABLE PUBLIC.TB_QUESTIONNAIRE_STATUS_SUGGESTIONS(
+	ID serial NOT NULL,
+	QUESTIONNAIRE_STATUS_ID INTEGER NOT NULL,
+	MAIN_TEXT CHARACTER VARYING(2048) NOT NULL,
+	PRIMARY KEY (ID),
+	CONSTRAINT QUESTIONNAIRE_STATUS_ID
+		FOREIGN KEY (QUESTIONNAIRE_STATUS_ID) REFERENCES PUBLIC.TB_QUESTIONNAIRE_STATUS (ID) 
+		MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE
+);
+
+-- Initial question
+INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER)
+VALUES('Which area of your data ecosystem are you most concerned about?', 1);
+
+-- Some suggestions for the initial screen
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('poor_data_quality.png', 'Poor data quality', 'Poor data quality', 'Low-quality data can lead to incorrect insights and poor decision-making.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	   
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('compliance_risks.png', 'Compliance and security risks', 'Compliance and security risks', 'Mishandling data can lead to legal troubles and reputational damage.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('data_silos.png', 'Data silos', 'Data silos', 'Data trapped in departmental silos can be inaccessible to other parts.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('lack_of_skilled_personnel.png', 'Lack of skilled personnel', 'Lack of skilled personnel', 'Missing skills in data science, analytics, AI and ML can impede the effective use of data.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('data_overload.png', 'Data overload', 'Data overload', '"Data glut" can slow down processes and make it difficult to identify what data is actually useful.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('cost_and_complexity.png', 'Cost and complexity', 'Cost and complexity', 'A robust data analytics infrastructure requires significant investment of resources.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('inconsistent_data_strategies.png', 'Inconsistent data strategies', 'Inconsistent data strategies', 'Difficult to align with modern concepts like Data Fabric, Mesh and Generative AI.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('resistence_to_change.png', 'Resistance to change', 'Resistance to change', 'Employees need to adapt to new ways of operating to make data-driven transformation work.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+```
+
+### Knowledge base 
+
+The knowledge base is based on a directory (see environment variable `RAW_TEXT_FOLDER`). The folder needs to have *.txt documents in it.
+
+The server fails if there are no documents in this folder.
 
 ### Running the main application
 
 ```
-chainlit run .\data_questionnaire_agent\ui\data_questionnaire_chainlit.py --port 8080
+python ./data_questionnaire_agent/server/questionnaire_server_main.py
 ```
 
 ## Configuration
@@ -128,128 +265,6 @@ WEBSOCKET_CORS_ALLOWED_ORIGINS=*
 
 # Webserver related
 UI_FOLDER=/development/playground/langchain/data_questionnaire_agent/web/ui
-
-```
-
-Here is the content of the `config.toml` file in the `.chainlit` folder:
-
-```
-[project]
-# Whether to enable telemetry (default: true). No personal data is collected.
-enable_telemetry = true
-
-# List of environment variables to be provided by each user to use the app.
-user_env = []
-
-# Duration (in seconds) during which the session is saved when the connection is lost
-session_timeout = 3600
-
-# Enable third parties caching (e.g LangChain cache)
-cache = false
-
-# Follow symlink for asset mount (see https://github.com/Chainlit/chainlit/issues/317)
-# follow_symlink = false
-
-[features]
-# Show the prompt playground
-prompt_playground = true
-
-[UI]
-# Name of the app and chatbot.
-name = "Chatbot"
-
-# Description of the app and chatbot. This is used for HTML tags.
-# description = ""
-
-# Large size content are by default collapsed for a cleaner ui
-default_collapse_content = true
-
-# The default value for the expand messages settings.
-default_expand_messages = false
-
-# Hide the chain of thought details from the user in the UI.
-hide_cot = false
-
-# Link to your github repo. This will add a github button in the UI's header.
-github = "https://onepointltd.com"
-
-# Specify a CSS file that can be used to customize the user interface.
-custom_css = '/public/css/styles.css'
-
-# Specify a JS file that can be used to customize the user interface.
-custom_js = '/public/js/onepoint.js'
-
-# The text
-watermark_text = "Built by"
-
-# Override default MUI light theme. (Check theme.ts)
-[UI.theme.light]
-    #background = "#FAFAFA"
-    #paper = "#FFFFFF"
-
-    [UI.theme.light.primary]
-        #main = "#F80061"
-        #dark = "#980039"
-        #light = "#FFE7EB"
-
-# Override default MUI dark theme. (Check theme.ts)
-[UI.theme.dark]
-    #background = "#FAFAFA"
-    #paper = "#FFFFFF"
-
-    [UI.theme.dark.primary]
-        #main = "#F80061"
-        #dark = "#980039"
-        #light = "#FFE7EB"
-
-
-[meta]
-generated_by = "0.7.1"
-```
-
-## Note on sqllite3 on Windows
-
-If you have a hard time installing sqllite3 on Windows follow these instructions:
-
-https://zeljic.com/blog/sqlite-lib-windows-10/
-
-1. Download source from [source](https://www.sqlite.org/download.html)
-
-	For example: [source](https://www.sqlite.org/2023/sqlite-amalgamation-3430100.zip) `https://www.sqlite.org/2023/sqlite-amalgamation-3430100.zip`
-2. Download binary from [binary](https://www.sqlite.org/download.html)
-
-	For example: [binary](https://www.sqlite.org/2023/sqlite-dll-win64-x64-3430100.zip) `https://www.sqlite.org/2023/sqlite-dll-win64-x64-3430100.zip`
-    
-3. Extract both archives to the same directory
-    
-4. Open **Developer Command Prompt for VS 2017** by typing *Developer Command* in Windows Search
-
-5. Go to directory where you've extracted **source code** and **binary** files (via opened cmd)
-6. Run 
-	```lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64```
-7. Copy all of the files including `sqlite3.h` into one of the include folders used by `cl.exe` like e.g. `-IC:\Users\gilfe\miniconda3\envs\data_integration_questionnaire_agent\Include`
-	
-[Blog post](https://zeljic.com/blog/sqlite-lib-windows-10/)
-
-## Note on sqllite3 on Linux
-
-Make sure that `gcc` is installed.
-
-On Ubuntu these are the commands:
-
-```bash
-sudo apt update
-sudo apt install build-essential
-# Check if gcc is installed
-gcc --version
-```
-
-## Listing the interactions
-
-If you want to list the interactions with the system from the database you can run this command into a CSV file:
-
-```python
-python ./data_questionnaire_agent/utils/tracker_db_lister.py > temp.csv
 ```
 
 ## Running Tests

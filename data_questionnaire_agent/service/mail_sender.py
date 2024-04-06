@@ -62,7 +62,11 @@ def encode_name_and_mail(name: Union[str, None], email: str) -> str:
     return f"{name} <{email}>"
 
 
-def create_mail_body(questionnaire: Questionnaire, advices: ConditionalAdvice, feedback_email: str = mail_config.feedback_email) -> str:
+def create_mail_body(
+    questionnaire: Questionnaire,
+    advices: ConditionalAdvice,
+    feedback_email: str = mail_config.feedback_email,
+) -> str:
     mail_template = cfg.template_location / "mail-template.html"
     mail_template_text = mail_template.read_text(encoding="utf-8")
     content = f"""

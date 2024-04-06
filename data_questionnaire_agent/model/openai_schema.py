@@ -18,8 +18,20 @@ class ResponseQuestions(BaseModel):
         description="The list of questions given used to gather information to be able to give a customer advice.",
     )
 
+    possible_answers: List[str] = Field(
+        ...,
+        description="The list of possible answers to the generated questions.",
+    )
+
     def __str__(self) -> str:
-        return "\n".join(self.questions)
+        questions_str = "\n".join(self.questions)
+        possible_answers_str = "\n".join(self.possible_answers)
+
+        return f"""
+Questions: {questions_str}
+
+Possible Answwers: {possible_answers_str}
+"""
 
 
 class ResponseTags(BaseModel):

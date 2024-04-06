@@ -1,6 +1,6 @@
 import sys
 import asyncio
-from typing import Callable, Any, Union, List
+from typing import Callable, Coroutine, Any, Union, List
 from psycopg import AsyncCursor, AsyncConnection
 
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
@@ -26,15 +26,32 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
+async def create_connection() -> AsyncConnection:
+    return await AsyncConnection.connect(conninfo=db_cfg.db_conn_str)
+
+
 async def create_cursor(func: Callable, commit=False) -> Any:
     # await asynch_pool.check()
     try:
-        conn = await AsyncConnection.connect(conninfo=db_cfg.db_conn_str)
+        conn = await create_connection()
         # async with asynch_pool.connection() as conn:
         async with conn.cursor() as cur:
             return await func(cur)
     except:
         logger.exception("Could not create cursor.")
+    finally:
+        if conn is not None:
+            if commit:
+                await conn.commit()
+            await conn.close()
+
+
+async def use_connection(func: Coroutine, commit=True) -> any:
+    try:
+        conn = await create_connection()
+        return await func(conn)
+    except:
+        logger.exception("Could not create database.")
     finally:
         if conn is not None:
             if commit:
@@ -328,7 +345,12 @@ WHERE SESSION_ID = %(session_id)s
 """,
         {"session_id": session_id},
     )
-    if len(res) == 0 or len(res[0]) == 0 or res[0][0] == None or not isinstance(res[0][0], int):
+    if (
+        len(res) == 0
+        or len(res[0]) == 0
+        or res[0][0] == None
+        or not isinstance(res[0][0], int)
+    ):
         return DEFAULT_SESSION_STEPS
     return int(res[0][0])
 
@@ -352,6 +374,23 @@ VALUES (%(session_id)s, %(question)s, TRUE, NOW(), NOW()) RETURNING ID
         return created_id
 
     return await create_cursor(process_save, True)
+
+
+async def insert_questionnaire_status_suggestions(
+    questionnaire_status_id: id, question_answer: QuestionAnswer
+) -> int:
+    async def insert_suggestions(conn: AsyncConnection) -> int:
+        changed = 0
+        async with conn.pipeline():
+            for suggestion in question_answer.possible_answers:
+                await conn.execute(
+                    """INSERT INTO TB_QUESTIONNAIRE_STATUS_SUGGESTIONS (QUESTIONNAIRE_STATUS_ID, MAIN_TEXT) VALUES (%s, %s)""",
+                    [questionnaire_status_id, suggestion],
+                )
+                changed += 1
+        return changed
+
+    return await use_connection(insert_suggestions)
 
 
 if __name__ == "__main__":
@@ -445,10 +484,24 @@ if __name__ == "__main__":
         deleted = await delete_questionnaire_status(id)
         assert deleted == 1
 
+    async def test_insert_questionnaire_status_suggestions():
+        from data_questionnaire_agent.test.provider.question_answer_provider import create_question_answer_with_possible_answers
+        qs = create_simple()
+        new_qs = await insert_questionnaire_status(qs)
+        assert new_qs is not None
+        assert new_qs.id is not None
+        question_answer = create_question_answer_with_possible_answers()
+        changed = await insert_questionnaire_status_suggestions(new_qs.id, question_answer)
+        assert changed > 1
+        deleted = await delete_questionnaire_status(new_qs.id)
+        assert deleted == 1
+
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial())
     # asyncio.run(test_insert_answer())
     # asyncio.run(test_select_answers())
     # asyncio.run(test_session_configuration_save())
     # asyncio.run(test_select_current_session_steps())
-    asyncio.run(test_save_report())
+    # asyncio.run(test_save_report())
+    asyncio.run(test_insert_questionnaire_status_suggestions())

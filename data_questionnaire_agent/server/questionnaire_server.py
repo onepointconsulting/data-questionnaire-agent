@@ -52,10 +52,7 @@ from data_questionnaire_agent.service.mail_sender import send_email
 from data_questionnaire_agent.service.mail_sender import create_mail_body
 
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "*"
-}
+CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 
 docsearch = init_vector_search()
 
@@ -112,7 +109,7 @@ async def start_session(sid: str, client_session: str, session_steps: int = 6):
         question = questionnaire_messages[0].question
         await load_configuration(server_messages)
 
-    await append_suggestions(server_messages, question)
+    await append_first_suggestion(server_messages, question)
     await sio.emit(
         Commands.START_SESSION,
         server_messages.json(),
@@ -182,7 +179,7 @@ async def append_suggestions_and_send(
     server_messages: ServerMessages,
     questionnaire_messages: List[QuestionnaireStatus],
 ):
-    await append_suggestions(server_messages, questionnaire_messages[0].question)
+    await append_first_suggestion(server_messages, questionnaire_messages[0].question)
     await sio.emit(
         Commands.SERVER_MESSAGE,
         server_messages.json(),
@@ -190,7 +187,7 @@ async def append_suggestions_and_send(
     )
 
 
-async def persist_question(session_id, question):
+async def persist_question(session_id: str, question: str):
     qs = QuestionnaireStatus(
         session_id=session_id, question=question, final_report=False
     )
@@ -198,7 +195,7 @@ async def persist_question(session_id, question):
     return qs, qs_res
 
 
-async def append_suggestions(server_messages: ServerMessages, question: str):
+async def append_first_suggestion(server_messages: ServerMessages, question: str):
     server_messages.server_messages[0].suggestions = await select_suggestions(question)
 
 
@@ -262,6 +259,7 @@ async def get_pdf(request: web.Request) -> web.Response:
         },
     )
 
+
 @routes.options("/email/{session_id}")
 async def send_email_options(_: web.Request) -> web.Response:
     return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
@@ -276,22 +274,26 @@ async def send_email_request(request: web.Request) -> web.Response:
             text=json.dumps({"error": f"Invalid Session: {session_id}"}),
             status=400,
             content_type="application/json",
-            headers=CORS_HEADERS
+            headers=CORS_HEADERS,
         )
     try:
         data: Any = await request.json()
         mail_data = MailData.parse_obj(data)
         mail_body = create_mail_body(questionnaire, advices)
         # Respond with a JSON message indicating success
-        await asyncify(send_email)(mail_data.person_name, mail_data.email, mail_config.mail_subject, mail_body)
-        return web.json_response({"message": "Mail sent successfully."}, headers=CORS_HEADERS)
+        await asyncify(send_email)(
+            mail_data.person_name, mail_data.email, mail_config.mail_subject, mail_body
+        )
+        return web.json_response(
+            {"message": "Mail sent successfully."}, headers=CORS_HEADERS
+        )
     except json.JSONDecodeError:
         # In case of a JSON parsing error, return an error response
         return web.Response(
             text=json.dumps({"error": "Invalid JSON"}),
             status=400,
-            content_type="application/json", 
-            headers=CORS_HEADERS
+            content_type="application/json",
+            headers=CORS_HEADERS,
         )
 
 
@@ -303,7 +305,9 @@ def extract_session(request):
     return session_id
 
 
-async def query_questionnaire_advices(session_id: str) -> Tuple[Questionnaire,  Union[ConditionalAdvice, None]]:
+async def query_questionnaire_advices(
+    session_id: str,
+) -> Tuple[Questionnaire, Union[ConditionalAdvice, None]]:
     questionnaire = await select_questionnaire(session_id, False)
     advices = await select_report(session_id)
     return questionnaire, advices

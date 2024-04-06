@@ -1,6 +1,6 @@
 from typing import List
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Union, Optional
 
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
@@ -11,6 +11,7 @@ class QuestionAnswer:
     question: str
     answer: Union[str, dict]
     clarification: Optional[str]
+    possible_answers: List[str] = field(default_factory=list)
 
     def answer_str(self):
         if not self.answer:
@@ -74,4 +75,10 @@ class Questionnaire:
 def convert_to_question_answers(
     response_questions: ResponseQuestions,
 ) -> List[QuestionAnswer]:
-    return [QuestionAnswer.question_factory(q) for q in response_questions.questions]
+    question_answers = []
+    for i, q in enumerate(response_questions.questions):
+        question_answer = QuestionAnswer.question_factory(q)
+        question_answers.append(question_answer)
+        if i == 0:
+            question_answer.possible_answers = response_questions.possible_answers
+    return question_answers

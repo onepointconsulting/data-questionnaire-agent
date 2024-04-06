@@ -31,7 +31,7 @@ The user answer provided by the customer starts with ==== ANSWER ==== and ends w
     [questionnaire.secondary]
     system_message = "You are a British data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
     human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, gouvernance and quality issues.
+please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, gouvernance and quality issues. Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers.
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
