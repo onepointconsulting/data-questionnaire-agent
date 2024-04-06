@@ -393,6 +393,11 @@ async def insert_questionnaire_status_suggestions(
     return await use_connection(insert_suggestions)
 
 
+async def select_questionnaire_status_suggestions(questionnaire_status_id: id):
+    # Implement this
+    pass
+
+
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.questionnaire_status_provider import (
         create_simple,
@@ -485,17 +490,21 @@ if __name__ == "__main__":
         assert deleted == 1
 
     async def test_insert_questionnaire_status_suggestions():
-        from data_questionnaire_agent.test.provider.question_answer_provider import create_question_answer_with_possible_answers
+        from data_questionnaire_agent.test.provider.question_answer_provider import (
+            create_question_answer_with_possible_answers,
+        )
+
         qs = create_simple()
         new_qs = await insert_questionnaire_status(qs)
         assert new_qs is not None
         assert new_qs.id is not None
         question_answer = create_question_answer_with_possible_answers()
-        changed = await insert_questionnaire_status_suggestions(new_qs.id, question_answer)
+        changed = await insert_questionnaire_status_suggestions(
+            new_qs.id, question_answer
+        )
         assert changed > 1
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
-
 
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial())

@@ -36,6 +36,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_session_configuration,
     select_current_session_steps,
     save_report,
+    insert_questionnaire_status_suggestions,
 )
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.similarity_search import (
@@ -165,6 +166,8 @@ async def handle_secondary_question(
     last_question_answer = question_answer[-1]
     # Save the generated question
     _, qs_res = await persist_question(session_id, last_question_answer.question)
+    # Persist the suggestions for this answer
+    await insert_questionnaire_status_suggestions(qs_res.id, question_answer)
     if qs_res.id is None:
         await send_error(sid, session_id, "Failed to insert question in database.")
         return
