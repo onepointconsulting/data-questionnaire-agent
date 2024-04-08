@@ -51,7 +51,7 @@ async def use_connection(func: Coroutine, commit=True) -> any:
         conn = await create_connection()
         return await func(conn)
     except:
-        logger.exception("Could not create database.")
+        logger.exception("Could not create database connection.")
     finally:
         if conn is not None:
             if commit:
@@ -393,9 +393,29 @@ async def insert_questionnaire_status_suggestions(
     return await use_connection(insert_suggestions)
 
 
-async def select_questionnaire_status_suggestions(questionnaire_status_id: id):
-    # Implement this
-    pass
+async def select_questionnaire_status_suggestions(
+    questionnaire_status_id: id,
+) -> List[QuestionSuggestion]:
+    res = await select_from(
+        f"""
+SELECT ID, MAIN_TEXT
+FROM PUBLIC.TB_QUESTIONNAIRE_STATUS_SUGGESTIONS
+WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire_status_id)s
+""",
+        {"questionnaire_status_id": questionnaire_status_id},
+    )
+    ID = 0
+    MAIN_TEXT = 1
+    return [
+        QuestionSuggestion(
+            id=r[ID],
+            img_src="",
+            img_alt="",
+            title="",
+            main_text=r[MAIN_TEXT],
+        )
+        for r in res
+    ]
 
 
 if __name__ == "__main__":
@@ -503,6 +523,10 @@ if __name__ == "__main__":
             new_qs.id, question_answer
         )
         assert changed > 1
+        possible_question_answers = await select_questionnaire_status_suggestions(
+            new_qs.id
+        )
+        assert len(possible_question_answers) > 0
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 

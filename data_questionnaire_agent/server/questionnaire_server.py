@@ -37,6 +37,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_current_session_steps,
     save_report,
     insert_questionnaire_status_suggestions,
+    select_questionnaire_status_suggestions,
 )
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.similarity_search import (
@@ -111,6 +112,7 @@ async def start_session(sid: str, client_session: str, session_steps: int = 6):
         await load_configuration(server_messages)
 
     await append_first_suggestion(server_messages, question)
+    await append_other_suggestions(server_messages, questionnaire_messages)
     await sio.emit(
         Commands.START_SESSION,
         server_messages.json(),
@@ -157,20 +159,20 @@ async def client_message(sid: str, session_id: str, answer: str):
 async def handle_secondary_question(
     sid: str, session_id: str, questionnaire: Questionnaire
 ):
-    question_answer = await process_secondary_questions(
+    question_answers = await process_secondary_questions(
         questionnaire, cfg.questions_per_batch
     )
-    if len(question_answer) == 0:
+    if len(question_answers) == 0:
         await send_error(sid, session_id, "Could not get any answers from ChatGPT.")
         return
-    last_question_answer = question_answer[-1]
+    last_question_answer = question_answers[-1]
     # Save the generated question
     _, qs_res = await persist_question(session_id, last_question_answer.question)
     # Persist the suggestions for this answer
-    await insert_questionnaire_status_suggestions(qs_res.id, question_answer)
     if qs_res.id is None:
         await send_error(sid, session_id, "Failed to insert question in database.")
         return
+    await insert_questionnaire_status_suggestions(qs_res.id, last_question_answer)
     questionnaire_messages = await select_questionnaire_statuses(session_id)
     server_messages = server_messages_factory(questionnaire_messages)
 
@@ -183,11 +185,20 @@ async def append_suggestions_and_send(
     questionnaire_messages: List[QuestionnaireStatus],
 ):
     await append_first_suggestion(server_messages, questionnaire_messages[0].question)
+    await append_other_suggestions(server_messages, questionnaire_messages)
     await sio.emit(
         Commands.SERVER_MESSAGE,
         server_messages.json(),
         room=sid,
     )
+
+
+async def append_other_suggestions(server_messages, questionnaire_messages):
+    if len(questionnaire_messages) > 1:
+        for i, message in enumerate(questionnaire_messages[1:]):
+            server_messages.server_messages[
+                i + 1
+            ].suggestions = await select_questionnaire_status_suggestions(message.id)
 
 
 async def persist_question(session_id: str, question: str):
