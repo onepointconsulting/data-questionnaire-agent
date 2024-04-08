@@ -352,7 +352,11 @@ WHERE SESSION_ID = %(session_id)s
         # or not isinstance(res[0][0], int)
     ):
         return DEFAULT_SESSION_STEPS
-    return int(res[0][0])
+    try:
+        return int(res[0][0])
+    except:
+        logger.exception("Cannot select current session steps")
+        return DEFAULT_SESSION_STEPS
 
 
 async def save_report(session_id: str, conditional_advice: ConditionalAdvice) -> int:
