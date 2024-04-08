@@ -54,6 +54,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [selectedSuggestion, setSelectedSuggestion] = useState<string>();
   const [sending, setSending] = useState(false);
   const [expectedNodes, setExpectedNodes] = useState(DEFAULT_EXPECTED_NODES);
+
   return (
     <AppContext.Provider
       value={{
