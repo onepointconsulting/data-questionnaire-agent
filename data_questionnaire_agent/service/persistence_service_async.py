@@ -349,7 +349,7 @@ WHERE SESSION_ID = %(session_id)s
         len(res) == 0
         or len(res[0]) == 0
         or res[0][0] == None
-        or not isinstance(res[0][0], int)
+        # or not isinstance(res[0][0], int)
     ):
         return DEFAULT_SESSION_STEPS
     return int(res[0][0])
