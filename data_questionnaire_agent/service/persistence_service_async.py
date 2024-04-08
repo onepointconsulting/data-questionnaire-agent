@@ -406,6 +406,8 @@ WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire_status_id)s
     )
     ID = 0
     MAIN_TEXT = 1
+    if res == None:
+        return []
     return [
         QuestionSuggestion(
             id=r[ID],
