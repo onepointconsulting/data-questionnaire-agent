@@ -44,7 +44,7 @@ function createAppState(): AppState {
     setSending: (_) => {},
     setExpectedNodes: (_) => {},
     setChatText: (_) => {},
-    isLast: true
+    isLast: true,
   };
 }
 
@@ -84,7 +84,7 @@ export const AppContextProvider = ({ children }: Props) => {
         setSending,
         chatText,
         setChatText,
-        isLast
+        isLast,
       }}
     >
       {" "}

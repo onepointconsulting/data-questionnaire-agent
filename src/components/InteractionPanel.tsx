@@ -22,7 +22,11 @@ export default function InteractionPanel() {
           messagesLength={messages.length}
         />
         <Suggestions message={message} />
-        {sending && <div className="mt-6"><Spinner /></div>}
+        {sending && (
+          <div className="mt-6">
+            <Spinner />
+          </div>
+        )}
         {sending && displayReportGenerationMessage && (
           <div className="final-report-message">
             Generating final report. This might take 2 to 3 minutes.

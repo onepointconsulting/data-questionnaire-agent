@@ -39,8 +39,11 @@ export default function RestartDialogue() {
       </div>
       <div className="companion-dialogue-config">
         <label htmlFor="expectedInteviewSteps">Interview Steps: </label>
-        <select id="expectedInteviewSteps" value={expectedInteviewSteps}
-                onChange={(e) => setExpectedInterviewSteps(parseInt(e.target.value))}>
+        <select
+          id="expectedInteviewSteps"
+          value={expectedInteviewSteps}
+          onChange={(e) => setExpectedInterviewSteps(parseInt(e.target.value))}
+        >
           {Array.from({ length: MAX_STEPS - MIN_STEPS + 1 }, (_, i) => (
             <option key={i} value={i + MIN_STEPS}>
               {i + MIN_STEPS}

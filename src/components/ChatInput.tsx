@@ -1,7 +1,7 @@
-import {useContext, useEffect, useRef} from "react";
-import {AppContext} from "../context/AppContext.tsx";
-import {sendClientMessage} from "../lib/websocketFunctions.ts";
-import {ChatContext} from "../context/ChatContext.tsx";
+import { useContext, useEffect, useRef } from "react";
+import { AppContext } from "../context/AppContext.tsx";
+import { sendClientMessage } from "../lib/websocketFunctions.ts";
+import { ChatContext } from "../context/ChatContext.tsx";
 
 function adjustHeight(style: CSSStyleDeclaration, el: HTMLTextAreaElement) {
   style.height = `auto`;
@@ -13,9 +13,15 @@ function adjustHeight(style: CSSStyleDeclaration, el: HTMLTextAreaElement) {
  * @constructor
  */
 export default function ChatInput() {
-  const {selectedSuggestion, setSending, sending, connected, chatText, setChatText} =
-    useContext(AppContext);
-  const {socket} = useContext(ChatContext);
+  const {
+    selectedSuggestion,
+    setSending,
+    sending,
+    connected,
+    chatText,
+    setChatText,
+  } = useContext(AppContext);
+  const { socket } = useContext(ChatContext);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -30,7 +36,7 @@ export default function ChatInput() {
       const el = textAreaRef.current;
       adjustHeight(style, el);
     }
-  }, [chatText])
+  }, [chatText]);
 
   useEffect(() => {
     if (!sending) {
@@ -75,7 +81,7 @@ export default function ChatInput() {
             sendMessage();
           }}
         >
-          <img src="send_button.svg" alt="Send"/>
+          <img src="send_button.svg" alt="Send" />
         </button>
       </div>
     </div>
