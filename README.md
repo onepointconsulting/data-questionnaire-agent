@@ -36,7 +36,7 @@ You have to download the UI files (a React app from Github)
 ```
 mkdir ~/projects/data-wellness-companion-ui
 cd ~/projects/data-wellness-companion-ui
-wget https://github.com/onepointconsulting/data-wellness-companion-ui/releases/download/v0.1/companion_ui.zip
+wget https://github.com/onepointconsulting/data-wellness-companion-ui/releases/download/v0.2/companion_ui.zip
 
 cd ~/projects/data-wellness-companion
 mkdir ui
