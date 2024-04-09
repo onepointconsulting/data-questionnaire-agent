@@ -51,7 +51,7 @@
 }
 
 #root .suggestion .suggestion-text {
-  @apply w-11/12 lg:w-5/6 px-2 flex items-center no-underline;
+  @apply px-2 flex items-center justify-between no-underline w-full;
 }
 
 #root .chat-container {

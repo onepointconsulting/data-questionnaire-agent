@@ -17,6 +17,9 @@ interface AppState {
   setSelectedSuggestion: (selectedSuggestion: string) => void;
   sending: boolean;
   setSending: (sending: boolean) => void;
+  chatText: string;
+  setChatText: (chatText: string) => void;
+  readonly isLast: boolean;
 }
 
 const DEFAULT_EXPECTED_NODES = 6;
@@ -32,6 +35,7 @@ function createAppState(): AppState {
     connected: false,
     sending: false,
     currentMessage: 0,
+    chatText: "",
     setStartSession: (_) => {},
     setConnected: (_) => {},
     setMessages: (_: Message[]) => {},
@@ -39,6 +43,8 @@ function createAppState(): AppState {
     setSelectedSuggestion: (_) => {},
     setSending: (_) => {},
     setExpectedNodes: (_) => {},
+    setChatText: (_) => {},
+    isLast: true
   };
 }
 
@@ -54,6 +60,9 @@ export const AppContextProvider = ({ children }: Props) => {
   const [selectedSuggestion, setSelectedSuggestion] = useState<string>();
   const [sending, setSending] = useState(false);
   const [expectedNodes, setExpectedNodes] = useState(DEFAULT_EXPECTED_NODES);
+  const [chatText, setChatText] = useState("");
+
+  const isLast = currentMessage === messages.length - 1;
 
   return (
     <AppContext.Provider
@@ -73,6 +82,9 @@ export const AppContextProvider = ({ children }: Props) => {
         setSelectedSuggestion,
         sending,
         setSending,
+        chatText,
+        setChatText,
+        isLast
       }}
     >
       {" "}

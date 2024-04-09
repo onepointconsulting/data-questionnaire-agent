@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { AppContext } from "../context/AppContext.tsx";
-import { sendClientMessage } from "../lib/websocketFunctions.ts";
-import { ChatContext } from "../context/ChatContext.tsx";
+import {useContext, useEffect, useRef} from "react";
+import {AppContext} from "../context/AppContext.tsx";
+import {sendClientMessage} from "../lib/websocketFunctions.ts";
+import {ChatContext} from "../context/ChatContext.tsx";
 
 function adjustHeight(style: CSSStyleDeclaration, el: HTMLTextAreaElement) {
   style.height = `auto`;
@@ -13,34 +13,38 @@ function adjustHeight(style: CSSStyleDeclaration, el: HTMLTextAreaElement) {
  * @constructor
  */
 export default function ChatInput() {
-  const { selectedSuggestion, setSending, sending, connected } =
+  const {selectedSuggestion, setSending, sending, connected, chatText, setChatText} =
     useContext(AppContext);
-  const { socket } = useContext(ChatContext);
-  const [text, setText] = useState("");
+  const {socket} = useContext(ChatContext);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (selectedSuggestion && textAreaRef.current) {
-      setText(selectedSuggestion);
-      const style = textAreaRef.current.style;
-      const el = textAreaRef.current;
-      adjustHeight(style, el);
+      setChatText(selectedSuggestion);
     }
   }, [selectedSuggestion]);
 
   useEffect(() => {
+    if (textAreaRef.current) {
+      const style = textAreaRef.current.style;
+      const el = textAreaRef.current;
+      adjustHeight(style, el);
+    }
+  }, [chatText])
+
+  useEffect(() => {
     if (!sending) {
-      setText("");
+      setChatText("");
     }
   }, [sending]);
 
   function sendMessage() {
     setSending(true);
-    sendClientMessage(socket.current, text);
+    sendClientMessage(socket.current, chatText);
   }
 
   function sendEnterMessage(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (!e.shiftKey && e.key === "Enter" && text.length > 0) {
+    if (!e.shiftKey && e.key === "Enter" && chatText.length > 0) {
       sendMessage();
       // resetHeight();
     } else {
@@ -58,8 +62,8 @@ export default function ChatInput() {
           aria-invalid="false"
           autoComplete="false"
           id="chat-input"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
+          value={chatText}
+          onChange={(e) => setChatText(e.target.value)}
           placeholder="Type your message here and press ENTER..."
           onKeyUp={sendEnterMessage}
           disabled={sending || !connected}
@@ -71,7 +75,7 @@ export default function ChatInput() {
             sendMessage();
           }}
         >
-          <img src="send_button.svg" alt="Send" />
+          <img src="send_button.svg" alt="Send"/>
         </button>
       </div>
     </div>

@@ -8,11 +8,10 @@ import Spinner from "./Spinner.tsx";
 import FinalReport from "./FinalReport.tsx";
 
 export default function InteractionPanel() {
-  const { currentMessage, messages, sending, expectedNodes } =
+  const { currentMessage, messages, sending, expectedNodes, isLast } =
     useContext(AppContext);
   const message = messages[currentMessage];
   if (!message) return null;
-  const isLast = currentMessage === messages.length - 1;
   const displayReportGenerationMessage = currentMessage === expectedNodes - 2;
   if (!message.final_report) {
     return (

@@ -1,6 +1,11 @@
-import {Message} from "../model/message.ts";
+import {Message, Suggestion} from "../model/message.ts";
 import React, {useContext, useEffect} from "react";
 import {AppContext} from "../context/AppContext.tsx";
+import {IoMdAddCircleOutline} from "react-icons/io";
+
+function adaptSuggestion(suggestion: Suggestion) {
+  return `${suggestion.title} - ${suggestion.main_text}`;
+}
 
 /**
  * Displays the suggestions available on a specific message.
@@ -8,16 +13,22 @@ import {AppContext} from "../context/AppContext.tsx";
  * @constructor
  */
 export default function Suggestions({message}: { message: Message }) {
-  const {setSelectedSuggestion, currentMessage} = useContext(AppContext);
+  const {setSelectedSuggestion, currentMessage, chatText, isLast} = useContext(AppContext);
   const [clicked, setClicked] = React.useState<number>(-1);
 
   useEffect(() => {
     setClicked(-1);
   }, [currentMessage])
 
-  function handleSelectedSuggestion(e: React.MouseEvent, suggestion: string, clicked: number) {
+  function handleSelectedSuggestion(e: React.MouseEvent, newSuggestion: string, clicked: number, append: boolean = false) {
     e.preventDefault();
-    setSelectedSuggestion(suggestion);
+    e.stopPropagation()
+    if (append && chatText) {
+      const concatenated = `${chatText}\n${newSuggestion}`;
+      setSelectedSuggestion(concatenated);
+    } else {
+      setSelectedSuggestion(newSuggestion);
+    }
     setClicked(clicked);
   }
 
@@ -31,7 +42,7 @@ export default function Suggestions({message}: { message: Message }) {
                onClick={(e) => {
                  return handleSelectedSuggestion(
                    e,
-                   `${suggestion.title} - ${suggestion.main_text}`,
+                   adaptSuggestion(suggestion),
                    i
                  )
                }
@@ -48,6 +59,12 @@ export default function Suggestions({message}: { message: Message }) {
               <div>
                 {suggestion.title && <><b>{suggestion.title}</b> - </>}{suggestion.main_text}
               </div>
+              {isLast && <div>
+                <IoMdAddCircleOutline
+                  onClick={(e) => handleSelectedSuggestion(e, adaptSuggestion(suggestion), i, true)}
+                  title="Append to message"
+                />
+              </div>}
             </div>
           </div>
         );
