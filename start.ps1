@@ -1,2 +1,2 @@
-conda activate data_integration_questionnaire_agent
+conda activate data_wellness_agent
 python .\data_questionnaire_agent\server\questionnaire_server_main.py

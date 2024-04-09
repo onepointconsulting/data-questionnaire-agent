@@ -22,6 +22,7 @@ scikit-image = "^0.21.0"
 tenacity = "^8.2.3"
 chainlit = {path = "wheels/chainlit-0.7.8.10-py3-none-any.whl", develop = true}
 psycopg = {extras = ["binary"], version = "^3.1.18"}
+aiohttp = "^3.9.3"
 
 
 [tool.poetry.group.dev.dependencies]
