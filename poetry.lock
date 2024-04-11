@@ -141,6 +141,20 @@ test = ["anyio[trio]", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "mock (>=
 trio = ["trio (<0.22)"]
 
 [[package]]
+name = "asyncer"
+version = "0.0.5"
+description = "Asyncer, async and await, focused on developer experience."
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "asyncer-0.0.5-py3-none-any.whl", hash = "sha256:ba06d6de3c750763868dffacf89b18d40b667605b0241d31c2ee43f188e2ab74"},
+    {file = "asyncer-0.0.5.tar.gz", hash = "sha256:2979f3e04cbedfe5cfeb79027dcf7d004fcc4430a0ca0066ae20490f218ec06e"},
+]
+
+[package.dependencies]
+anyio = ">=3.4.0,<5.0"
+
+[[package]]
 name = "attrs"
 version = "23.2.0"
 description = "Classes Without Boilerplate"
@@ -2735,4 +2749,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "210739ec368240f1739dd87f5d8168cba0990507fdb102d86a97ae38baf86976"
+content-hash = "6aabe340361899278a02cb7b10cd0c83fbc9a1d3a303cca0743c29c6c3495d32"

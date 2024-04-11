@@ -25,6 +25,7 @@ psycopg = {extras = ["binary"], version = "^3.1.18"}
 aiohttp = "^3.9.3"
 langchain-openai = "^0.1.2"
 python-socketio = "^5.11.2"
+asyncer = "^0.0.5"
 
 
 [tool.poetry.group.dev.dependencies]
