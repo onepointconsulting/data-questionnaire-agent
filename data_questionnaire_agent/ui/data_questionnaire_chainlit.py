@@ -13,7 +13,7 @@ from data_questionnaire_agent.ui.model.session_number_container import (
     SessionNumberContainer,
 )
 
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 from langchain.callbacks.openai_info import OpenAICallbackHandler
 
 from data_questionnaire_agent.model.application_schema import (

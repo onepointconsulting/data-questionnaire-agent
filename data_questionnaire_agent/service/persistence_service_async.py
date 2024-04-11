@@ -211,14 +211,15 @@ async def insert_questionnaire_status(
     async def process_save(cur: AsyncCursor):
         await cur.execute(
             """
-INSERT INTO TB_QUESTIONNAIRE_STATUS (SESSION_ID, QUESTION, FINAL_REPORT, CREATED_AT, UPDATED_AT)
-VALUES (%(session_id)s, %(question)s, %(final_report)s, now(), now()) RETURNING ID, CREATED_AT, UPDATED_AT;
+INSERT INTO TB_QUESTIONNAIRE_STATUS (SESSION_ID, QUESTION, FINAL_REPORT, TOTAL_COST, CREATED_AT, UPDATED_AT)
+VALUES (%(session_id)s, %(question)s, %(final_report)s, %(total_cost)s, now(), now()) RETURNING ID, CREATED_AT, UPDATED_AT;
             """,
             {
                 "session_id": questionnaire_status.session_id,
                 "question": questionnaire_status.question,
                 "answer": questionnaire_status.answer,
                 "final_report": questionnaire_status.final_report,
+                "total_cost": questionnaire_status.total_cost,
             },
         )
         created_row = await cur.fetchone()
@@ -231,6 +232,7 @@ VALUES (%(session_id)s, %(question)s, %(final_report)s, now(), now()) RETURNING 
             question=questionnaire_status.question,
             answer=questionnaire_status.answer,
             final_report=questionnaire_status.final_report,
+            total_cost=questionnaire_status.total_cost,
             created_at=created_at,
             updated_at=updated_at,
         )
@@ -359,18 +361,21 @@ WHERE SESSION_ID = %(session_id)s
         return DEFAULT_SESSION_STEPS
 
 
-async def save_report(session_id: str, conditional_advice: ConditionalAdvice) -> int:
+async def save_report(
+    session_id: str, conditional_advice: ConditionalAdvice, total_cost: float = 0
+) -> int:
     conditional_advice_json = conditional_advice.json()
 
     async def process_save(cur: AsyncCursor):
         await cur.execute(
             """
-INSERT INTO TB_QUESTIONNAIRE_STATUS(SESSION_ID, QUESTION, FINAL_REPORT, CREATED_AT, UPDATED_AT)
-VALUES (%(session_id)s, %(question)s, TRUE, NOW(), NOW()) RETURNING ID
+INSERT INTO TB_QUESTIONNAIRE_STATUS(SESSION_ID, QUESTION, FINAL_REPORT, CREATED_AT, UPDATED_AT, TOTAL_COST)
+VALUES (%(session_id)s, %(question)s, TRUE, NOW(), NOW(), %(total_cost)s) RETURNING ID
             """,
             {
                 "session_id": session_id,
                 "question": conditional_advice_json,
+                "total_cost": total_cost,
             },
         )
         created_row = await cur.fetchone()
@@ -510,7 +515,7 @@ if __name__ == "__main__":
 
         advice = create_simple_advice()
         dummy_session = "12321231231231"
-        id = await save_report(dummy_session, advice)
+        id = await save_report(dummy_session, advice, 0)
         assert id is not None
         deleted = await delete_questionnaire_status(id)
         assert deleted == 1
@@ -536,11 +541,11 @@ if __name__ == "__main__":
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 
-    # asyncio.run(test_insert_questionnaire_status())
+    asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial())
     # asyncio.run(test_insert_answer())
     # asyncio.run(test_select_answers())
     # asyncio.run(test_session_configuration_save())
     # asyncio.run(test_select_current_session_steps())
     # asyncio.run(test_save_report())
-    asyncio.run(test_insert_questionnaire_status_suggestions())
+    # asyncio.run(test_insert_questionnaire_status_suggestions())

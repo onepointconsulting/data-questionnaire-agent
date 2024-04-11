@@ -15,3 +15,4 @@ class QuestionnaireStatus(BaseModel):
     updated_at: Union[datetime, None] = Field(
         default=None, description="The updated timestamp"
     )
+    total_cost: float = Field(default=0, description="")

@@ -1,14 +1,15 @@
 [tool.poetry]
 name = "data-questionnaire-agent"
-version = "0.1.0"
+version = "0.2.0"
 description = "Implementation of an agent which asks questions and gives advices about a predefined question."
 authors = ["Gil Fernandes <gil.fernandes@onepointltd.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-openai = "^0.28.0"
-langchain = "^0.0.323"
+openai = "^1.17.0"
+langchain = "^0.1.15"
+langchain-community = "0.0.32"
 prompt-toolkit = "^3.0.39"
 tomli = "^2.0.1"
 faiss-cpu = "^1.7.4"
@@ -22,6 +23,7 @@ scikit-image = "^0.21.0"
 tenacity = "^8.2.3"
 psycopg = {extras = ["binary"], version = "^3.1.18"}
 aiohttp = "^3.9.3"
+langchain-openai = "^0.1.2"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -6,6 +6,9 @@ import json
 from aiohttp import web
 from asyncer import asyncify
 
+from langchain.callbacks.openai_info import OpenAICallbackHandler
+from langchain.callbacks import get_openai_callback
+
 from data_questionnaire_agent.config import websocket_cfg, mail_config
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
@@ -143,11 +146,7 @@ async def client_message(sid: str, session_id: str, answer: str):
 
             if report is None:
                 # Generate the report.
-                conditional_advice: ConditionalAdvice = await process_advice(
-                    docsearch, questionnaire, advice_chain
-                )
-                report_id = await save_report(session_id, conditional_advice)
-                assert report_id is not None, "Report ID is not available."
+                await generate_report(session_id, questionnaire)
 
             questionnaire_messages = await select_questionnaire_statuses(session_id)
             server_messages = server_messages_factory(questionnaire_messages)
@@ -156,18 +155,34 @@ async def client_message(sid: str, session_id: str, answer: str):
             )
 
 
+async def generate_report(session_id, questionnaire):
+    total_cost = 0
+    with get_openai_callback() as cb:
+        conditional_advice: ConditionalAdvice = await process_advice(
+            docsearch, questionnaire, advice_chain
+        )
+        total_cost = cb.total_cost
+    report_id = await save_report(session_id, conditional_advice, total_cost)
+    assert report_id is not None, "Report ID is not available."
+
+
 async def handle_secondary_question(
     sid: str, session_id: str, questionnaire: Questionnaire
 ):
-    question_answers = await process_secondary_questions(
-        questionnaire, cfg.questions_per_batch
-    )
+    total_cost = 0
+    with get_openai_callback() as cb:
+        question_answers = await process_secondary_questions(
+            questionnaire, cfg.questions_per_batch
+        )
+        total_cost = cb.total_cost
     if len(question_answers) == 0:
         await send_error(sid, session_id, "Could not get any answers from ChatGPT.")
         return
     last_question_answer = question_answers[-1]
     # Save the generated question
-    _, qs_res = await persist_question(session_id, last_question_answer.question)
+    _, qs_res = await persist_question(
+        session_id, last_question_answer.question, total_cost
+    )
     # Persist the suggestions for this answer
     if qs_res.id is None:
         await send_error(sid, session_id, "Failed to insert question in database.")
@@ -201,9 +216,12 @@ async def append_other_suggestions(server_messages, questionnaire_messages):
             ].suggestions = await select_questionnaire_status_suggestions(message.id)
 
 
-async def persist_question(session_id: str, question: str):
+async def persist_question(session_id: str, question: str, total_cost: int = 0):
     qs = QuestionnaireStatus(
-        session_id=session_id, question=question, final_report=False
+        session_id=session_id,
+        question=question,
+        final_report=False,
+        total_cost=total_cost,
     )
     qs_res = await insert_questionnaire_status(qs)
     return qs, qs_res

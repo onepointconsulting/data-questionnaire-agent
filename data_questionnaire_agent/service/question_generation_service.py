@@ -2,7 +2,7 @@ from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains.openai_functions import create_structured_output_chain
-from langchain import LLMChain
+from langchain.chains import LLMChain
 
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         provide_data_quality_ops,
     )
     from data_questionnaire_agent.log_init import logger
-    from langchain.callbacks import get_openai_callback
+    from langchain_community.callbacks import get_openai_callback
     import asyncio
 
     questionnaire = create_questionnaire_2_questions()

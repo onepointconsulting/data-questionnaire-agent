@@ -5,13 +5,13 @@ from dotenv import load_dotenv
 from tenacity import stop_after_attempt
 import tenacity
 
-from langchain.chat_models import ChatOpenAI
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.llms import OpenAI
-
-load_dotenv()
+from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
+from langchain_openai import OpenAI
 
 from data_questionnaire_agent.log_init import logger
+
+load_dotenv()
 
 
 def create_if_not_exists(folder):
@@ -33,6 +33,7 @@ class Config:
         cache=has_langchain_cache,
         streaming=streaming,
     )
+    logger.info(f"Using model {model}")
 
     image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))
     image_llm = OpenAI(temperature=image_llm_temperature)
