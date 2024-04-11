@@ -1,6 +1,5 @@
 from tenacity import AsyncRetrying
 
-import chainlit as cl
 from asyncer import asyncify
 
 from langchain_community.vectorstores import FAISS
@@ -41,20 +40,6 @@ async def process_advice(
                     logger.info(advice)
             return conditional_advice
 
-
-async def display_advice(conditional_advice: ConditionalAdvice):
-    advice_amount = len(conditional_advice.advices)
-    if advice_amount > 0:
-        pieces = "piece" if advice_amount == 1 else "pieces"
-        await cl.Message(
-            content=f"You have {advice_amount} {pieces} of advice.",
-            author=AVATAR["CHATBOT"],
-        ).send()
-        advice_markdown = "\n- ".join(conditional_advice.advices)
-        await cl.Message(
-            content="\n- " + advice_markdown,
-            author=AVATAR["CHATBOT"],
-        ).send()
 
 
 if __name__ == "__main__":
