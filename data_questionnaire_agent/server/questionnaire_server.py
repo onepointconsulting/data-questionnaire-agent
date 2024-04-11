@@ -6,8 +6,7 @@ import json
 from aiohttp import web
 from asyncer import asyncify
 
-from langchain.callbacks.openai_info import OpenAICallbackHandler
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 
 from data_questionnaire_agent.config import websocket_cfg, mail_config
 from data_questionnaire_agent.log_init import logger
@@ -46,7 +45,7 @@ from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.similarity_search import (
     init_vector_search,
 )
-from data_questionnaire_agent.ui.data_questionnaire_chainlit import (
+from data_questionnaire_agent.service.secondary_question_processor import (
     process_secondary_questions,
 )
 from data_questionnaire_agent.ui.advice_processor import process_advice

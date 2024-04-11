@@ -1,3 +1,7 @@
+########################################
+############## Deprecated ##############
+########################################
+
 from typing import List
 import chainlit as cl
 from enum import Enum
@@ -286,24 +290,6 @@ async def process_initial_question(
         with attempt:
             response_questions: ResponseQuestions = await initial_question_chain.arun(
                 input
-            )
-            return convert_to_question_answers(response_questions)
-
-
-async def process_secondary_questions(
-    questionnaire: Questionnaire, question_per_batch: int
-) -> List[QuestionAnswer]:
-    knowledge_base = similarity_search(
-        docsearch, questionnaire.answers_str(), how_many=cfg.search_results_how_many
-    )
-    secondary_question_input = prepare_secondary_question(
-        questionnaire, knowledge_base, question_per_batch
-    )
-
-    async for attempt in AsyncRetrying(**cfg.retry_args):
-        with attempt:
-            response_questions: ResponseQuestions = await secondary_question_chain.arun(
-                secondary_question_input
             )
             return convert_to_question_answers(response_questions)
 
