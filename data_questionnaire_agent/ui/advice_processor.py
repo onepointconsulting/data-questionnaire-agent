@@ -13,7 +13,6 @@ from data_questionnaire_agent.service.advice_service import (
     prepare_conditional_advice,
 )
 from data_questionnaire_agent.service.similarity_search import similarity_search
-from data_questionnaire_agent.ui.avatar_factory import AVATAR
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
