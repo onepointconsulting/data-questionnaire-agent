@@ -51,4 +51,4 @@ if __name__ == "__main__":
     advice_chain = chain_factory_advice()
     questionnaire = create_questionnaire_2_questions()
     docsearch = init_vector_search()
-    asyncio.run(process_advice(docsearch, questionnaire, advice_chain))
+    print(asyncio.run(process_advice(docsearch, questionnaire, advice_chain)))
