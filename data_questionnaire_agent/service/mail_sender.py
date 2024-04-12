@@ -11,6 +11,9 @@ from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import mail_config
 
 from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.service.report_enhancement_service import (
+    replace_bold_markdown,
+)
 
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 
@@ -75,9 +78,9 @@ def create_mail_body(
 
     <p>A big thank you for completing a session with the <b>{cfg.product_title}</b>.</p>
     <h2>Transcript</h2>
-    {questionnaire.to_html()}
+    {replace_bold_markdown(questionnaire.to_html())}
     <h2>Advice</h2>
-    {advices.to_html() if advices is not None else ""}
+    {replace_bold_markdown(advices.to_html()) if advices is not None else ""}
 
     <h2 class="personalOffer">A personal offer for you</h2>
     <p>We are offering a free results interpretation call to talk through the Companion's recommendations and suggested courses of action with a real human expert. 

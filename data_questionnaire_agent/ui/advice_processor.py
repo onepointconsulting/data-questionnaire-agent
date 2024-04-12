@@ -40,7 +40,6 @@ async def process_advice(
             return conditional_advice
 
 
-
 if __name__ == "__main__":
     import asyncio
     from data_questionnaire_agent.service.similarity_search import init_vector_search

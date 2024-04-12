@@ -154,7 +154,7 @@ async def client_message(sid: str, session_id: str, answer: str):
             )
 
 
-async def generate_report(session_id, questionnaire):
+async def generate_report(session_id: str, questionnaire: Questionnaire):
     total_cost = 0
     with get_openai_callback() as cb:
         conditional_advice: ConditionalAdvice = await process_advice(

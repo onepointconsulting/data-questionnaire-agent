@@ -19,7 +19,9 @@ def init_vector_search() -> FAISS:
     # Check if directory exists and has something inside
     if embedding_dir_path.exists() and len(list(embedding_dir_path.glob("*"))) > 0:
         logger.info(f"reading from existing directory")
-        docsearch = FAISS.load_local(embedding_dir, cfg.embeddings, allow_dangerous_deserialization=True)
+        docsearch = FAISS.load_local(
+            embedding_dir, cfg.embeddings, allow_dangerous_deserialization=True
+        )
         return docsearch
     else:
         logger.warning(f"Cannot find path {embedding_dir} or path is empty.")

@@ -3,7 +3,7 @@ from typing import List, Any, Union
 from pydantic import BaseModel, Field
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import SessionConfiguration
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.service.report_enhancement_service import replace_markdown_bold_with_links
 
 
 class ServerMessage(BaseModel):
@@ -53,6 +53,11 @@ def convert_questionnaire(
 def server_messages_factory(questionnaire: List[QuestionnaireStatus]) -> ServerMessages:
     assert_server_messages_factory(questionnaire)
     session_id = questionnaire[0].session_id
+    if len(questionnaire) > 1:
+        for qs in questionnaire:
+            if qs.final_report:
+                qs.question = replace_markdown_bold_with_links(qs.question)
+
     return ServerMessages(
         session_id=session_id,
         server_messages=convert_questionnaire(questionnaire),
