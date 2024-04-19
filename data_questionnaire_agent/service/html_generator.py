@@ -3,7 +3,9 @@ from datetime import datetime
 
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.service.report_enhancement_service import replace_bold_markdown
+from data_questionnaire_agent.service.report_enhancement_service import (
+    replace_bold_markdown,
+)
 
 import jinja2
 import pdfkit
@@ -42,7 +44,6 @@ def generate_pdf_from(questionnaire: Questionnaire, advices: ConditionalAdvice) 
 def generate_iso() -> str:
     current_time = datetime.now()
     return current_time.isoformat().replace(":", ".")
-
 
 
 if __name__ == "__main__":

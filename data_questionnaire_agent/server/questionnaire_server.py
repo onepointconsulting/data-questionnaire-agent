@@ -54,6 +54,7 @@ from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.mail_sender import send_email
 from data_questionnaire_agent.service.mail_sender import create_mail_body
+from data_questionnaire_agent.service.question_clarifications import chain_factory_question_clarifications
 
 
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
@@ -74,6 +75,7 @@ routes = web.RouteTableDef()
 class Commands(StrEnum):
     START_SESSION = "start_session"
     SERVER_MESSAGE = "server_message"
+    CLARIFICATION_TOKEN = "clarification_token"
     ERROR = "error"
 
 
@@ -152,6 +154,18 @@ async def client_message(sid: str, session_id: str, answer: str):
             await append_suggestions_and_send(
                 sid, server_messages, questionnaire_messages
             )
+
+
+@sio.event
+async def clarify_question(sid: str, session_id: str, question: str):
+    async for token in await chain_factory_question_clarifications(question):
+        content = token.content
+        await sio.emit(
+            Commands.CLARIFICATION_TOKEN,
+            content,
+            room=sid,
+        )
+
 
 
 async def generate_report(session_id: str, questionnaire: Questionnaire):

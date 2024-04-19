@@ -33,6 +33,14 @@ class Config:
         cache=has_langchain_cache,
         streaming=streaming,
     )
+    llm_stream = ChatOpenAI(
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        model=model,
+        temperature=0,
+        request_timeout=request_timeout,
+        cache=has_langchain_cache,
+        streaming=True,
+    )
     logger.info(f"Using model {model}")
 
     image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))

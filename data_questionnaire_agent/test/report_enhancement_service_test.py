@@ -1,7 +1,8 @@
 from data_questionnaire_agent.service.report_enhancement_service import (
     replace_bold_markdown,
-    replace_markdown_bold_with_links
+    replace_markdown_bold_with_links,
 )
+
 
 def provider_string():
     return "This is some **bold** content with some **important** message as you can imagine."

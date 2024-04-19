@@ -48,7 +48,12 @@ The user answers are in the section that starts with ==== ANSWERS ==== and ends 
 {answers}
 ==== ANSWERS END ====
 """
+    [questionnaire.clarification]
+    system_message = "I am a helpful assistant. I explain the meaning of questions step by step. I highlight the main topics in bold markdown. I use British English."
+    human_message = """Please explain the following question in a way that a layman can understand it:
 
+{question}
+"""
 
 [tagging]
 system_message = "You are an expert in terms of getting different types of sentiments from sentences."

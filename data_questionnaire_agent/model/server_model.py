@@ -3,7 +3,9 @@ from typing import List, Any, Union
 from pydantic import BaseModel, Field
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import SessionConfiguration
-from data_questionnaire_agent.service.report_enhancement_service import replace_markdown_bold_with_links
+from data_questionnaire_agent.service.report_enhancement_service import (
+    replace_markdown_bold_with_links,
+)
 
 
 class ServerMessage(BaseModel):
