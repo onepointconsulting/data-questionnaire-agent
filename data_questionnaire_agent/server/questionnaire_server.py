@@ -54,7 +54,9 @@ from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.mail_sender import send_email
 from data_questionnaire_agent.service.mail_sender import create_mail_body
-from data_questionnaire_agent.service.question_clarifications import chain_factory_question_clarifications
+from data_questionnaire_agent.service.question_clarifications import (
+    chain_factory_question_clarifications,
+)
 
 
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
@@ -165,7 +167,6 @@ async def clarify_question(sid: str, session_id: str, question: str):
             content,
             room=sid,
         )
-
 
 
 async def generate_report(session_id: str, questionnaire: Questionnaire):

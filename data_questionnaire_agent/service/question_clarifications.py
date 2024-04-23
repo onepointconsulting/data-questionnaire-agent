@@ -33,7 +33,6 @@ if __name__ == "__main__":
     async def stream_response():
         question = "What is the meaning of data governance?"
         async for token in await chain_factory_question_clarifications(question):
-            print(token.content, end='', flush=True)
+            print(token.content, end="", flush=True)
 
     asyncio.run(stream_response())
-    
