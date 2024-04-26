@@ -9,6 +9,15 @@ The source code for the hacked chainlit version is from this repo:
 
 https://github.com/onepointconsulting/chainlit-data-wellness-agent.git
 
+## Cloning the project 
+
+You should clone the project and then initialize the UI module with these commands:
+
+```
+git submodule init
+git submodule update
+```
+
 ## Setup
 
 We suggest to use [Conda](https://docs.conda.io/en/latest/) to manage the virtual environment and then install poetry.
@@ -97,9 +106,19 @@ You will need to have an OpenAI API key.
 
 ### Running the main application
 
+Before you run, you should compile the UI with this command from the root folder of the project:
+
+```
+poetry run build-ui
+```
+
+Make the Postgres DB is available.
+
 ```
 python ./data_questionnaire_agent/server/questionnaire_server_main.py
 ```
+
+You can then check the UI on http://localhost:8085/index.html
 
 On Windows you can use the `start.ps1` script to start the server.
 
