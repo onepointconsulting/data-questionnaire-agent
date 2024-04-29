@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 DEFAULT_SESSION_STEPS = 6
 
 SESSION_STEPS_CONFIG_KEY = "session-steps"
+SESSION_STEPS_LANGUAGE_KEY = "session-language"
 
 
 class SessionConfigurationEntry(BaseModel):

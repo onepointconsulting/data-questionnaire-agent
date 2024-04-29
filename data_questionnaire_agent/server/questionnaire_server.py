@@ -20,6 +20,7 @@ from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.session_configuration import (
     SessionConfigurationEntry,
     SESSION_STEPS_CONFIG_KEY,
+    SESSION_STEPS_LANGUAGE_KEY,
     DEFAULT_SESSION_STEPS,
     SessionConfiguration,
 )
@@ -92,7 +93,9 @@ def disconnect(sid, environ):
 
 
 @sio.event
-async def start_session(sid: str, client_session: str, session_steps: int = 6):
+async def start_session(
+    sid: str, client_session: str, session_steps: int = 6, language: str ="en"
+):
     """
     Start the session by setting the main topic.
     """
@@ -110,7 +113,7 @@ async def start_session(sid: str, client_session: str, session_steps: int = 6):
             await send_error(sid, session_id, "Failed to insert question in database.")
             return
         server_messages = server_messages_factory([qs])
-        await insert_configuration(server_messages, session_steps)
+        await insert_configuration(server_messages, session_steps, language)
     else:
         # Get all messages on this session
         server_messages = server_messages_factory(questionnaire_messages)
@@ -241,23 +244,36 @@ async def persist_question(session_id: str, question: str, total_cost: int = 0):
     return qs, qs_res
 
 
-async def append_first_suggestion(server_messages: ServerMessages, question: str):
+async def append_first_suggestion(
+        server_messages: ServerMessages, question: str):
     server_messages.server_messages[0].suggestions = await select_suggestions(question)
 
 
-async def insert_configuration(server_messages: ServerMessages, session_steps: int):
+async def insert_configuration(
+        server_messages: ServerMessages, session_steps: int, language: str
+):
     session_id = server_messages.session_id
     session_configuration_entry = SessionConfigurationEntry(
         session_id=session_id,
         config_key=SESSION_STEPS_CONFIG_KEY,
         config_value=str(session_steps),
     )
-    saved_entry = await save_session_configuration(session_configuration_entry)
-    if saved_entry is None:
-        # Something went wrong. We will use the dafault value.
-        logger.error(f"Could not save configuration with {session_steps}")
+    session_configuration_language = SessionConfigurationEntry(
+        session_id=session_id,
+        config_key=SESSION_STEPS_LANGUAGE_KEY,
+        config_value=language,
+    )
+    session_keys = [session_configuration_entry, session_configuration_language]
+    accepted_keys = []
+    for session_key in session_keys:
+        saved_entry = await save_session_configuration(session_key)
+        if saved_entry is None:
+            # Something went wrong. We will use the dafault value.
+            logger.error(f"Could not save configuration with {session_key.config_key}: {session_key.config_value}")
+        else:
+            accepted_keys.append(session_key)
     session_configuration = SessionConfiguration(
-        configuration_entries=[session_configuration_entry]
+        configuration_entries=accepted_keys
     )
     server_messages.session_configuration = session_configuration
 
