@@ -40,21 +40,14 @@ poetry install
 
 ## UI Installation
 
-You have to download the UI files (a React app from Github)
+Before you run, you should compile the UI with this command from the root folder of the project. 
+Please note that this requires the installation of Yarn and node 18.18.0 or later.
 
 ```
-mkdir ~/projects/data-wellness-companion-ui
-cd ~/projects/data-wellness-companion-ui
-wget https://github.com/onepointconsulting/data-wellness-companion-ui/releases/download/v0.2/companion_ui.zip
-
-cd ~/projects/data-wellness-companion
-mkdir ui
-cd ui
-unzip ~/projects/data-wellness-companion-ui/companion_ui.zip
-# Change the port to the port you are going to use. Here we change from 8085 to 8086
-sed -i -e 's/8085/8086/g' ./index.html
-sed -i -e 's/127\.0\.0\.1/<some_ip_address>/g' ./index.html
+poetry run build-ui
 ```
+
+The UI connects the websocket to port 8085 natively. If the Python server runs on a different port, please change the port accordingly.
 
 ## Running
 
@@ -106,12 +99,6 @@ You will need to have an OpenAI API key.
 
 ### Running the main application
 
-Before you run, you should compile the UI with this command from the root folder of the project:
-
-```
-poetry run build-ui
-```
-
 Make the Postgres DB is available.
 
 ```
@@ -120,7 +107,7 @@ python ./data_questionnaire_agent/server/questionnaire_server_main.py
 
 You can then check the UI on http://localhost:8085/index.html
 
-On Windows you can use the `start.ps1` script to start the server.
+On Windows you can use the `.\start.ps1` script to start the server.
 
 ## Running Tests
 
