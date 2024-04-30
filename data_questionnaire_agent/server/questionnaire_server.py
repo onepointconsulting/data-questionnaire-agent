@@ -37,7 +37,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_report,
     save_session_configuration,
     select_session_configuration,
-    select_current_session_steps,
+    select_current_session_steps_and_language,
     save_report,
     insert_questionnaire_status_suggestions,
     select_questionnaire_status_suggestions,
@@ -143,7 +143,7 @@ async def client_message(sid: str, session_id: str, answer: str):
             )
             return
         questionnaire = await select_questionnaire(session_id)
-        current_session_steps = await select_current_session_steps(session_id)
+        current_session_steps, language = await select_current_session_steps_and_language(session_id)
         if current_session_steps - 1 > len(questionnaire):
             await handle_secondary_question(sid, session_id, questionnaire)
         else:

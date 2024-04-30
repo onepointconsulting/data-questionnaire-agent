@@ -1,6 +1,6 @@
 import sys
 import asyncio
-from typing import Callable, Coroutine, Any, Union, List
+from typing import Callable, Coroutine, Any, Union, List, Tuple
 from psycopg import AsyncCursor, AsyncConnection
 
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
@@ -15,12 +15,14 @@ from data_questionnaire_agent.model.application_schema import (
 )
 from data_questionnaire_agent.model.session_configuration import (
     SESSION_STEPS_CONFIG_KEY,
+    SESSION_STEPS_LANGUAGE_KEY,
     DEFAULT_SESSION_STEPS,
 )
 from data_questionnaire_agent.model.session_configuration import (
     SessionConfigurationEntry,
     SessionConfiguration,
 )
+from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -337,28 +339,35 @@ ORDER BY PREFERRED_QUESTION_ORDER""",
     ]
 
 
-async def select_current_session_steps(session_id: str) -> int:
+async def select_current_session_steps_and_language(session_id: str) -> Tuple[int, str]:
     res = await select_from(
         f"""
-SELECT CONFIG_VALUE
+SELECT CONFIG_KEY, CONFIG_VALUE
 FROM TB_SESSION_CONFIGURATION
 WHERE SESSION_ID = %(session_id)s
-	AND CONFIG_KEY = '{SESSION_STEPS_CONFIG_KEY}'
+	AND CONFIG_KEY in ('{SESSION_STEPS_CONFIG_KEY}', '{SESSION_STEPS_LANGUAGE_KEY}')
 """,
         {"session_id": session_id},
     )
+    default_values = (DEFAULT_SESSION_STEPS, DEFAULT_LANGUAGE)
     if (
         len(res) == 0
         or len(res[0]) == 0
         or res[0][0] == None
-        # or not isinstance(res[0][0], int)
     ):
-        return DEFAULT_SESSION_STEPS
+        return default_values
     try:
-        return int(res[0][0])
+        steps = default_values[0]
+        language = default_values[1]
+        for r in res:
+            if r[0] == SESSION_STEPS_CONFIG_KEY:
+                steps = int(r[1])
+            elif r[0] == SESSION_STEPS_LANGUAGE_KEY:
+                language = str(r[1])
+        return (steps, language)
     except:
         logger.exception("Cannot select current session steps")
-        return DEFAULT_SESSION_STEPS
+        return default_values
 
 
 async def save_report(
@@ -503,7 +512,7 @@ if __name__ == "__main__":
         session_configuration = create_session_configuration()
         saved = await save_session_configuration(session_configuration)
         assert isinstance(saved, SessionConfigurationEntry)
-        current_session_steps = await select_current_session_steps(saved.session_id)
+        current_session_steps, language = await select_current_session_steps_and_language(saved.session_id)
         assert current_session_steps == DEFAULT_SESSION_STEPS
         deleted = await delete_session_configuration(saved.id)
         assert deleted == 1
@@ -541,11 +550,11 @@ if __name__ == "__main__":
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 
-    asyncio.run(test_insert_questionnaire_status())
+    # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial())
     # asyncio.run(test_insert_answer())
     # asyncio.run(test_select_answers())
     # asyncio.run(test_session_configuration_save())
-    # asyncio.run(test_select_current_session_steps())
+    asyncio.run(test_select_current_session_steps())
     # asyncio.run(test_save_report())
     # asyncio.run(test_insert_questionnaire_status_suggestions())
