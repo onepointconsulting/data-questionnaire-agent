@@ -1,7 +1,12 @@
+-- Add language
+INSERT INTO public.tb_language(language_code) VALUES ('en');
 
 -- Initial question
-INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER)
-VALUES('Which area of your data ecosystem are you most concerned about?', 1);
+INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER, LANGUAGE_ID)
+VALUES('Which area of your data ecosystem are you most concerned about?', 1, (SELECT ID FROM TB_LANGUAGE WHERE language_code = 'en'));
+
+INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER, LANGUAGE_ID)
+VALUES('شما نگران کدام بخش از اکوسیستم داده‌های خود هستید؟', 1, (SELECT ID FROM TB_LANGUAGE WHERE language_code = 'fa'));
 
 -- Suggestions
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
@@ -10,7 +15,7 @@ INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION
 	   
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
 	VALUES('compliance_risks.png', 'Compliance and security risks', 'Compliance and security risks', 'Mishandling data can lead to legal troubles and reputational damage.', 
-	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosys, ()tem are you most concerned about?'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
 	VALUES('data_silos.png', 'Data silos', 'Data silos', 'Data trapped in departmental silos can be inaccessible to other parts.', 

@@ -77,14 +77,15 @@ async def select_from(query: str, parameter_map: dict) -> list:
     return await create_cursor(handle_select)
 
 
-async def select_initial_question() -> str:
+async def select_initial_question(language: str) -> str:
     res = await select_from(
         """
-SELECT question FROM TB_QUESTION
+SELECT question FROM TB_QUESTION Q INNER JOIN public.tb_language L on Q.language_id = L.id
+WHERE LANGUAGE_CODE = %(language)s
 ORDER BY PREFERRED_QUESTION_ORDER
 LIMIT 1
 """,
-        {},
+        {"language": language},
     )
     if len(res) == 0:
         return prompts["questionnaire"]["initial"]["question"]
@@ -350,11 +351,7 @@ WHERE SESSION_ID = %(session_id)s
         {"session_id": session_id},
     )
     default_values = (DEFAULT_SESSION_STEPS, DEFAULT_LANGUAGE)
-    if (
-        len(res) == 0
-        or len(res[0]) == 0
-        or res[0][0] == None
-    ):
+    if len(res) == 0 or len(res[0]) == 0 or res[0][0] == None:
         return default_values
     try:
         steps = default_values[0]
@@ -457,13 +454,13 @@ if __name__ == "__main__":
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 
-    async def test_select_initial():
-        question = await select_initial_question()
+    async def test_select_initial_fa():
+        question = await select_initial_question("fa")
         assert question is not None
         print(question)
 
-    async def test_select_initial():
-        question = await select_initial_question()
+    async def test_select_initial_en():
+        question = await select_initial_question("en")
         assert question is not None
         suggestions = await select_suggestions(question)
         assert len(suggestions) > 0
@@ -512,7 +509,10 @@ if __name__ == "__main__":
         session_configuration = create_session_configuration()
         saved = await save_session_configuration(session_configuration)
         assert isinstance(saved, SessionConfigurationEntry)
-        current_session_steps, language = await select_current_session_steps_and_language(saved.session_id)
+        (
+            current_session_steps,
+            language,
+        ) = await select_current_session_steps_and_language(saved.session_id)
         assert current_session_steps == DEFAULT_SESSION_STEPS
         deleted = await delete_session_configuration(saved.id)
         assert deleted == 1
@@ -551,10 +551,11 @@ if __name__ == "__main__":
         assert deleted == 1
 
     # asyncio.run(test_insert_questionnaire_status())
-    # asyncio.run(test_select_initial())
+    # asyncio.run(test_select_initial_fa())
+    asyncio.run(test_select_initial_en())
     # asyncio.run(test_insert_answer())
     # asyncio.run(test_select_answers())
     # asyncio.run(test_session_configuration_save())
-    asyncio.run(test_select_current_session_steps())
+    # asyncio.run(test_select_current_session_steps())
     # asyncio.run(test_save_report())
     # asyncio.run(test_insert_questionnaire_status_suggestions())

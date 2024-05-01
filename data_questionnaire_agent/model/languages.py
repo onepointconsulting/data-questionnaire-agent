@@ -1,4 +1,4 @@
-ENGLISH = 'en'
-FARSI = 'fa'
+ENGLISH = "en"
+FARSI = "fa"
 
 DEFAULT_LANGUAGE = ENGLISH

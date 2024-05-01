@@ -89,6 +89,12 @@ class Config:
     product_title = "Onepoint Data Wellness Companion™"
     tracker_db_logs_password = os.getenv("TRACKER_DB_LOGS_PASSWORD")
 
+    translation_path = os.getenv("TRANSLATION_PATH")
+    assert Path(translation_path).exists()
+    assert (
+        translation_path is not None
+    ), "Please specifiy the translation path TRANSLATION_PATH."
+
 
 cfg = Config()
 

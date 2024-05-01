@@ -1,6 +1,7 @@
 import os
 import shutil
 
+
 def ui():
     os.chdir("./data-wellness-companion-ui")
     os.system("yarn")

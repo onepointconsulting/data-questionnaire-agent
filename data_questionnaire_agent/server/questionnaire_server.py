@@ -58,7 +58,7 @@ from data_questionnaire_agent.service.mail_sender import create_mail_body
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
 )
-
+from data_questionnaire_agent.translation import t
 
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 
@@ -94,7 +94,7 @@ def disconnect(sid, environ):
 
 @sio.event
 async def start_session(
-    sid: str, client_session: str, session_steps: int = 6, language: str ="en"
+    sid: str, client_session: str, session_steps: int = 6, language: str = "en"
 ):
     """
     Start the session by setting the main topic.
@@ -107,10 +107,10 @@ async def start_session(
 
     if len(questionnaire_messages) == 0:
         # No question yet. Start from scratch
-        question = await select_initial_question()
+        question = await select_initial_question(language)
         qs, qs_res = await persist_question(session_id, question)
         if qs_res.id is None:
-            await send_error(sid, session_id, "Failed to insert question in database.")
+            await send_error(sid, session_id, t("db_insert_failed", locale=language))
             return
         server_messages = server_messages_factory([qs])
         await insert_configuration(server_messages, session_steps, language)
@@ -143,7 +143,10 @@ async def client_message(sid: str, session_id: str, answer: str):
             )
             return
         questionnaire = await select_questionnaire(session_id)
-        current_session_steps, language = await select_current_session_steps_and_language(session_id)
+        (
+            current_session_steps,
+            language,
+        ) = await select_current_session_steps_and_language(session_id)
         if current_session_steps - 1 > len(questionnaire):
             await handle_secondary_question(sid, session_id, questionnaire)
         else:
@@ -244,13 +247,12 @@ async def persist_question(session_id: str, question: str, total_cost: int = 0):
     return qs, qs_res
 
 
-async def append_first_suggestion(
-        server_messages: ServerMessages, question: str):
+async def append_first_suggestion(server_messages: ServerMessages, question: str):
     server_messages.server_messages[0].suggestions = await select_suggestions(question)
 
 
 async def insert_configuration(
-        server_messages: ServerMessages, session_steps: int, language: str
+    server_messages: ServerMessages, session_steps: int, language: str
 ):
     session_id = server_messages.session_id
     session_configuration_entry = SessionConfigurationEntry(
@@ -269,12 +271,12 @@ async def insert_configuration(
         saved_entry = await save_session_configuration(session_key)
         if saved_entry is None:
             # Something went wrong. We will use the dafault value.
-            logger.error(f"Could not save configuration with {session_key.config_key}: {session_key.config_value}")
+            logger.error(
+                f"Could not save configuration with {session_key.config_key}: {session_key.config_value}"
+            )
         else:
             accepted_keys.append(session_key)
-    session_configuration = SessionConfiguration(
-        configuration_entries=accepted_keys
-    )
+    session_configuration = SessionConfiguration(configuration_entries=accepted_keys)
     server_messages.session_configuration = session_configuration
 
 

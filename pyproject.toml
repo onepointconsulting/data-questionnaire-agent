@@ -27,6 +27,7 @@ langchain-openai = "^0.1.2"
 python-socketio = "^5.11.2"
 asyncer = "^0.0.5"
 jinja2 = "^3.1.3"
+python-i18n = {extras = ["yaml"], version = "^0.3.9"}
 
 [tool.poetry.scripts]
 build-ui = "data_questionnaire_agent.build:ui"
