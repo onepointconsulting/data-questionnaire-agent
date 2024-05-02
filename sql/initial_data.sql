@@ -39,5 +39,15 @@ INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION
 	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('inconsistent_data_strategies.png', 'استراتژی‌های ناسازگار داده‌ها', 'استراتژی‌های ناسازگار داده‌ها', 
+		   'همسو کردن با مفاهیم مدرنی مانند فابریک داده، مش و هوش مصنوعی تولیدی دشوار است.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'شما نگران کدام بخش از اکوسیستم داده‌های خود هستید؟'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
 	VALUES('resistence_to_change.png', 'Resistance to change', 'Resistance to change', 'Employees need to adapt to new ways of operating to make data-driven transformation work.', 
 	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('resistence_to_change.png', 'مقاومت در برابر تغییر', 'مقاومت در برابر تغییر', 
+		   'کارمندان باید به روش‌های جدید عملکرد خود را تطبیق دهند تا تحول مبتنی بر داده‌ها به خوبی پیاده‌سازی شود.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'شما نگران کدام بخش از اکوسیستم داده‌های خود هستید؟'));
