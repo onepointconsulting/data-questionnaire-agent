@@ -337,6 +337,26 @@ ORDER BY PREFERRED_QUESTION_ORDER""",
     ]
 
 
+async def update_session_steps(session_id: str, session_steps: int):
+    async def process_update(cur: AsyncCursor):
+        await cur.execute(
+            """
+UPDATE TB_SESSION_CONFIGURATION SET CONFIG_VALUE = %(config_value)s
+WHERE SESSION_ID = %(session_id)s AND CONFIG_KEY = %(config_key)s RETURNING ID
+            """,
+            {
+                "session_id": session_id,
+                "config_key": SESSION_STEPS_CONFIG_KEY,
+                "config_value": session_steps,
+            },
+        )
+        created_row = await cur.fetchone()
+        updated_id = created_row[0]
+        return updated_id
+
+    return await create_cursor(process_update, True)
+
+
 async def select_current_session_steps(session_id: str) -> int:
     res = await select_from(
         f"""
@@ -496,6 +516,8 @@ if __name__ == "__main__":
         assert saved.id is not None
         session_configuration = await select_session_configuration(saved.session_id)
         assert len(session_configuration.configuration_entries) > 0
+        updated_id = await update_session_steps(saved.session_id, 10)
+        assert updated_id == saved.id
         deleted = await delete_session_configuration(saved.id)
         assert deleted == 1
 
@@ -541,11 +563,11 @@ if __name__ == "__main__":
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 
-    asyncio.run(test_insert_questionnaire_status())
+    # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial())
     # asyncio.run(test_insert_answer())
     # asyncio.run(test_select_answers())
-    # asyncio.run(test_session_configuration_save())
+    asyncio.run(test_session_configuration_save())
     # asyncio.run(test_select_current_session_steps())
     # asyncio.run(test_save_report())
     # asyncio.run(test_insert_questionnaire_status_suggestions())

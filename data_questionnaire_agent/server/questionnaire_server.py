@@ -78,6 +78,7 @@ class Commands(StrEnum):
     START_SESSION = "start_session"
     SERVER_MESSAGE = "server_message"
     CLARIFICATION_TOKEN = "clarification_token"
+    EXTEND_SESSION = "extend_session"
     ERROR = "error"
 
 
@@ -167,6 +168,10 @@ async def clarify_question(sid: str, session_id: str, question: str):
             content,
             room=sid,
         )
+
+@sio.event
+async def extend_session(sid: str, session_id: str):
+    pass
 
 
 async def generate_report(session_id: str, questionnaire: Questionnaire):
