@@ -229,9 +229,9 @@ async def append_suggestions_and_send(
 async def append_other_suggestions(server_messages, questionnaire_messages):
     if len(questionnaire_messages) > 1:
         for i, message in enumerate(questionnaire_messages[1:]):
-            server_messages.server_messages[i + 1].suggestions = (
-                await select_questionnaire_status_suggestions(message.id)
-            )
+            server_messages.server_messages[
+                i + 1
+            ].suggestions = await select_questionnaire_status_suggestions(message.id)
 
 
 async def persist_question(session_id: str, question: str, total_cost: int = 0):

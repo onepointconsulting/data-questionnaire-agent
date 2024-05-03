@@ -21,7 +21,7 @@ The question asked to the user starts with ==== QUESTION ==== and ends with ====
 The user answer provided by the customer starts with ==== ANSWER ==== and ends with ==== ANSWER END ====.
 
 ==== RESOURCES START ====
-{resources}
+{knowledge_base}
 ==== RESOURCES END ====
 ==== QUESTION ====
 {question}
