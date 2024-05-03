@@ -8,11 +8,29 @@ def read_toml(file: Path) -> dict:
         return tomli.load(f)
 
 
-def read_prompts_toml() -> dict:
-    return read_toml(cfg.project_root / "prompts.toml")
+# Need to add a language parameter.
+# Pick the right file based on the language parameter.
+# Default to English if the language is not supported.
+
+DEFAULT_LANGUAGE = "en"
+SUPPORTED_LANGUAGES = ["en", "fa"]
 
 
-prompts = read_prompts_toml()
+def read_prompts_toml(language=DEFAULT_LANGUAGE) -> dict:
+
+    if language not in SUPPORTED_LANGUAGES:
+        print(f"Warning: Language  not supported. Using default language.")
+        language = DEFAULT_LANGUAGE
+
+    print(f"Reading prompts from prompts_{language}.toml")
+
+    return read_toml(cfg.project_root / f"prompts_{language}.toml")
+
+
+selected_language = "fa"  # Just to test with farsi language
+
+prompts = read_prompts_toml(selected_language)
+
 
 if __name__ == "__main__":
     from data_questionnaire_agent.log_init import logger

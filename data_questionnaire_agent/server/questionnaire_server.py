@@ -138,9 +138,7 @@ async def client_message(sid: str, session_id: str, answer: str):
     else:
         update_id = await update_answer(session_id, answer)
         if update_id is None:
-            await send_error(
-                sid, session_id, "Failed to update the answer in database."
-            )
+            await send_error(sid, session_id, t("db_update_failed", locale=language))
             return
         questionnaire = await select_questionnaire(session_id)
         (
@@ -183,7 +181,7 @@ async def generate_report(session_id: str, questionnaire: Questionnaire):
         )
         total_cost = cb.total_cost
     report_id = await save_report(session_id, conditional_advice, total_cost)
-    assert report_id is not None, "Report ID is not available."
+    assert report_id is not None, t("no_report_id", locale=language)
 
 
 async def handle_secondary_question(
@@ -196,7 +194,7 @@ async def handle_secondary_question(
         )
         total_cost = cb.total_cost
     if len(question_answers) == 0:
-        await send_error(sid, session_id, "Could not get any answers from ChatGPT.")
+        await send_error(sid, session_id, t("no_answer_from_chatgpt", locale=language))
         return
     last_question_answer = question_answers[-1]
     # Save the generated question
@@ -205,7 +203,7 @@ async def handle_secondary_question(
     )
     # Persist the suggestions for this answer
     if qs_res.id is None:
-        await send_error(sid, session_id, "Failed to insert question in database.")
+        await send_error(sid, session_id, t("failed_insert_question", locale=language))
         return
     await insert_questionnaire_status_suggestions(qs_res.id, last_question_answer)
     questionnaire_messages = await select_questionnaire_statuses(session_id)
@@ -231,9 +229,9 @@ async def append_suggestions_and_send(
 async def append_other_suggestions(server_messages, questionnaire_messages):
     if len(questionnaire_messages) > 1:
         for i, message in enumerate(questionnaire_messages[1:]):
-            server_messages.server_messages[
-                i + 1
-            ].suggestions = await select_questionnaire_status_suggestions(message.id)
+            server_messages.server_messages[i + 1].suggestions = (
+                await select_questionnaire_status_suggestions(message.id)
+            )
 
 
 async def persist_question(session_id: str, question: str, total_cost: int = 0):

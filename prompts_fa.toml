@@ -1,0 +1,129 @@
+[general_messages]
+tip_correct_format = "نکته:  مطمئن شوید که پاسخ خود را با فرمت صحیح وارد کنید"
+tip_language = "نکته: لطفاً اطمینان حاصل کنید که تمام پاسخ های خود را به زبان فارسی وارد کنید"
+tool_name = "چت ربات مشاوره پناهندگی"
+
+[general_settings]
+questions_per_batch = 1
+minimum_number_of_questions = 4
+
+
+[questionnaire]
+    [questionnaire.initial]
+    question = "در حال حاضر با چه چالش هایی در رابطه با پناهندگی خود مواجه هستید؟"
+    system_message = "من یک دستیار راهنما هستم که در مورد مسائلی مانند اسکان، اشتغال، آموزش و سایر موارد به پناهندگان کمک می کنم. برای کمک به شما در یافتن بهترین راه‌حل‌ها، سوالاتی را به زبان فارسی رسمی می‌پرسم"
+    human_message = """با استناد به بهترین شیوه ها و دانش پایه و بر اساس پاسخ به سوالی که توسط کاربر پاسخ داده شده است، لطفاً {questions_per_batch} سوال ایجاد کنید که برای حل مشکلات مرتبط با پناهندگی به این کاربر مفید باش.
+بخش بهترین شیوه ها با ==== بهترین شیوه ها شروع می شود ==== و با ==== بهترین شیوه ها پایان می یابد ==== شروع می شود. بخش دانش پایه با ==== دانش پایه شروع می شود ==== و با ==== دانش پایه پایان می یابد ==== شروع می شود.
+سوال پرسیده شده از کاربر با ==== سوال شروع می شود ==== و با ==== سوال پایان می یابد ==== شروع می شود. پاسخ کاربر ارائه شده توسط مشتری با ==== پاسخ شروع می شود ==== و با ==== پاسخ پایان می یابد ==== شروع می شود.
+
+==== دانش پایه شروع می شود ====
+{knowledge_base}
+==== دانش پایه پایان می یابد ====
+
+==== سوال شروع می شود ====
+{question}
+==== سوال پایان می یابد ====
+
+==== پاسخ شروع می شود ====
+{answer}
+==== پاسخ پایان می یابد ====
+
+"""
+    [questionnaire.secondary]
+    system_message = "من یک دستیار راهنما هستم که در مورد مسائلی مانند اسکان، اشتغال، آموزش و سایر موارد به پناهندگان کمک می کنم. برای کمک به شما در یافتن بهترین راه‌حل‌ها، سوالاتی را به زبان فارسی رسمی می‌پرسم"
+
+    human_message = """با استناد به دانش پایه و بر اساس پاسخ به چندین سوال پاسخ داده شده توسط کاربر، لطفاً {questions_per_batch} سوال ایجاد کنید که برای حل چالش های مرتبط با پناهندگی به این کاربر مفید باشد. بر روی درک کامل مشکلات کاربر تمرکز کنید و از پرسیدن سوال در مورد راه حل های خاص خودداری کنید.
+
+همچنین برای هر سوال ایجاد شده، چندین پاسخ احتمالی ارائه دهید. یک پاسخ احتمالی برای هر سوال کافی است. پاسخ احتمالی تولید شده نباید بیش از 2 جمله باشد.
+
+
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
+The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
+The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+==== ANSWERS ====
+{answers}
+==== ANSWERS END ====
+"""
+    [questionnaire.clarification]
+    system_message = "I am a helpful assistant. I explain the meaning of questions step by step. I highlight the main topics in bold markdown. I use British English."
+    human_message = """Please explain the following question in a way that a layman can understand it:
+
+{question}
+"""
+
+[tagging]
+system_message = "You are an expert in terms of getting different types of sentiments from sentences."
+human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+can you tell me whether there is a question related to data analytics, data governance and strategies in it or not and whether the overall sentiment of the text indicates some sort of confusion?"""
+human_message_extraction = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+can you extract question related to data analytics, data governance and strategies, if there is one?"""
+
+[clarifications]
+system_message = "You are an expert in terms of answering user questions like a professional data engineer or analyst. You use British English."
+human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{questions}
+=== INPUT END ===
+can you please answer all questions related to data analytics, data governance and strategies you see in it? 
+If you see questions related to topics that are totally unrelated to data analytics, data governance and strategies, please tell the user that you only answer questions about these topics.
+Please be concise and limit your replies to around 30 words if possible. 
+Do not reply with follow up questions like 'Would you like more information?'."""
+
+[advice]
+system_message = """You are a British data integration and gouvernance advisor \
+that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems \
+You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present. You use British English."""
+human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
+please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
+if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
+or are not related to the questions you should refrain from giving advice.
+Also include 3 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
+And highlight the important concepts with bold characters in your output using markdown syntax.
+
+Make sure not to enumerate the advices if you decide to give them.
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
+The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+
+Here is an example of a questionnaire with answers that are too vague to which you should not give advice:
+==== QUESTIONNAIRE EXAMPLE ====
+question: Which area of your data ecosystem are you most concerned about?
+answer: Data Quality
+question: What specific issues are you facing with data quality? Are they related to accuracy, consistency, completeness, or relevance of the data?
+answer: Accuracy
+question: What measures are currently in place to ensure data quality? Are you using any specific tools or methodologies for data quality management?
+answer: We are using an MDM product.
+==== QUESTIONNAIRE EXAMPLE END ====
+
+Here is an example of a questionnaire with answers that have enough detail to which you should give advices:
+==== QUESTIONNAIRE EXAMPLE ====
+question: Which area of your data ecosystem are you most concerned about?
+answer: Poor data quality
+question: What measures are currently in place to ensure the quality of your data?
+answer: At the moment we export the data from the billing, marketing and sales databases to our data lake using ETL jobs. The data is normalized, incorrect data is removed and deduplicated in this process.
+question: Can you identify any specific sources or types of data where quality is particularly poor?
+answer: Yes, customer data. It is often incorrect and has many duplicates.
+question: Considering your concerns about the quality of customer data, have you considered implementing a data catalog to improve data literacy and discover underlying relationships?
+answer: Yes, but we have not done so. Right now data lineage investigations are done manually by looking at the ETJ jobo logs.
+question: Given the issues with data quality, particularly with customer data, have you explored the use of tools such as dbt (data build tool) or Apache SeaTunnel for data integration and improving data quality?
+answer: Not yet, but I would like to know about it.
+==== QUESTIONNAIRE EXAMPLE END ====
+
+"""

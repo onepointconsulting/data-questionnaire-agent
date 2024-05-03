@@ -1,2 +1,6 @@
 en:
-  db_insert_failed: "عدم موفقیت در افزودن سوال به پایگاه داده."
+  db_insert_failed: "Failed to add query to database"
+  db_update_failed: "Failed to update the answer in database"
+  no_report_id: "Report ID is not available"
+  no_answer_from_chatgpt: "Could not get any answers from ChatGPT"
+  failed_insert_question: "Failed to insert question in database"
