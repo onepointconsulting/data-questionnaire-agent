@@ -337,7 +337,7 @@ ORDER BY PREFERRED_QUESTION_ORDER""",
     ]
 
 
-async def update_session_steps(session_id: str, session_steps: int):
+async def update_session_steps(session_id: str, session_steps: int) -> Union[int, None]:
     async def process_update(cur: AsyncCursor):
         await cur.execute(
             """
@@ -351,6 +351,8 @@ WHERE SESSION_ID = %(session_id)s AND CONFIG_KEY = %(config_key)s RETURNING ID
             },
         )
         created_row = await cur.fetchone()
+        if created_row is None:
+            return None
         updated_id = created_row[0]
         return updated_id
 

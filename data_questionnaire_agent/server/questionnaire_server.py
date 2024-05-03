@@ -40,6 +40,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     save_report,
     insert_questionnaire_status_suggestions,
     select_questionnaire_status_suggestions,
+    update_session_steps,
 )
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.similarity_search import (
@@ -60,6 +61,8 @@ from data_questionnaire_agent.service.question_clarifications import (
 
 
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
+FAILED_SESSION_STEPS = -1
+MAX_SESSION_STEPS = 14
 
 docsearch = init_vector_search()
 
@@ -169,9 +172,17 @@ async def clarify_question(sid: str, session_id: str, question: str):
             room=sid,
         )
 
+
 @sio.event
-async def extend_session(sid: str, session_id: str):
-    pass
+async def extend_session(sid: str, session_id: str, session_steps: int):
+    session_steps = min(MAX_SESSION_STEPS, session_steps)
+    config_id = await update_session_steps(session_id, session_steps)
+    session_steps = session_steps if config_id is not None else FAILED_SESSION_STEPS
+    await sio.emit(
+        Commands.EXTEND_SESSION,
+        session_steps,
+        room=sid,
+    )
 
 
 async def generate_report(session_id: str, questionnaire: Questionnaire):
