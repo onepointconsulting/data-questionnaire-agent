@@ -3,40 +3,45 @@ INSERT INTO public.tb_language(language_code) VALUES ('en');
 
 -- Initial question
 INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER, LANGUAGE_ID)
-VALUES('Which area of your data ecosystem are you most concerned about?', 1, (SELECT ID FROM TB_LANGUAGE WHERE language_code = 'en'));
+VALUES('بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟', 1, (SELECT ID FROM TB_LANGUAGE WHERE language_code = 'en'));
 
 INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER, LANGUAGE_ID)
 VALUES('شما نگران کدام بخش از اکوسیستم داده‌های خود هستید؟', 1, (SELECT ID FROM TB_LANGUAGE WHERE language_code = 'fa'));
 
 -- Suggestions
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('poor_data_quality.png', 'Poor data quality', 'Poor data quality', 'Low-quality data can lead to incorrect insights and poor decision-making.', 
-	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	VALUES('poor_data_quality.png', 'کیفیت داده ضعیف', 'کیفیت داده ضعیف', '.داده های با کیفیت پایین می تواند منجر به بینش نادرست و تصمیم گیری ضعیف شود', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟'));
 	   
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('compliance_risks.png', 'Compliance and security risks', 'Compliance and security risks', 'Mishandling data can lead to legal troubles and reputational damage.', 
+	VALUES('compliance_risks.png', 'انطباق و خطرات امنیتی', 'انطباق و خطرات امنیتی', '.سوء استفاده از داده ها می تواند منجر به مشکلات قانونی و آسیب به اعتبار شود', 
 	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosys, ()tem are you most concerned about?'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('data_silos.png', 'Data silos', 'Data silos', 'Data trapped in departmental silos can be inaccessible to other parts.', 
-	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	VALUES('data_silos.png', 'سیلوهای داده', 'سیلوهای داده', '.داده های به دام افتاده در سیلوهای دپارتمان می تواند برای سایر قسمت ها غیرقابل دسترسی باشد', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('lack_of_skilled_personnel.png', 'Lack of skilled personnel', 'Lack of skilled personnel', 'Missing skills in data science, analytics, AI and ML can impede the effective use of data.', 
-	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	VALUES('lack_of_skilled_personnel.png', 'کمبود پرسنل ماهر', '.کمبود پرسنل ماهر', 'فقدان مهارت در علم داده، تجزیه و تحلیل، هوش مصنوعی و ML می تواند مانع استفاده موثر از داده ها شود.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('data_overload.png', 'Data overload', 'Data overload', '"Data glut" can slow down processes and make it difficult to identify what data is actually useful.', 
-	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	VALUES('data_overload.png', 'اضافه بار داده ها', 'اضافه بار داده ها', '."افزایش داده ها" می تواند فرآیندها را کند کند و تشخیص اینکه چه داده هایی واقعا مفید هستند را دشوار می کند', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('cost_and_complexity.png', 'Cost and complexity', 'Cost and complexity', 'A robust data analytics infrastructure requires significant investment of resources.', 
-	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	VALUES('cost_and_complexity.png', 'هزینه و پیچیدگی', 'هزینه و پیچیدگی', '.یک زیرساخت قوی تجزیه و تحلیل داده ها به سرمایه گذاری قابل توجهی در منابع نیاز دارد', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('inconsistent_data_strategies.png', 'Inconsistent data strategies', 'Inconsistent data strategies', 'Difficult to align with modern concepts like Data Fabric, Mesh and Generative AI.', 
-	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	VALUES('inconsistent_data_strategies.png', 'استراتژی های داده ناسازگار', 'استراتژی های داده ناسازگار', '.این موارد سخت است که با مفاهیم مدرن مانند ساختار داده، شبکه و هوش مصنوعی تولیدی هماهنگ شوند', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('resistence_to_change.png', 'Resistance to change', 'Resistance to change', 'Employees need to adapt to new ways of operating to make data-driven transformation work.', 
-	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+	VALUES('resistence_to_change.png', 'مقاومت در برابر تغییرات', 'مقاومت در برابر تغییرات', '.کارمندان باید خود را با روش‌های جدید کار تطبیق دهند تا تحول مبتنی بر داده‌ها عملی شود', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟'));
+
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('document-related-issues.jpg', 'مراحل درخواست پناهندگی', 'مراحل درخواست پناهندگی', 'من علاقه مند هستم در مورد روش درخواست پناهندگی بیشتر بدانم', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'بیشتر نگران کدام ناحیه از اکوسیستم داده خود هستید؟'));
