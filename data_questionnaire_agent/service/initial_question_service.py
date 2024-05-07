@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
     docsearch = init_vector_search()
     assert docsearch is not None
-    answer = "Expired Passport"
+    answer = "Expired Passport" # Supposed the client answer
     search_res = similarity_search(docsearch, answer)
     input = prepare_initial_question(
         question=initial_question,
