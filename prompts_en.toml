@@ -34,13 +34,13 @@ The user answer provided by the customer starts with ==== ANSWER ==== and ends w
 [questionnaire.secondary]
 
 system_message = "I am a resource assistant familiar with refugee and immigrant support services. I can help you find information and answer questions about resettlement, legal aid, and other resources. Please use formal English in your responses."
-human_message = """Based on available resources and answers to multiple questions answered by a user, please generate {questions_per_batch} questions that are helpful to this user to find relevant support services.
+human_message = """Based on an available knowledge base and answers to multiple questions answered by a user, please generate {questions_per_batch} questions that are helpful to this user to find relevant support services.
 The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
 
 ==== RESOURCES START ====
-{resources}
+{knowledge_base}
 ==== RESOURCES END ====
 ==== QUESTIONNAIRE ====
 {questions_answers}

@@ -13,7 +13,7 @@ from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 
 from data_questionnaire_agent.config import cfg
 
-from data_questionnaire_agent.toml_support import get_prompts_object
+from data_questionnaire_agent.toml_support import get_prompts
 
 
 def prompt_factory_generic(
@@ -34,13 +34,13 @@ def prompt_factory_generic(
         ),
         HumanMessagePromptTemplate(
             prompt=PromptTemplate(
-                template=prompts.general_messages["tip_correct_format"],
+                template=prompts["general_messages"]["tip_correct_format"],
                 input_variables=[],
             )
         ),
         HumanMessagePromptTemplate(
             prompt=PromptTemplate(
-                template=prompts.general_messages["tip_language"],
+                template=prompts["general_messages"]["tip_language"],
                 input_variables=[],
             )
         ),
@@ -49,8 +49,8 @@ def prompt_factory_generic(
 
 
 def prompt_factory_initial_questions(language: str) -> ChatPromptTemplate:
-    prompts = get_prompts_object(language)
-    section = prompts.questionnaire["initial"]
+    prompts = get_prompts(language)
+    section = prompts["questionnaire"]["initial"]
     return prompt_factory_generic(
         section,
         [
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     from data_questionnaire_agent.log_init import logger
 
     language = "en"
-    initial_question = get_prompts_object(language).questionnaire["initial"]["question"]
+    initial_question = get_prompts(language)["questionnaire"]["initial"]["question"]
     assert initial_question is not None
 
     docsearch = init_vector_search()

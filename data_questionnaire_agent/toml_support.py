@@ -69,5 +69,6 @@ if __name__ == "__main__":
     english_prompt_test()
     farsi_prompt_test()
 
-    prompts_object = get_prompts_object("fa")
+    prompts_object = get_prompts("fa")
     print(type(prompts_object))
+    print(prompts_object)

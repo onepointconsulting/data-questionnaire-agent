@@ -7,11 +7,11 @@ def read_file(file_name: str) -> str:
 
 
 def provide_data_quality() -> str:
-    return read_file("data quality.txt")
+    return read_file("data quality.txt" if not "refugee" in str(cfg.raw_text_folder) else "AboutRefugees.txt") 
 
 
 def provide_data_ops() -> str:
-    return read_file("dataops.txt")
+    return read_file("dataops.txt" if not "refugee" in str(cfg.raw_text_folder) else "AsylumInAustria.txt")
 
 
 def provide_data_quality_ops() -> str:
