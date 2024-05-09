@@ -8,7 +8,7 @@ from data_questionnaire_agent.model.question_suggestion import QuestionSuggestio
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import db_cfg
-from data_questionnaire_agent.toml_support import prompts
+from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.model.application_schema import (
     Questionnaire,
     QuestionAnswer,
@@ -88,7 +88,7 @@ LIMIT 1
         {"language": language},
     )
     if len(res) == 0:
-        return prompts["questionnaire"]["initial"]["question"]
+        return get_prompts(language)["questionnaire"]["initial"]["question"]
     else:
         return res[0][0]
 

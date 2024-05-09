@@ -137,16 +137,16 @@ async def client_message(sid: str, session_id: str, answer: str):
         await start_session(sid, session_id)
     else:
         update_id = await update_answer(session_id, answer)
-        if update_id is None:
-            await send_error(sid, session_id, t("db_update_failed", locale=language))
-            return
-        questionnaire = await select_questionnaire(session_id)
         (
             current_session_steps,
             language,
         ) = await select_current_session_steps_and_language(session_id)
+        if update_id is None:
+            await send_error(sid, session_id, t("db_update_failed", locale=language))
+            return
+        questionnaire = await select_questionnaire(session_id)
         if current_session_steps - 1 > len(questionnaire):
-            await handle_secondary_question(sid, session_id, questionnaire)
+            await handle_secondary_question(sid, session_id, questionnaire, language)
         else:
             # Check if report is available
             report = await select_report(session_id)
@@ -185,12 +185,12 @@ async def generate_report(session_id: str, questionnaire: Questionnaire):
 
 
 async def handle_secondary_question(
-    sid: str, session_id: str, questionnaire: Questionnaire
+    sid: str, session_id: str, questionnaire: Questionnaire, language: str
 ):
     total_cost = 0
     with get_openai_callback() as cb:
         question_answers = await process_secondary_questions(
-            questionnaire, cfg.questions_per_batch
+            questionnaire, cfg.questions_per_batch, language
         )
         total_cost = cb.total_cost
     if len(question_answers) == 0:

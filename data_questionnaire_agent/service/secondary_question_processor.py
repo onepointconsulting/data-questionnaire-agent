@@ -23,11 +23,9 @@ from data_questionnaire_agent.model.openai_schema import (
 
 docsearch = init_vector_search()
 
-secondary_question_chain = chain_factory_secondary_question()
-
 
 async def process_secondary_questions(
-    questionnaire: Questionnaire, question_per_batch: int
+    questionnaire: Questionnaire, question_per_batch: int, language: str
 ) -> List[QuestionAnswer]:
     knowledge_base = similarity_search(
         docsearch, questionnaire.answers_str(), how_many=cfg.search_results_how_many
@@ -38,7 +36,7 @@ async def process_secondary_questions(
 
     async for attempt in AsyncRetrying(**cfg.retry_args):
         with attempt:
-            response_questions: ResponseQuestions = await secondary_question_chain.arun(
+            response_questions: ResponseQuestions = await chain_factory_secondary_question(language).arun(
                 secondary_question_input
             )
             return convert_to_question_answers(response_questions)
