@@ -346,7 +346,7 @@ async def select_current_session_steps_and_language(session_id: str) -> Tuple[in
 SELECT CONFIG_KEY, CONFIG_VALUE
 FROM TB_SESSION_CONFIGURATION
 WHERE SESSION_ID = %(session_id)s
-	AND CONFIG_KEY in ('{SESSION_STEPS_CONFIG_KEY}', '{SESSION_STEPS_LANGUAGE_KEY}')
+        AND CONFIG_KEY in ('{SESSION_STEPS_CONFIG_KEY}', '{SESSION_STEPS_LANGUAGE_KEY}')
 """,
         {"session_id": session_id},
     )

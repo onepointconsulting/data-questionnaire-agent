@@ -13,7 +13,8 @@ from data_questionnaire_agent.toml_support import get_prompts_object
 
 def test_initial_question():
     language = "en"
-    initial_question = get_prompts_object(language).questionnaire["initial"]["question"]
+    initial_question = get_prompts_object(
+        language).questionnaire["initial"]["question"]
     assert initial_question is not None
 
     docsearch = init_vector_search()

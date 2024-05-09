@@ -36,5 +36,14 @@ def create_questionnaire_2_questions_refugees() -> Questionnaire:
     return Questionnaire(questions=[question_answer, question_answer_2])
 
 
+# Farsi version of create_questionnaire_2_questions
 def create_questionnaire_2_questions__refugees_fa() -> Questionnaire:
-    pass
+    question_answer = QuestionAnswer.question_answer_factory(
+        "چه چالش‌هایی در حال حاضر به عنوان یک پناهنده دارید؟",
+        "مشکلات مربوط به اسناد",
+    )
+    question_answer_2 = QuestionAnswer.question_answer_factory(
+        "با اسناد خود چه مشکلاتی دارید؟",
+        "پاسپورت خود را گم کرده‌ام.",
+    )
+    return Questionnaire(questions=[question_answer, question_answer_2])

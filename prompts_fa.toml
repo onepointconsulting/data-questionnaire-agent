@@ -37,9 +37,9 @@ minimum_number_of_questions = 4
 همچنین برای هر سوال ایجاد شده، چندین پاسخ احتمالی ارائه دهید. یک پاسخ احتمالی برای هر سوال کافی است. پاسخ احتمالی تولید شده نباید بیش از 2 جمله باشد.
 
 
-The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
-The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
-The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
+بخش پایگاه دانش با عبارت «بخش پایگاه دانش» یا «مستر مستندات» آغاز می‌شود. ==== KNOWLEDGE BASE START ==== و به پایان می رسد ==== KNOWLEDGE BASE END ====.
+بخش پرسش و پاسخ توسط مشتری با عبارت «پرسش‌های مشتری» یا «سوالات متداول مشتری» آغاز می‌شود. ==== QUESTIONNAIRE ==== و به پایان می رسد ==== QUESTIONNAIRE END ====.
+بخش پاسخ‌های کاربر با عبارت «پاسخ‌های کاربر» یا «جواب‌های کاربر» آغاز می‌شود. ==== ANSWERS ==== و به پایان می رسد ==== ANSWERS END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -51,28 +51,26 @@ The user answers are in the section that starts with ==== ANSWERS ==== and ends 
 ==== ANSWERS END ====
 """
     [questionnaire.clarification]
-    system_message = "I am a helpful assistant. I explain the meaning of questions step by step. I highlight the main topics in bold markdown. I use British English."
-    human_message = """Please explain the following question in a way that a layman can understand it:
-
-{question}
+    system_message = "من یک دستیار مفید هستم. معنی سوالات را به صورت گام به گام توضیح می‌دهم. موضوعات اصلی را با فونت بولد و به زبان فارسی برجسته می‌کنم"
+    human_message = """لطفاً این سوال را به گونه‌ای توضیح دهید که یک فرد عادی (غیر متخصص) بتواند آن را درک کند: {question}
 """
 
 [tagging]
-system_message = "You are an expert in terms of getting different types of sentiments from sentences."
-human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+system_message = "شما در درک لایه‌های احساسی متن و استخراج طیف وسیعی از احساسات از جملات، خبره هستید"
+human_message = """ در صورتی که ورودی با عبارت === I NPUT START === و به پایان می رسد === INPUT END ===
 === INPUT START ===
 {answer}
 === INPUT END ===
-can you tell me whether there is a question related to data analytics, data governance and strategies in it or not and whether the overall sentiment of the text indicates some sort of confusion?"""
-human_message_extraction = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+آیا می‌توانید به من بگویید که آیا این متن به موضوعاتی مانند تجزیه و تحلیل پناهندگان، حکمرانی در مورد پناهندگان و استراتژی‌های مربوط به آن‌ها اشاره دارد یا نه؟ همچنین، آیا لحن کلی متن نشان‌دهنده نوعی سردرگمی است؟"""
+human_message_extraction = """فرض کنید ورودی ای داریم که با شروع می‌شه === INPUT START === و به پایان می رسد === INPUT END ===
 === INPUT START ===
 {answer}
 === INPUT END ===
-can you extract question related to data analytics, data governance and strategies, if there is one?"""
+آیا در این متن، سوالی در مورد تحلیل پناهندگان، حکمرانی در مورد پناهندگان و استراتژی‌های مربوط به آن‌ها وجود دارد؟"""
 
 [clarifications]
-system_message = "You are an expert in terms of answering user questions like a professional data engineer or analyst. You use British English."
-human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+system_message = "شما در پاسخ به سوالات کاربران مانند یک کارشناس تحلیل داده‌های پناهندگان یا متخصص سیاست‌گذاری پناهندگان، خبره هستید. پاسخ‌هایتان را با فارسی اصیل ارائه می‌دهید"
+human_message = """فرض کنید ورودی ای داریم که با شروع می‌شه === INPUT START === و به پایان می رسد === INPUT END ===
 === INPUT START ===
 {questions}
 === INPUT END ===
@@ -93,8 +91,8 @@ Also include 3 pieces of advice about what the customer should avoid. In total y
 And highlight the important concepts with bold characters in your output using markdown syntax.
 
 Make sure not to enumerate the advices if you decide to give them.
-The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
-The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== و به پایان می رسد ==== KNOWLEDGE BASE END ====.
+The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== و به پایان می رسد ==== QUESTIONNAIRE END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====

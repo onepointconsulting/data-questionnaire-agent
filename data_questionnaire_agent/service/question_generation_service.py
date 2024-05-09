@@ -50,7 +50,7 @@ def prepare_secondary_question(
 
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.questionnaire_provider import (
-        create_questionnaire_2_questions, create_questionnaire_2_questions_refugees
+        create_questionnaire_2_questions, create_questionnaire_2_questions_refugees, create_questionnaire_2_questions__refugees_fa
     )
     from data_questionnaire_agent.test.provider.knowledge_base_provider import (
         provide_data_quality_ops,
@@ -60,7 +60,8 @@ if __name__ == "__main__":
     import asyncio
 
     def test_en():
-        questionnaire = create_questionnaire_2_questions() if not "refugee" in str(cfg.raw_text_folder) else create_questionnaire_2_questions_refugees()
+        questionnaire = create_questionnaire_2_questions() if not "refugee" in str(
+            cfg.raw_text_folder) else create_questionnaire_2_questions_refugees()
         knowledge_base = provide_data_quality_ops()
         input = prepare_secondary_question(questionnaire, knowledge_base)
         with get_openai_callback() as cb:
@@ -70,7 +71,19 @@ if __name__ == "__main__":
         assert isinstance(res, ResponseQuestions)
         logger.info("response questions: %s", res)
 
-    def test_fa():
-        pass
+        # Farsi version
 
-    test_en()
+    def test_fa():
+        questionnaire = create_questionnaire_2_questions() if not "refugee" in str(
+            cfg.raw_text_folder) else create_questionnaire_2_questions__refugees_fa()
+        knowledge_base = provide_data_quality_ops()
+        input = prepare_secondary_question(questionnaire, knowledge_base)
+        with get_openai_callback() as cb:
+            chain = chain_factory_secondary_question("fa")
+            res: ResponseQuestions = asyncio.run(chain.arun(input))
+            logger.info("total cost: %s", cb)
+        assert isinstance(res, ResponseQuestions)
+        logger.info("response questions: %s", res)
+
+    # test_en()
+    test_fa()
