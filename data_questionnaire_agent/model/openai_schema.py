@@ -102,15 +102,17 @@ class ConditionalAdvice(BaseModel):
         return html
 
     def to_markdown(self) -> str:
-        markdown = "# What you should do ...\n\n"
-
-        for advice in self.advices:
-            markdown += f"- {advice}\n\n"
-
-        if self.what_you_should_avoid is not None:
-            markdown += "# What you should avoid ... \n\n"
-            for avoid in self.what_you_should_avoid:
-                markdown += f"- {avoid}\n\n"
+        
+        def convert_to_text(text_list: List[str], title: str):
+            md = f"# {title} ...\n\n"
+            if text_list is not None:
+                for text in text_list:
+                    md += f"- {text}\n\n"
+            return md
+        
+        markdown = convert_to_text(self.advices, "What you should do")
+        markdown += convert_to_text(self.what_you_should_avoid, "What you should avoid")
+        markdown += convert_to_text(self.positive_outcomes, "Positive outcomes")
 
         return markdown
 
