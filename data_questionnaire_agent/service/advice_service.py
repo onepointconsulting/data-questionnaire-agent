@@ -11,10 +11,13 @@ from data_questionnaire_agent.config import cfg
 
 
 def prompt_factory_conditional_advice(language: str) -> ChatPromptTemplate:
-    section = get_prompts(language)["advice"]
+    # Assuming get_prompts() returns the required dictionary
+    prompts = get_prompts(language)
+    section = prompts["advice"]
     return prompt_factory_generic(
-        section,
-        ["knowledge_base", "questions_answers"],
+        section=section,
+        input_variables=["knowledge_base", "questions_answers"],
+        prompts=prompts,
     )
 
 

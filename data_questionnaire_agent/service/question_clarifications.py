@@ -3,12 +3,13 @@ from typing import AsyncIterator
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.messages import BaseMessageChunk
 
-from data_questionnaire_agent.toml_support import prompts
+from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.config import cfg
 
 
-def prompt_factory_question_clarifications() -> ChatPromptTemplate:
-    extraction_prompts = prompts["questionnaire"]["clarification"]
+def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:
+    extraction_prompts = get_prompts(
+        language)["questionnaire"]["clarification"]
     return ChatPromptTemplate.from_messages(
         [
             ("system", extraction_prompts["system_message"]),
@@ -17,13 +18,12 @@ def prompt_factory_question_clarifications() -> ChatPromptTemplate:
     )
 
 
-question_clarifications_prompt = prompt_factory_question_clarifications()
-
-
 async def chain_factory_question_clarifications(
     question: str,
+    language: str
 ) -> AsyncIterator[BaseMessageChunk]:
-    input = question_clarifications_prompt.format(question=question)
+    input = prompt_factory_question_clarifications(
+        language).format(question=question)
     return cfg.llm_stream.astream(input)
 
 

@@ -60,11 +60,11 @@ from data_questionnaire_agent.service.question_clarifications import (
 )
 from data_questionnaire_agent.translation import t
 
-CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
+CORS_HEADERS = {"Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*"}
 
 docsearch = init_vector_search()
 
-advice_chain = chain_factory_advice()
 
 sio = socketio.AsyncServer(
     cors_allowed_origins=websocket_cfg.websocket_cors_allowed_origins
@@ -153,7 +153,7 @@ async def client_message(sid: str, session_id: str, answer: str):
 
             if report is None:
                 # Generate the report.
-                await generate_report(session_id, questionnaire)
+                await generate_report(session_id, questionnaire, language)
 
             questionnaire_messages = await select_questionnaire_statuses(session_id)
             server_messages = server_messages_factory(questionnaire_messages)
@@ -173,11 +173,11 @@ async def clarify_question(sid: str, session_id: str, question: str):
         )
 
 
-async def generate_report(session_id: str, questionnaire: Questionnaire):
+async def generate_report(session_id: str, questionnaire: Questionnaire, language: str):
     total_cost = 0
     with get_openai_callback() as cb:
         conditional_advice: ConditionalAdvice = await process_advice(
-            docsearch, questionnaire, advice_chain
+            docsearch, questionnaire, chain_factory_advice(language)
         )
         total_cost = cb.total_cost
     report_id = await save_report(session_id, conditional_advice, total_cost)
@@ -263,18 +263,23 @@ async def insert_configuration(
         config_key=SESSION_STEPS_LANGUAGE_KEY,
         config_value=language,
     )
-    session_keys = [session_configuration_entry, session_configuration_language]
+    session_keys = [session_configuration_entry,
+                    session_configuration_language]
     accepted_keys = []
     for session_key in session_keys:
         saved_entry = await save_session_configuration(session_key)
         if saved_entry is None:
             # Something went wrong. We will use the dafault value.
+            # logger.error(
+            #     f"Could not save configuration with {
+            #         session_key.config_key}: {session_key.config_value}"
+            # )
             logger.error(
-                f"Could not save configuration with {session_key.config_key}: {session_key.config_value}"
-            )
+                f"Could not save configuration with {session_key.config_key}: {session_key.config_value}")
         else:
             accepted_keys.append(session_key)
-    session_configuration = SessionConfiguration(configuration_entries=accepted_keys)
+    session_configuration = SessionConfiguration(
+        configuration_entries=accepted_keys)
     server_messages.session_configuration = session_configuration
 
 
