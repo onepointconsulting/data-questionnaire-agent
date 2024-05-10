@@ -65,18 +65,52 @@ human_message = """Given this input that starts with === INPUT START === and end
 
 system_message = "I can answer your questions about refugee and immigrant support services."
 human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {questions} === INPUT END === Can you please answer all questions you see related to refugee and immigrant support services? If the questions are unrelated, kindly inform the user that your expertise lies in support services. Please keep your answers concise and informative."""
+
 [advice]
+system_message = """You are a British data integration and gouvernance advisor \
+that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems \
+You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present. You use British English."""
+human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
+please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
+if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
+or are not related to the questions you should refrain from giving advice.
 
-system_message = "I can analyze the sentiment of your answers."
-human_message = """Based on available resources and answers to multiple questions answered by a user, provide a series of up to 5 recommendations for relevant support services, considering the user's situation. If the user's answers are unclear, refrain from giving recommendations.
-The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
+Also include 3 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
+Please also describe 3 potential positive outcomes in case the customer follows the suggested advices.
+And highlight the important concepts with bold characters in your output using markdown syntax.
+
+Make sure not to enumerate the advices if you decide to give them.
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
 
-Here is an example of a questionnaire with vague answers where recommendations are not helpful:
+Here is an example of a questionnaire with answers that are too vague to which you should not give advice:
 ==== QUESTIONNAIRE EXAMPLE ====
-question: What is your situation and what kind of support are you looking for?
-answer: I need help
-question: Can you tell me a bit more about what kind of help you need?
-answer: Just general help.
-==== QUESTIONNAIRE EXAMPLE END ====system_message = "I can recommend resources that might be helpful based on your situation."
+question: Which area of your data ecosystem are you most concerned about?
+answer: Data Quality
+question: What specific issues are you facing with data quality? Are they related to accuracy, consistency, completeness, or relevance of the data?
+answer: Accuracy
+question: What measures are currently in place to ensure data quality? Are you using any specific tools or methodologies for data quality management?
+answer: We are using an MDM product.
+==== QUESTIONNAIRE EXAMPLE END ====
+
+Here is an example of a questionnaire with answers that have enough detail to which you should give advices:
+==== QUESTIONNAIRE EXAMPLE ====
+question: Which area of your data ecosystem are you most concerned about?
+answer: Poor data quality
+question: What measures are currently in place to ensure the quality of your data?
+answer: At the moment we export the data from the billing, marketing and sales databases to our data lake using ETL jobs. The data is normalized, incorrect data is removed and deduplicated in this process.
+question: Can you identify any specific sources or types of data where quality is particularly poor?
+answer: Yes, customer data. It is often incorrect and has many duplicates.
+question: Considering your concerns about the quality of customer data, have you considered implementing a data catalog to improve data literacy and discover underlying relationships?
+answer: Yes, but we have not done so. Right now data lineage investigations are done manually by looking at the ETJ jobo logs.
+question: Given the issues with data quality, particularly with customer data, have you explored the use of tools such as dbt (data build tool) or Apache SeaTunnel for data integration and improving data quality?
+answer: Not yet, but I would like to know about it.
+==== QUESTIONNAIRE EXAMPLE END ====
+
 """
