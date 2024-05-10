@@ -67,6 +67,7 @@ system_message = "I can answer your questions about refugee and immigrant suppor
 human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {questions} === INPUT END === Can you please answer all questions you see related to refugee and immigrant support services? If the questions are unrelated, kindly inform the user that your expertise lies in support services. Please keep your answers concise and informative."""
 [advice]
 
+system_message = "I can analyze the sentiment of your answers."
 human_message = """Based on available resources and answers to multiple questions answered by a user, provide a series of up to 5 recommendations for relevant support services, considering the user's situation. If the user's answers are unclear, refrain from giving recommendations.
 The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.

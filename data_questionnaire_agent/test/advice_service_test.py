@@ -5,24 +5,24 @@ from data_questionnaire_agent.service.advice_service import (
     prompt_factory_conditional_advice,
 )
 from data_questionnaire_agent.test.provider.knowledge_base_provider import (
-    provide_data_quality_ops,
+    provide_knowledge_base,
 )
 from data_questionnaire_agent.test.provider.question_answers_provider import (
-    provide_data_silo_questionnaire,
+    provide_dummy_questionnaire,
     provide_incomplete_questionnaire,
 )
 
 
 def create_chain():
-    chain = chain_factory_advice()
+    chain = chain_factory_advice("en")
     assert chain is not None
     return chain
 
 
 def test_has_advice_questionnaire():
     chain = create_chain()
-    knowledge_base = provide_data_quality_ops()
-    questions_answers = provide_data_silo_questionnaire()
+    knowledge_base = provide_knowledge_base()
+    questions_answers = provide_dummy_questionnaire()
     conditional_advice_input = prepare_conditional_advice(
         knowledge_base, questions_answers
     )

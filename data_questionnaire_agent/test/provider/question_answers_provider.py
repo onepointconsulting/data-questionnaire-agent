@@ -1,4 +1,5 @@
 from typing import List
+from data_questionnaire_agent.config import cfg
 
 
 def questionnaire_str_adapter(questions: List[str], answers: List[str]) -> str:
@@ -21,6 +22,29 @@ def provide_data_silo_questionnaire() -> str:
         "Billing data is related to personal data and money flows and should therefore only be accessed by the department itself or selected controllers. This is the main concern.",
     ]
     return questionnaire_str_adapter(questions, answers)
+
+
+def provide_missing_documents_questionnaire() -> str:
+    questions = [
+        "What challenges are you currently facing as a refugee?",
+        "Have you reported the loss of your documents to the local authorities?",
+        "Have you obtained the confirmation of the theft report from the local police, which is required to apply for the reissue of your ID card at the passport authority center?",
+        "Do you need assistance in obtaining a replacement for your lost identity card?",
+    ]
+    answers = [
+        "I lost my documents",
+        "Yes, I did.",
+        "Yes, I have obtained it.",
+        "Yes, I need help with the replacement process.",
+    ]
+    return questionnaire_str_adapter(questions, answers)
+
+
+def provide_dummy_questionnaire() -> str:
+    if "data quality.txt" in str(cfg.raw_text_folder):
+        return provide_data_silo_questionnaire()
+    else:
+        return provide_missing_documents_questionnaire()
 
 
 def provide_incomplete_questionnaire() -> str:

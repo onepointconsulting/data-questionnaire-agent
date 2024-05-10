@@ -8,8 +8,7 @@ from data_questionnaire_agent.config import cfg
 
 
 def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:
-    extraction_prompts = get_prompts(
-        language)["questionnaire"]["clarification"]
+    extraction_prompts = get_prompts(language)["questionnaire"]["clarification"]
     return ChatPromptTemplate.from_messages(
         [
             ("system", extraction_prompts["system_message"]),
@@ -19,11 +18,9 @@ def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:
 
 
 async def chain_factory_question_clarifications(
-    question: str,
-    language: str
+    question: str, language: str
 ) -> AsyncIterator[BaseMessageChunk]:
-    input = prompt_factory_question_clarifications(
-        language).format(question=question)
+    input = prompt_factory_question_clarifications(language).format(question=question)
     return cfg.llm_stream.astream(input)
 
 

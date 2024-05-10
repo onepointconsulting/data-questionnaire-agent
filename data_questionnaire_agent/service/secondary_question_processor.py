@@ -36,7 +36,9 @@ async def process_secondary_questions(
 
     async for attempt in AsyncRetrying(**cfg.retry_args):
         with attempt:
-            response_questions: ResponseQuestions = await chain_factory_secondary_question(language).arun(
-                secondary_question_input
+            response_questions: ResponseQuestions = (
+                await chain_factory_secondary_question(language).arun(
+                    secondary_question_input
+                )
             )
             return convert_to_question_answers(response_questions)

@@ -60,8 +60,7 @@ from data_questionnaire_agent.service.question_clarifications import (
 )
 from data_questionnaire_agent.translation import t
 
-CORS_HEADERS = {"Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "*"}
+CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 
 docsearch = init_vector_search()
 
@@ -263,8 +262,7 @@ async def insert_configuration(
         config_key=SESSION_STEPS_LANGUAGE_KEY,
         config_value=language,
     )
-    session_keys = [session_configuration_entry,
-                    session_configuration_language]
+    session_keys = [session_configuration_entry, session_configuration_language]
     accepted_keys = []
     for session_key in session_keys:
         saved_entry = await save_session_configuration(session_key)
@@ -275,11 +273,11 @@ async def insert_configuration(
             #         session_key.config_key}: {session_key.config_value}"
             # )
             logger.error(
-                f"Could not save configuration with {session_key.config_key}: {session_key.config_value}")
+                f"Could not save configuration with {session_key.config_key}: {session_key.config_value}"
+            )
         else:
             accepted_keys.append(session_key)
-    session_configuration = SessionConfiguration(
-        configuration_entries=accepted_keys)
+    session_configuration = SessionConfiguration(configuration_entries=accepted_keys)
     server_messages.session_configuration = session_configuration
 
 

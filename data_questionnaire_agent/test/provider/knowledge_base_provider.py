@@ -8,7 +8,6 @@ def read_file(file_name: str) -> str:
 
 # provide_data_quality throw an error if the file does not exist
 def provide_data_quality() -> str:
-
     # Check if "data quality.txt" exists in the raw_text_folder, if not, check if "AboutRefugees.txt" exists
     # return read_file("data quality.txt" if not "refugee" in str(cfg.raw_text_folder) else "AboutRefugees.txt")
 
@@ -26,5 +25,5 @@ def provide_data_ops() -> str:
         return read_file("AsylumInAustria.txt")
 
 
-def provide_data_quality_ops() -> str:
+def provide_knowledge_base() -> str:
     return f"{provide_data_quality()}\n\n{provide_data_ops()}"

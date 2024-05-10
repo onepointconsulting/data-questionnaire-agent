@@ -22,7 +22,7 @@ def prompt_factory_secondary_questions(language: str) -> ChatPromptTemplate:
             "answers",
             "questions_per_batch",
         ],
-        prompts
+        prompts,
     )
 
 
@@ -50,19 +50,24 @@ def prepare_secondary_question(
 
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.questionnaire_provider import (
-        create_questionnaire_2_questions, create_questionnaire_2_questions_refugees, create_questionnaire_2_questions__refugees_fa
+        create_questionnaire_2_questions,
+        create_questionnaire_2_questions_refugees,
+        create_questionnaire_2_questions__refugees_fa,
     )
     from data_questionnaire_agent.test.provider.knowledge_base_provider import (
-        provide_data_quality_ops,
+        provide_knowledge_base,
     )
     from data_questionnaire_agent.log_init import logger
     from langchain_community.callbacks import get_openai_callback
     import asyncio
 
     def test_en():
-        questionnaire = create_questionnaire_2_questions() if not "refugee" in str(
-            cfg.raw_text_folder) else create_questionnaire_2_questions_refugees()
-        knowledge_base = provide_data_quality_ops()
+        questionnaire = (
+            create_questionnaire_2_questions()
+            if not "refugee" in str(cfg.raw_text_folder)
+            else create_questionnaire_2_questions_refugees()
+        )
+        knowledge_base = provide_knowledge_base()
         input = prepare_secondary_question(questionnaire, knowledge_base)
         with get_openai_callback() as cb:
             chain = chain_factory_secondary_question("en")
@@ -74,9 +79,12 @@ if __name__ == "__main__":
         # Farsi version
 
     def test_fa():
-        questionnaire = create_questionnaire_2_questions() if not "refugee" in str(
-            cfg.raw_text_folder) else create_questionnaire_2_questions__refugees_fa()
-        knowledge_base = provide_data_quality_ops()
+        questionnaire = (
+            create_questionnaire_2_questions()
+            if not "refugee" in str(cfg.raw_text_folder)
+            else create_questionnaire_2_questions__refugees_fa()
+        )
+        knowledge_base = provide_knowledge_base()
         input = prepare_secondary_question(questionnaire, knowledge_base)
         with get_openai_callback() as cb:
             chain = chain_factory_secondary_question("fa")
