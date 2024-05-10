@@ -70,12 +70,19 @@ class ConditionalAdvice(BaseModel):
         default=[],
         description="A list of advice about what you should not do and avoid.",
     )
+    positive_outcomes: Optional[List[str]] = Field(
+        default=[],
+        description="A list of potential positive outcomes in case the user follows the advice.",
+    )
 
     def to_html(self) -> str:
         return f"""{self.to_advice_html()}
 
 <h2>What to avoid</h2>
 {self.to_avoid_html()}
+
+<h2>Positive outcomes</h2>
+{self.positive_outcomes_html()}
 """
 
     def to_advice_html(self) -> str:
@@ -83,6 +90,9 @@ class ConditionalAdvice(BaseModel):
 
     def to_avoid_html(self) -> str:
         return self.html_convert(self.what_you_should_avoid)
+    
+    def positive_outcomes_html(self) -> str:
+        return self.html_convert(self.positive_outcomes)
 
     def html_convert(self, list: List[str]) -> str:
         html = "<ul>"

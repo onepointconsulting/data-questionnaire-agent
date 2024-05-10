@@ -28,6 +28,8 @@ def test_has_advice_questionnaire():
     )
     res: ConditionalAdvice = chain.run(conditional_advice_input)
     assert res.has_advice is True
+    print("************ ADIVCE ***************")
+    print(res.to_html())
 
 
 # def test_has_no_advice_questionnaire():
