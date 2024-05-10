@@ -87,7 +87,9 @@ human_message = """Based on the best practices and knowledge base and answers to
 please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
 if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
 or are not related to the questions you should refrain from giving advice.
+
 Also include 3 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
+Please also describe 3 potential positive outcomes in case the customer follows the suggested advices.
 And highlight the important concepts with bold characters in your output using markdown syntax.
 
 Make sure not to enumerate the advices if you decide to give them.
