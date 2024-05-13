@@ -6,16 +6,19 @@ from data_questionnaire_agent.config import web_server_cfg
 from data_questionnaire_agent.server.questionnaire_server import app, routes
 
 
+FILE_INDEX = "index.html"
+PATH_INDEX = web_server_cfg.ui_folder / FILE_INDEX
+
+
 async def get_index(request: web.Request) -> web.Response:
-    print("get_index")
-    return web.FileResponse(web_server_cfg.ui_folder / "index.html")
+    return web.FileResponse(PATH_INDEX)
 
 
 if __name__ == "__main__":
     for i in range(10):
         app.router.add_get(f"/{i}", get_index)
     app.add_routes(routes)
-    app.router.add_static("/", path=web_server_cfg.ui_folder.as_posix(), name="ui")
+    app.router.add_static("/", path=PATH_INDEX.as_posix(), name="ui")
     loop = asyncio.new_event_loop()
 
     web.run_app(
