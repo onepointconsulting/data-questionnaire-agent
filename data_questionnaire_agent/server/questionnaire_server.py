@@ -311,6 +311,7 @@ async def send_error(sid: str, session_id: str, error_message: str):
 async def get_pdf(request: web.Request) -> web.Response:
     session_id = extract_session(request)
     questionnaire, advices = await query_questionnaire_advices(session_id)
+    logger.info("PDF advices: %s", advices)
     report_path = generate_pdf_from(questionnaire, advices)
     logger.info("PDF report_path: %s", report_path)
     content_disposition = "attachment"
