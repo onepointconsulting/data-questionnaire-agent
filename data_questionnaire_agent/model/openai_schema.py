@@ -81,7 +81,7 @@ class ConditionalAdvice(BaseModel):
 <h2>What to avoid</h2>
 {self.to_avoid_html()}
 
-<h2>Positive outcomes</h2>
+<h2>Potential positive outcomes</h2>
 {self.positive_outcomes_html()}
 """
 
