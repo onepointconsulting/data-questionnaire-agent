@@ -20,6 +20,7 @@ def generate_html(questionnaire: Questionnaire, advices: ConditionalAdvice) -> s
         "questionnaire": questionnaire.to_html(),
         "advices": replace_bold_markdown(advices.to_advice_html()),
         "avoids": replace_bold_markdown(advices.to_avoid_html()),
+        "positive_outcomes": replace_bold_markdown(advices.positive_outcomes_html()),
         "timestamp": timestamp,
     }
     template_loader = jinja2.FileSystemLoader(cfg.template_location)
@@ -33,9 +34,11 @@ def generate_pdf_from(questionnaire: Questionnaire, advices: ConditionalAdvice) 
         return None
     html = generate_html(questionnaire, advices)
     file_name = (
-        cfg.pdf_folder / f"Advice from the {cfg.product_title}_{generate_iso()}.pdf"
+        cfg.pdf_folder /
+        f"Advice from the {cfg.product_title}_{generate_iso()}.pdf"
     )
-    config = pdfkit.configuration(wkhtmltopdf=cfg.wkhtmltopdf_binary.as_posix())
+    config = pdfkit.configuration(
+        wkhtmltopdf=cfg.wkhtmltopdf_binary.as_posix())
     pdfkit.from_string(html, file_name, configuration=config)
     logger.info("Created PDF: %s", file_name)
     return file_name

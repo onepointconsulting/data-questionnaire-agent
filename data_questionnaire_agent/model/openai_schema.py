@@ -1,4 +1,5 @@
 from typing import List, Optional, Union
+from data_questionnaire_agent.translation import t
 
 from pydantic import Field
 
@@ -57,7 +58,6 @@ class ResponseTags(BaseModel):
 
 class ConditionalAdvice(BaseModel):
     """If there is enough information to give advice then advice will be available here."""
-
     has_advice: bool = Field(
         ...,
         description="Whether there is advice here or not",
@@ -83,6 +83,7 @@ class ConditionalAdvice(BaseModel):
 
 <h2>Positive outcomes</h2>
 {self.positive_outcomes_html()}
+
 """
 
     def to_advice_html(self) -> str:
@@ -90,7 +91,7 @@ class ConditionalAdvice(BaseModel):
 
     def to_avoid_html(self) -> str:
         return self.html_convert(self.what_you_should_avoid)
-    
+
     def positive_outcomes_html(self) -> str:
         return self.html_convert(self.positive_outcomes)
 
@@ -101,16 +102,26 @@ class ConditionalAdvice(BaseModel):
         html += "</ul>"
         return html
 
-    def to_markdown(self) -> str:
-        markdown = "# What you should do ...\n\n"
+    def to_markdown(self, language) -> str:
 
+        # Add translation to markdown
+        translated_title = t("What_you_should_do", locale=language)
+        positive_title = t("Positive_outcomes", locale=language)
+        avoid_title = t("What_you_should_avoid", locale=language)
+
+        markdown = f"# {translated_title} ...\n\n"
         for advice in self.advices:
             markdown += f"- {advice}\n\n"
 
         if self.what_you_should_avoid is not None:
-            markdown += "# What you should avoid ... \n\n"
+            markdown += f"# {avoid_title} ...\n\n"
             for avoid in self.what_you_should_avoid:
                 markdown += f"- {avoid}\n\n"
+
+        if self.positive_outcomes is not None:
+            markdown += f"# {positive_title} ...\n\n"
+            for positive_outcome in self.positive_outcomes:
+                markdown += f"- {positive_outcome}\n\n"
 
         return markdown
 

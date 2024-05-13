@@ -67,21 +67,19 @@ system_message = "I can answer your questions about refugee and immigrant suppor
 human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {questions} === INPUT END === Can you please answer all questions you see related to refugee and immigrant support services? If the questions are unrelated, kindly inform the user that your expertise lies in support services. Please keep your answers concise and informative."""
 
 [advice]
-system_message = """You are a British data integration and gouvernance advisor \
-that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems \
-You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present. You use British English."""
+system_message = """You are a refugees and immigrants advisor \
+that gives advice about refugees and displaced people integration and immigrants to help a user with new integration and new place problems \
+You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present. You use Offical Persian/Farsi."""
 human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
-if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
+please generate a series of at most 5 advices that are helpful to this user to solve refugees and immigrants issues \
+if the user has given enough information in his answers to your questions. So if the answers of the user are too vague and lack detail \
 or are not related to the questions you should refrain from giving advice.
-
-Also include 3 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
-Please also describe 3 potential positive outcomes in case the customer follows the suggested advices.
+Also include 3 pieces of advice about what the user should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
 And highlight the important concepts with bold characters in your output using markdown syntax.
 
 Make sure not to enumerate the advices if you decide to give them.
-The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
-The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== و به پایان می رسد ==== KNOWLEDGE BASE END ====.
+The questions and answers section answered by the user starts with ==== QUESTIONNAIRE ==== و به پایان می رسد ==== QUESTIONNAIRE END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -91,26 +89,21 @@ The questions and answers section answered by the customer starts with ==== QUES
 
 Here is an example of a questionnaire with answers that are too vague to which you should not give advice:
 ==== QUESTIONNAIRE EXAMPLE ====
-question: Which area of your data ecosystem are you most concerned about?
-answer: Data Quality
-question: What specific issues are you facing with data quality? Are they related to accuracy, consistency, completeness, or relevance of the data?
-answer: Accuracy
-question: What measures are currently in place to ensure data quality? Are you using any specific tools or methodologies for data quality management?
-answer: We are using an MDM product.
+question: What challenges are you currently facing as a refugee?
+answer: Document
+question: Have you lost your identity card or has it been stolen in Austria??
+answer: lost.
+question: Have you reported the loss of your identity card to the local passport authority in Austria?
+answer: Not reported.
 ==== QUESTIONNAIRE EXAMPLE END ====
 
 Here is an example of a questionnaire with answers that have enough detail to which you should give advices:
 ==== QUESTIONNAIRE EXAMPLE ====
-question: Which area of your data ecosystem are you most concerned about?
-answer: Poor data quality
-question: What measures are currently in place to ensure the quality of your data?
-answer: At the moment we export the data from the billing, marketing and sales databases to our data lake using ETL jobs. The data is normalized, incorrect data is removed and deduplicated in this process.
-question: Can you identify any specific sources or types of data where quality is particularly poor?
-answer: Yes, customer data. It is often incorrect and has many duplicates.
-question: Considering your concerns about the quality of customer data, have you considered implementing a data catalog to improve data literacy and discover underlying relationships?
-answer: Yes, but we have not done so. Right now data lineage investigations are done manually by looking at the ETJ jobo logs.
-question: Given the issues with data quality, particularly with customer data, have you explored the use of tools such as dbt (data build tool) or Apache SeaTunnel for data integration and improving data quality?
-answer: Not yet, but I would like to know about it.
+question: What challenges are you currently facing as a refugee?
+answer: Document-related issues 
+question: Have you lost your identity card or has it been stolen in Austria??
+answer: Yes, it has been lost, while travling from centeral train station.
+question: Have you reported the loss of your identity card to the local passport authority in Austria?
+answer: No, I have not reported it yet, i would appricate some help with the procces.
 ==== QUESTIONNAIRE EXAMPLE END ====
-
 """

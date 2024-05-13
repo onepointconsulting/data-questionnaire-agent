@@ -4,3 +4,6 @@ fa:
   no_report_id: "شناسه گزارش در دسترس نیست"
   no_answer_from_chatgpt: "هیچ پاسخی از ChatGPT دریافت نشد"
   failed_insert_question: "عدم موفقیت در وارد کردن سوال در پایگاه داده"
+  What_you_should_do: "چه کاری باید انجام دهید؟"
+  What_you_should_avoid: "چه چیزی باید اجتناب کنید؟"
+  Positive_outcomes: "نتایج مثبت"

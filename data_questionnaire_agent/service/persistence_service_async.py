@@ -93,7 +93,7 @@ LIMIT 1
         return res[0][0]
 
 
-async def select_questionnaire_statuses(session_id: str) -> List[QuestionnaireStatus]:
+async def select_questionnaire_statuses(session_id: str, language: str = "en") -> List[QuestionnaireStatus]:
     res = await select_from(
         """select id, session_id, question, answer, final_report, created_at, updated_at from tb_questionnaire_status
 where session_id = %(session_id)s order by id asc""",
@@ -114,7 +114,7 @@ where session_id = %(session_id)s order by id asc""",
         question = r[QUESTION]
         if final_report:
             conditional_advice = ConditionalAdvice.parse_raw(question)
-            question = conditional_advice.to_markdown()
+            question = conditional_advice.to_markdown(language)
         final_res.append(
             QuestionnaireStatus(
                 id=r[ID],
@@ -184,7 +184,7 @@ WHERE SESSION_ID = %(session_id)s {include_last_sql} ORDER BY ID""",
             conditional_advice = ConditionalAdvice.parse_raw(r[0])
             questions.append(
                 QuestionAnswer(
-                    question=conditional_advice.to_markdown(),
+                    question=conditional_advice.to_markdown(language),
                     answer=r[1],
                     clarification=None,
                 )
