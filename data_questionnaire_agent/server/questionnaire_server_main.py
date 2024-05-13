@@ -3,7 +3,7 @@ import asyncio
 from aiohttp import web
 from data_questionnaire_agent.config import websocket_cfg
 from data_questionnaire_agent.config import web_server_cfg
-from data_questionnaire_agent.server.questionnaire_server import app, routes
+from data_questionnaire_agent.server.questionnaire_server import MAX_SESSION_STEPS, app, routes
 
 
 FILE_INDEX = "index.html"
@@ -15,7 +15,7 @@ async def get_index(request: web.Request) -> web.Response:
 
 
 if __name__ == "__main__":
-    for i in range(10):
+    for i in range(MAX_SESSION_STEPS):
         app.router.add_get(f"/{i}", get_index)
     app.add_routes(routes)
     app.router.add_static("/", path=PATH_INDEX.as_posix(), name="ui")
