@@ -91,8 +91,8 @@ async def connect(sid: str, environ):
 
 
 @sio.event
-def disconnect(sid, environ):
-    logger.info(f"disconnect {sid} {environ}")
+def disconnect(sid):
+    logger.info(f"disconnect {sid}")
 
 
 @sio.event
