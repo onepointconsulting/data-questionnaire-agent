@@ -114,7 +114,7 @@ clarification_agent = instantiate_clarification_agent()
 
 async def initial_message():
     initial_message = f"""
-### Hello! I will ask you a few questions (around {cfg.minimum_questionnaire_size}) about your data ecosystem. At the end, you will get recommendations and suggested courses of action.
+### Hello! I will ask you a few questions (around {cfg.minimum_questionnaire_size}) about your situation as a refugee. At the end, you will get recommendations and suggested courses of action.
 
 - Onepoint’s Data & Analytics Body of Knowledge is the basis for the diagnostics and recommendations.
 - If you’d like, you can ask for a copy of the results to be emailed to you.
@@ -162,11 +162,13 @@ async def setup_agent(settings: cl.ChatSettings):
 async def process_questionnaire(
     settings: cl.ChatSettings, cb: OpenAICallbackHandler
 ) -> APP_STATE:
-    minimum_number_of_questions: int = int(settings[MINIMUM_NUMBER_OF_QUESTIONS])
+    minimum_number_of_questions: int = int(
+        settings[MINIMUM_NUMBER_OF_QUESTIONS])
     question_per_batch: int = int(settings[QUESTION_PER_BATCH])
     initial_question: str = settings[INITIAL_QUESTION]
 
-    current_counter = cl.user_session.get("session_counter").increment_and_get()
+    current_counter = cl.user_session.get(
+        "session_counter").increment_and_get()
 
     await setup_avatar()
 
@@ -253,7 +255,8 @@ async def loop_questions(
             )
             if latest_counter != current_counter:
                 # This means that the current session needs to be terminated
-                logger.warn("%s != %s", type(latest_counter), type(current_counter))
+                logger.warn("%s != %s", type(latest_counter),
+                            type(current_counter))
                 logger.warn("%s != %s", latest_counter, current_counter)
                 return False
             response = await cl.AskUserMessage(

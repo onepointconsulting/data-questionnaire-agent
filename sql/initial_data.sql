@@ -1,6 +1,7 @@
 -- Add language
 INSERT INTO public.tb_language(language_code) VALUES ('en');
 INSERT INTO public.tb_language(language_code) VALUES ('fa');
+INSERT INTO public.tb_language(language_code) VALUES ('de');
 
 -- Initial question
 INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER, LANGUAGE_ID)

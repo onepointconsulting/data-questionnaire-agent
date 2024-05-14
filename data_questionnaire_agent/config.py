@@ -86,7 +86,7 @@ class Config:
         "wait": tenacity.wait_fixed(wait_fixed),
     }
 
-    product_title = "Onepoint Data Wellness Companion™"
+    product_title = "HopeLink Chat Companion™"
     tracker_db_logs_password = os.getenv("TRACKER_DB_LOGS_PASSWORD")
 
     translation_path = os.getenv("TRANSLATION_PATH")
@@ -116,7 +116,8 @@ mail_config = MailConfig()
 class WebsocketConfig:
     websocket_server = os.getenv("WEBSOCKET_SERVER", "0.0.0.0")
     websocket_port = int(os.getenv("WEBSOCKET_PORT", 8080))
-    websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
+    websocket_cors_allowed_origins = os.getenv(
+        "WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
 
 
 websocket_cfg = WebsocketConfig()
@@ -144,7 +145,16 @@ class DBConfig:
     db_password = os.getenv("DB_PASSWORD")
     assert db_password is not None
 
-    db_conn_str = f"dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}"
+    # db_conn_str = f"dbname={db_name} user={db_user} password={
+    #     db_password} host={db_host} port={db_port}"
+
+    db_conn_str = f"""
+    dbname={db_name}
+    user={db_user}
+    password={db_password}
+    host={db_host}
+    port={db_port}
+    """
 
 
 db_cfg = DBConfig()

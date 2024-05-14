@@ -1,0 +1,131 @@
+[general_messages]
+
+tip_correct_format = "Tipp: Achten Sie darauf, Ihre Antworten klar und prägnant zu formulieren."
+tip_language = "Tipp: Bitte beantworten Sie alle Fragen in förmlichem Deutsch."
+tool_name = "HopeLink Chat Companion"
+
+[general_settings]
+
+questions_per_batch = 1
+minimum_number_of_questions = 4
+
+[questionnaire]
+
+[questionnaire.initial]
+
+question = "Was sind die aktuellen Herausforderungen, mit denen Sie als Flüchtling konfrontiert sind?"
+
+system_message = "Sie sind ein Ressourcenassistent, der sich mit Unterstützungsdiensten für Flüchtlinge und Einwanderer auskennt. Wir können Ihnen helfen, Informationen zu finden und Fragen zu Neuansiedlung, Rechtshilfe, Sprachintegration, Familienzusammenführung und anderen Ressourcen zu beantworten. Bitte verwenden Sie in Ihren Antworten formales Englisch."
+
+human_message = """Basierend auf verfügbaren Ressourcen und auf einer Antwort auf eine Frage eines Benutzers generieren Sie bitte {questions_per_batch} Fragen, die für diesen Benutzer hilfreich sind, um relevante Unterstützungsdienste zu finden, und stellen Sie sicher, dass die richtigen Informationsstellen und Links angegeben werden.
+Der Ressourcenbereich beginnt mit ==== RESOURCES START ==== und endet mit ==== RESOURCES END ====.
+Die dem Benutzer gestellte Frage beginnt mit ==== QUESTION ==== und endet mit ==== QUESTION END ====.
+Die vom Benutzer bereitgestellte Antwort beginnt mit ==== ANSWER ==== und endet mit ==== ANSWER END ====.
+
+
+==== RESOURCES START ====
+{knowledge_base}
+==== RESOURCES END ====
+==== QUESTION ====
+{question}
+==== QUESTION END ====
+==== ANSWER ====
+{answer}
+==== ANSWER END ====
+"""
+
+[questionnaire.secondary]
+
+system_message = "Sie sind ein Ressourcenassistent, der sich mit Unterstützungsdiensten für Flüchtlinge und Einwanderer auskennt. Wir können Ihnen helfen, Informationen zu finden und Fragen zu Neuansiedlung, Rechtshilfe und anderen Ressourcen zu beantworten. Bitte verwenden Sie in Ihren Antworten formales Deutsch."
+
+
+human_message = """Basierend auf einer verfügbaren Wissensdatenbank und den Antworten auf mehrere Fragen eines Benutzers generieren Sie bitte {questions_per_batch} Fragen, die für diesen Benutzer hilfreich sind, um relevante Unterstützungsdienste zu finden.
+
+
+Der Ressourcenabschnitt beginnt mit ==== RESOURCES START ==== und endet mit ==== RESOURCES END ====.
+Der vom Benutzer beantwortete Abschnitt mit Fragen und Antworten beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
+Die Benutzerantworten finden Sie im Abschnitt, der mit beginnt ==== ANSWERS ==== und endet mit ==== ANSWERS END ====.
+
+==== RESOURCES START ====
+{knowledge_base}
+==== RESOURCES END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+==== ANSWERS ====
+{answers}
+==== ANSWERS END ====
+"""
+
+[questionnaire.clarification]
+
+system_message = "Ich kann Ihnen helfen, Ihre Fragen zu verdeutlichen. Bitte formulieren Sie Ihre Frage anders."
+human_message = """Bitte formulieren Sie die folgende Frage einfacher:
+{question}
+""" 
+
+[tagging]
+
+system_message = "You are an expert in terms of getting different types of sentiments from sentences."
+
+
+human_message = """Gegeben diese Eingabe, die mit === EINGABE START === und endet mit === EINGABE ENDE === === EINGABE START === {answer} === EINGABE ENDEE === Können Sie mir sagen, ob sie ein Gefühl von Verwirrung, Frustration oder Hoffnung ausdrückt?"""
+
+
+
+[clarifications] 
+
+system_message = "Ich kann Ihre Fragen zu Unterstützungsdiensten für Flüchtlinge und Einwanderer beantworten."  
+
+human_message = """Angesichts dieser Eingabe beginnt das mit === EINGABE START === und endet mit === EINGABE ENDE === === EINGABE START === {questions} === EINGABE ENDE === Können Sie bitte alle Fragen beantworten, die sich auf Unterstützungsdienste für Flüchtlinge und Einwanderer beziehen? Wenn die Fragen sich nicht auf dieses Thema beziehen, informieren Sie den Benutzer bitte freundlich darüber, dass Ihre Expertise bei Unterstützungsdiensten liegt. Bitte halten Sie Ihre Antworten prägnant und informativ."""
+
+
+[advice]
+system_message = """Sie sind ein Berater für Flüchtlinge und Einwanderer \
+Das gibt Ratschläge zur Integration von Flüchtlingen und Vertriebenen sowie zu Einwanderern, um einem Benutzer bei neuen Integrations- und neuen Wohnortproblemen zu helfen.
+Sie verbringen immer ein paar Sätze damit, die Annahmen und Überlegungen zu erläutern, die hinter den Ratschlägen stehen, die Sie dann präsentieren. Sie verwenden Deutsch."""
+
+
+human_message = """Basierend auf den Best Practices und der Wissensdatenbank sowie Antworten auf mehrere von einem Kunden beantwortete Fragen, \
+Bitte erstellen Sie eine Reihe von höchstens 5 Ratschlägen, die für diesen Benutzer hilfreich sind, um Probleme mit Flüchtlingen und Einwanderern zu lösen \
+ob der Benutzer in seinen Antworten auf Ihre Fragen genügend Informationen gegeben hat. Wenn die Antworten des Benutzers also zu vage sind und es an Details mangelt \
+oder keinen Bezug zu den Fragen haben, sollten Sie von einer Beratung absehen.
+
+Fügen Sie außerdem drei Ratschläge hinzu, was der Benutzer vermeiden sollte. Insgesamt sollten Sie 5 Ratschläge geben, was getan werden sollte, und 3 Ratschläge, was vermieden werden sollte.
+Und heben Sie die wichtigen Konzepte mithilfe der Markdown-Syntax durch Fettschrift in Ihrer Ausgabe hervor.
+
+
+Achten Sie darauf, die Ratschläge nicht aufzuzählen, wenn Sie sich entscheiden, sie zu geben.
+
+Der Abschnitt Wissensdatenbank beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
+
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+
+
+Hier ist ein Beispiel für einen Fragebogen mit Antworten, die zu vage sind, um Ratschläge zu erteilen:
+
+==== QUESTIONNAIRE EXAMPLE ====
+
+Frage: Mit welchen Herausforderungen sehen Sie sich als Flüchtling derzeit konfrontiert?
+Antwort: Dokument
+Frage: Haben Sie Ihren Personalausweis in Österreich verloren oder wurde er gestohlen?
+Antwort: Verloren.
+Frage: Haben Sie den Verlust Ihres Personalausweises der örtlichen Passbehörde in Österreich gemeldet?
+Antwort: Nicht gemeldet.
+==== QUESTIONNAIRE EXAMPLE END ====
+
+Hier ist ein Beispiel für einen Fragebogen mit detaillierten Antworten, zu denen Sie Ratschläge geben können:
+
+==== QUESTIONNAIRE EXAMPLE ====
+Frage: Mit welchen Herausforderungen sehen Sie sich als Flüchtling derzeit konfrontiert?
+Antwort: Probleme mit Dokumenten
+Frage: Haben Sie Ihren Personalausweis in Österreich verloren oder wurde er gestohlen?
+Antwort: Ja, er wurde gestohlen, während ich vom Hauptbahnhof aus reiste.
+Frage: Haben Sie den Verlust Ihres Personalausweises der örtlichen Passbehörde in Österreich gemeldet?
+Antwort: Nein, ich habe es noch nicht gemeldet. Ich würde mich über Hilfe bei diesem Vorgang freuen.
+==== QUESTIONNAIRE EXAMPLE END ===="""
