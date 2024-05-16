@@ -69,13 +69,13 @@ MAIL_FROM=<some valid email sender>
 MAIL_SERVER=smtp.gmail.com:587
 
 # General stuff
-PROJECT_ROOT=/development/playground/langchain/data_questionnaire_agent
-QUESTION_CACHE_FOLDER=/tmp/data_questionnaire_agent/cache
+PROJECT_ROOT=./development/playground/langchain/data_questionnaire_agent
+QUESTION_CACHE_FOLDER=./tmp/data_questionnaire_agent/cache
 
 # PDF Related
-WKHTMLTOPDF_BINARY=/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe
-TEMPLATE_LOCATION=/development/playground/langchain/data_questionnaire_agent/templates
-PDF_FOLDER=/tmp/data_questionnaire_agent/pdfs
+WKHTMLTOPDF_BINARY=./Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe
+TEMPLATE_LOCATION=./development/playground/langchain/data_questionnaire_agent/templates
+PDF_FOLDER=./tmp/data_questionnaire_agent/pdfs
 
 # Whether to show the task list or not
 TASKLIST=false
@@ -85,8 +85,8 @@ SHOW_CHAIN_OF_THOUGHT=true
 
 # Embedding related
 # The following property is where your knowledge base is located
-RAW_TEXT_FOLDER=/development/playground/langchain/data_questionnaire_agent/docs/raw_text
-EMBEDDINGS_PERSISTENCE_DIR=/development/playground/langchain/data_questionnaire_agent/embeddings
+RAW_TEXT_FOLDER=./development/playground/langchain/data_questionnaire_agent/docs/raw_text
+EMBEDDINGS_PERSISTENCE_DIR=./development/playground/langchain/data_questionnaire_agent/embeddings
 EMBEDDINGS_CHUNK_SIZE=2500
 SEARCH_RESULTS_HOW_MANY=2
 
@@ -109,7 +109,7 @@ OPENAI_WAIT_FIXED=30
 
 # SQLLite DB related
 # Optional
-ONEPOINT_SQL_LITE_DB=/tmp/SQL_LITE_DB.db
+ONEPOINT_SQL_LITE_DB=./tmp/SQL_LITE_DB.db
 
 # Related to the tracker DB download
 TRACKER_DB_LOGS_PASSWORD=<pass>

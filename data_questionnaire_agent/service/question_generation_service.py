@@ -2,7 +2,7 @@ from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains.openai_functions import create_structured_output_chain
-from langchain import LLMChain
+from langchain.chains import LLMChain
 
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,

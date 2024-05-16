@@ -1,0 +1,38 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+            "name": "Debug",
+			"type": "python",
+            "request": "launch",
+            "module": "chainlit",
+			// "debugServer": 4711,
+
+            // "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "run",
+                "${file}",
+                "--port",
+                "8080"
+            ],
+            "host": "localhost",
+            "port": 5678,
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ]
+        }
+
+		]
+	}
+}

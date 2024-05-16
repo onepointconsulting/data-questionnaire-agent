@@ -6,6 +6,8 @@ from langchain.schema import Document
 from langchain.document_loaders import TextLoader
 
 from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
+from langchain.vectorstores.faiss import FAISS
 
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import cfg
@@ -51,9 +53,19 @@ def log_stats(documents: List[Document]):
     counts = []
     for d in documents:
         counts.append(count_words(d))
-    logger.info(f"Tokens Max {np.max(counts)}")
-    logger.info(f"Tokens Min {np.min(counts)}")
-    logger.info(f"Tokens Min {np.mean(counts)}")
+    try:        
+        logger.info(f"Tokens Max {np.max(counts)}")
+    except Exception as e:
+        logger.exception("Failed to log statistics | logger.info Tokens Max")
+    try:        
+        logger.info(f"Tokens Min {np.min(counts)}")
+    except Exception as e:
+        logger.exception("Failed to log statistics | logger.info Tokens Min")
+    try:        
+        logger.info(f"Tokens Min {np.mean(counts)}")
+    except Exception as e:
+        logger.exception("Failed to log statistics | logger.info Tokens Mean")
+    
 
 
 def count_words(document: Document) -> int:

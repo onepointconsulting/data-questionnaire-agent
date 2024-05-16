@@ -1,0 +1,34 @@
+id,operation,user_id,session_id,message,timestamp
+1,connection_start,,U_7hLfTJkBFS07MHAAAB,Connection started,2024-05-16 16:36:24
+2,new_message,,U_7hLfTJkBFS07MHAAAB,"
+The project consists of the following services:
+
+Frontend: A React application that provides the user interface for interacting with the chatbot.
+
+Service2: A Python (FastAPI)-based backend that coordinates the communication between the frontend and Service3. This service also manages the interaction history between the user and the chatbot.
+
+Service3: Another Python (FastAPI)-based backend hosting the chatbot algorithm. This service communicates with the AI engine (OpenAI GPT-3.5-turbo) to process user queries and generate suitable responses.
+
+Redis: A Redis server used for state storage across the services.
+
+Postgres: A Postgres server acting as a database for storing vector embeddings.
+
+
+To get the project up and running, make sure Docker is installed on your system.
+
+Then, run the following command:
+
+docker-compose up
+This command starts all services using the docker-compose.yml file. It downloads the necessary Docker images, creates associated containers, and gets them running together.
+
+Data Population
+The provided insert_data.py script can be used to populate the Postgres database with your data. To do this, run the script once the services are up and running. It will connect to the Postgres service, create the necessary tables, and insert data into them.
+
+<strong>Test</strong>
+
+",2024-05-16 16:36:24
+3,ask,,U_7hLfTJkBFS07MHAAAB,/home/cnmfs/miniconda3/envs/conda_data_quest_agent_3.11/lib/python3.11/site-packages/chainlit/frontend/dist:: What is your name?,2024-05-16 16:36:24
+4,user_message,,U_7hLfTJkBFS07MHAAAB,camilla,2024-05-16 16:36:31
+5,new_message,,U_7hLfTJkBFS07MHAAAB,"Your name is: camilla.
+Chainlit installation is working!
+You can now start building your own chainlit apps!",2024-05-16 16:36:31

@@ -1,3 +1,8 @@
+# import debugpy
+
+# debugpy.listen(5678)
+
+
 from pathlib import Path
 import os
 
@@ -40,15 +45,19 @@ class Config:
     verbose_llm = os.getenv("VERBOSE_LLM") == "true"
     ui_timeout = int(os.getenv("UI_TIMEOUT"))
     project_root = Path(os.getenv("PROJECT_ROOT"))
+    print("\n✴️  project_root", project_root)
     assert project_root.exists()
     question_cache_folder = os.getenv("QUESTION_CACHE_FOLDER")
     question_cache_folder_path = Path(question_cache_folder)
 
     create_if_not_exists(question_cache_folder_path)
     wkhtmltopdf_binary = Path(os.getenv("WKHTMLTOPDF_BINARY"))
+    
     assert wkhtmltopdf_binary.exists()
     template_location = Path(os.getenv("TEMPLATE_LOCATION"))
-    assert template_location.exists()
+    print(f"\n✴️ template_location", template_location)
+
+    assert template_location.exists() #template_location.is_dir()
     pdf_folder = Path(os.getenv("PDF_FOLDER"))
     create_if_not_exists(pdf_folder)
     use_tasklist = os.getenv("TASKLIST") == "true"

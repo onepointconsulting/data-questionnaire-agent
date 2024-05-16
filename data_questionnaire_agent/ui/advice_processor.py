@@ -4,7 +4,7 @@ import chainlit as cl
 from asyncer import asyncify
 
 from langchain.vectorstores import FAISS
-from langchain import LLMChain
+from langchain.chains import LLMChain
 
 from data_questionnaire_agent.model.application_schema import Questionnaire
 
