@@ -47,7 +47,7 @@ async def display_advice(conditional_advice: ConditionalAdvice):
     if advice_amount > 0:
         pieces = "piece" if advice_amount == 1 else "pieces"
         await cl.Message(
-            content=f"You have {advice_amount} {pieces} of advice.",
+            content=f"Você tem {advice_amount} {pieces} conselhos.",
             author=AVATAR["CHATBOT"],
         ).send()
         advice_markdown = "\n- ".join(conditional_advice.advices)
