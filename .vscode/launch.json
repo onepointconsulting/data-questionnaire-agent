@@ -9,14 +9,16 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false
         },
         {
             "name": "Python: Attach",
             "type": "python",
             "request": "attach",
             "port": 5678,
-            "host": "localhost"
+            "host": "localhost",
+            "justMyCode": false
         },
         {
             "name": "Python: Module",
@@ -29,6 +31,7 @@
                 "--port",
                 "8080"
             ],
+            "justMyCode": false
         },
        
               {
@@ -74,7 +77,8 @@
                     "localRoot": "${workspaceFolder}",
                     "remoteRoot": "."
                 }
-            ]
+            ],
+            "justMyCode": false
         }
             ]
 

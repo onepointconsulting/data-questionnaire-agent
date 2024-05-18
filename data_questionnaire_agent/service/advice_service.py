@@ -1,11 +1,18 @@
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from langchain.chains.llm import LLMChain
-from langchain.prompts import ChatPromptTemplate
+# from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
 
 # from langchain.chains.openai_functions import create_structured_output_chain
-from langchain.chains.openai_functions import create_structured_output_runnable as create_structured_output_chain
-from langchain.prompts import ChatPromptTemplate
+# from langchain.chains.openai_functions import create_structured_output_runnable as create_structured_output_chain
+from langchain.chains.openai_functions import create_structured_output_chain
+from langchain_core.prompts import (
+    PromptTemplate,
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
+# from langchain.prompts import ChatPromptTemplate
 
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,

@@ -11,7 +11,7 @@ class BaseModel(PydanticBaseModel):
 
 
 class ResponseQuestions(BaseModel):
-    """Contains the questions used to gather information to be able to give a customer advice"""
+    # XXX: """Contém as perguntas usadas para coletar informações para poder aconselhar um cliente"""
 
     questions: List[str] = Field(
         ...,
@@ -23,7 +23,7 @@ class ResponseQuestions(BaseModel):
 
 
 class ResponseTags(BaseModel):
-    """Contains information about the answer given by the user"""
+    # XXX: """Contém informações sobre a resposta dada pelo usuário"""
 
     has_questions: bool = Field(
         ...,
@@ -44,7 +44,7 @@ class ResponseTags(BaseModel):
 
 
 class ConditionalAdvice(BaseModel):
-    """If there is enough information to give advice then advice will be available here."""
+    # XXX: """Se houver informações suficientes para dar conselhos, então os conselhos estarão disponíveis aqui."""
 
     has_advice: bool = Field(
         ...,
