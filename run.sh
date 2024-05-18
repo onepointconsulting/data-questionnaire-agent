@@ -1,13 +1,26 @@
 
 # SETUP
 
-conda activate base
-conda remove -n data_integration_questionnaire_agent --all
-conda create -n data_integration_questionnaire_agent python=3.11 --yes
+# . ./init.sh
+# pipx install --suffix=@1.2.0 poetry==1.7.0
 conda activate data_integration_questionnaire_agent
-pip install poetry
+
+python3 -m pip install --user --upgrade pipx
+conda install -c conda-forge pipx --yes
+pipx ensurepath    
+
+# pipx install --suffix=@1.8.2 poetry==1.8.2 --python $(which python)
+pipx install poetry==1.8.2 --python $(which python)
+# pipx reinstall poetry==1.8.2 --python $(which python)
 
 
+poetry lock
+
+# INSTALLATION
+poetry install   && \
+poetry add --editable ./wheels/chainlit-0.7.8.10-py3-none-any.whl
+
+# pip install langchain-community faiss-cpu langchain-openai tiktoken  
 
 # Installation
 
@@ -18,7 +31,7 @@ poetry add --editable ./wheels/chainlit-0.7.8.10-py3-none-any.whl
 # Running
 
 # PREPARE
-python ./data_questionnaire_agent/utils/tracker_db_init.py
+python ./data_questionnaire_agent/utils/tracker_db_init.pypoer
 
 # RUNNING
 
