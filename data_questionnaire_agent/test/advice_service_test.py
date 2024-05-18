@@ -27,6 +27,8 @@ def test_has_advice_questionnaire():
         knowledge_base, questions_answers
     )
     res: ConditionalAdvice = chain.run(conditional_advice_input)
+    # res: ConditionalAdvice = chain.invoke(conditional_advice_input)
+    
     assert res.has_advice is True
 
 

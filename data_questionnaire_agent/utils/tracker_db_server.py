@@ -16,7 +16,7 @@ async def get_report(request: Request):
 
     if security_key != cfg.tracker_db_logs_password:
         raise HTTPException(status_code=403, detail=f"Please add the {PARAM_SECURITY_KEY} query parameter with the correct security key")
-
+    # XXX : csv_file = cfg.project_root / "report.csv"
     csv_file = cfg.project_root / "report.csv"
     write_log(csv_file)
 

@@ -27,11 +27,11 @@ def test_initial_question():
         knowledge_base=search_res,
     )
     chain = chain_factory_initial_question()
-    # res: ResponseQuestions = chain.run(input)
-    res: ResponseQuestions = chain.invoke(input)
+    res: ResponseQuestions = chain.run(input)
+    # res: ResponseQuestions = chain.invoke(input)
     assert len(res.questions) > 0
 
     logger.info("Results: ")
     logger.info(res)
 
-# test_initial_question()
+test_initial_question()
