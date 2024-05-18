@@ -1,0 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+@import url("css/layout.css");
+@import url("css/typography.css");
+@import url("css/nodeNavigation.css");
+@import url("css/dialogue.css");
+@import url("css/button.css");
+@import url("css/spinner.css");
+@import url("css/animation.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  --radius: 0.5rem;
+}

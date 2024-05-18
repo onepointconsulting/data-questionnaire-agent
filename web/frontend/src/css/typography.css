@@ -1,0 +1,19 @@
+#root h1 {
+  @apply text-2xl md:text-4xl font-bold mt-1 ml-2 text-white;
+}
+
+#root h2 {
+  @apply text-xl md:text-2xl font-bold mt-1 ml-2;
+}
+
+#root .markdown-body strong {
+  @apply bg-[#e6f3fb] px-2 rounded-lg font-normal;
+}
+
+.experimental {
+  @apply bg-[#f1f4f8] text-[#0084d7] px-2 rounded-lg text-sm md:text-base;
+}
+
+#root a.default-link {
+  @apply underline text-[#0084d7] hover:text-[#0084d7] visited:text-[#0084d7];
+}

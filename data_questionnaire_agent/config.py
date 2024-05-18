@@ -43,9 +43,19 @@ class Config:
         model=model,
         temperature=0,
         request_timeout=request_timeout,
-        cache=False,
+        cache=has_langchain_cache,
+        # cache=False,
         streaming=streaming,
     )
+    llm_stream = ChatOpenAI(
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        model=model,
+        temperature=0,
+        request_timeout=request_timeout,
+        cache=has_langchain_cache,
+        streaming=True,
+    )
+    logger.info(f"Using model {model}")
 
     image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))
     image_llm = OpenAI(temperature=image_llm_temperature)
@@ -65,7 +75,8 @@ class Config:
     template_location = Path(os.getenv("TEMPLATE_LOCATION"))
     print(f"\n✴️ template_location", template_location)
 
-    assert template_location.exists() #template_location.is_dir()
+    assert template_location.exists()
+    #template_location.is_dir()
     pdf_folder = Path(os.getenv("PDF_FOLDER"))
     create_if_not_exists(pdf_folder)
     use_tasklist = os.getenv("TASKLIST") == "true"
@@ -73,6 +84,7 @@ class Config:
 
     # Embedding related
     raw_text_folder = Path(os.getenv("RAW_TEXT_FOLDER"))
+    create_if_not_exists(raw_text_folder)
     embeddings_persistence_dir = Path(os.getenv("EMBEDDINGS_PERSISTENCE_DIR"))
     chunk_size = int(os.getenv("EMBEDDINGS_CHUNK_SIZE"))
     embeddings = OpenAIEmbeddings(chunk_size=chunk_size)
@@ -110,9 +122,46 @@ class MailConfig:
     mail_from_person = os.getenv("MAIL_FROM_PERSON")
     mail_to_name = os.getenv("MAIL_TO_NAME")
     mail_subject = os.getenv("MAIL_SUBJECT")
+    feedback_email = os.getenv("FEEDBACK_EMAIL", "feedback@onepointltd.com")
 
 
 mail_config = MailConfig()
+
+class WebsocketConfig:
+    websocket_server = os.getenv("WEBSOCKET_SERVER", "0.0.0.0")
+    websocket_port = int(os.getenv("WEBSOCKET_PORT", 8080))
+    websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
+
+
+websocket_cfg = WebsocketConfig()
+
+
+class WebServerConfig:
+    ui_folder = Path(os.getenv("UI_FOLDER", "./web/ui"))
+    if not ui_folder.exists():
+        ui_folder.mkdir(parents=True, exist_ok=True)
+
+
+web_server_cfg = WebServerConfig()
+
+
+class DBConfig:
+    db_name = os.getenv("DB_NAME")
+    assert db_name is not None
+    db_user = os.getenv("DB_USER")
+    assert db_user is not None
+    db_host = os.getenv("DB_HOST")
+    assert db_host is not None
+    db_port = os.getenv("DB_PORT")
+    assert db_port is not None
+    db_port = int(db_port)
+    db_password = os.getenv("DB_PASSWORD")
+    assert db_password is not None
+
+    db_conn_str = f"dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}"
+
+
+db_cfg = DBConfig()
 
 if __name__ == "__main__":
     logger.info("Model: %s", cfg.model)

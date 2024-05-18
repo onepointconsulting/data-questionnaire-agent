@@ -1,3 +1,4 @@
+from os import replace
 from pathlib import Path
 import tomli
 from data_questionnaire_agent.config import cfg
@@ -11,10 +12,11 @@ def read_toml(file: Path) -> dict:
 
 def read_prompts_toml() -> dict:
     prompts_file = 'prompts.toml'
+    prompts_file_pt = 'prompts_pt.toml'
     # todo: change this to the correct path
-    shutil.copyfile(prompts_file, f"{cfg.project_root}/{prompts_file}")
+    shutil.copyfile(prompts_file_pt, f"{cfg.project_root}/{prompts_file}")
      
-    return read_toml(cfg.project_root / "prompts.toml")
+    return read_toml(cfg.project_root / prompts_file)
 
 
 prompts = read_prompts_toml()

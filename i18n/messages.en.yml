@@ -1,0 +1,9 @@
+en:
+  db_insert_failed: "Failed to add query to database"
+  db_update_failed: "Failed to update the answer in database"
+  no_report_id: "Report ID is not available"
+  no_answer_from_chatgpt: "Could not get any answers from ChatGPT"
+  failed_insert_question: "Failed to insert question in database"
+  What_you_should_do: "What you should do"
+  What_you_should_avoid: "What you should avoid"
+  Positive_outcomes: "Positive outcomes"

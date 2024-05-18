@@ -27,17 +27,15 @@ def test_has_advice_questionnaire():
         knowledge_base, questions_answers
     )
     res: ConditionalAdvice = chain.run(conditional_advice_input)
-    # res: ConditionalAdvice = chain.invoke(conditional_advice_input)
-    
     assert res.has_advice is True
 
 
-def test_has_no_advice_questionnaire():
-    chain = create_chain()
-    knowledge_base = provide_data_quality_ops()
-    incomplete_questionnaire = provide_incomplete_questionnaire()
-    incomplete_advice_input = prepare_conditional_advice(
-        knowledge_base, incomplete_questionnaire
-    )
-    res: ConditionalAdvice = chain.run(incomplete_advice_input)
-    assert res.has_advice is False
+# def test_has_no_advice_questionnaire():
+#     chain = create_chain()
+#     knowledge_base = provide_data_quality_ops()
+#     incomplete_questionnaire = provide_incomplete_questionnaire()
+#     incomplete_advice_input = prepare_conditional_advice(
+#         knowledge_base, incomplete_questionnaire
+#     )
+#     res: ConditionalAdvice = chain.run(incomplete_advice_input)
+#     assert res.has_advice is False

@@ -26,8 +26,10 @@ def init_vector_search() -> FAISS:
     # Check if directory exists and has something inside
     if embedding_dir_path.exists() and len(list(embedding_dir_path.glob("*"))) > 0:
         logger.info(f"reading from existing directory")
-        docsearch = FAISS.load_local(embedding_dir, cfg.embeddings, allow_dangerous_deserialization=True)
-        return docsearch
+        docsearch = FAISS.load_local(
+            embedding_dir, cfg.embeddings, allow_dangerous_deserialization=True
+        )
+        return docsearch        
     else:
         logger.warning(f"Cannot find path {embedding_dir} or path is empty.")
         doc_location = cfg.raw_text_folder
@@ -64,7 +66,7 @@ def similarity_search(
     attempts = 0
     max_attempts = 4
     while attempts < max_attempts:
-        doc_list = docsearch.similarity_search(input, k=how_many + attempts)
+        doc_list = docsearch.similarity_search(input, k=how_many + attempts)        
         logger.info("Similarity search results: %s", len(doc_list))
         joined = join_pages(doc_list)
         token_count = num_tokens_from_string(joined)

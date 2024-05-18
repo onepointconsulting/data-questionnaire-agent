@@ -15,7 +15,7 @@ class ResponseQuestions(BaseModel):
 
     questions: List[str] = Field(
         ...,
-        description="The list of questions given used to gather information to be able to give a customer advice.",
+        description="A lista de perguntas fornecidas usada para coletar informações para poder aconselhar um cliente.",
     )
 
     def __str__(self) -> str:
@@ -27,19 +27,19 @@ class ResponseTags(BaseModel):
 
     has_questions: bool = Field(
         ...,
-        description="Whether the text with the answers contains embedded questions or not.",
+       description="Se o texto com as respostas contém perguntas incorporadas ou não.",
     )
     sounds_confused: bool = Field(
         ...,
-        description="Whether the text with the answers suggests that the user is confused.",
+        description="Se o texto com as respostas sugere que o usuário está confuso.",
     )
     extracted_questions: Union[List[str], None] = Field(
         ...,
-        description="If the text with the answers contains questions, these are the questions.",
+        description="Se o texto com as respostas contiver perguntas, estas são as perguntas.",
     )
     questions_related_to_data_analytics: bool = Field(
         ...,
-        description="True only if any questions are related to data analytics, data governance or data systems.",
+        description="Verdadeiro apenas se alguma dúvida estiver relacionada à análise de dados, governança de dados ou sistemas de dados.",
     )
 
 
@@ -48,11 +48,15 @@ class ConditionalAdvice(BaseModel):
 
     has_advice: bool = Field(
         ...,
-        description="Whether there is advice here or not",
+        description="Se há conselhos aqui ou não",
     )
     advices: Optional[List[str]] = Field(
         ...,
-        description="In case there is enough information to give advice, this list will contain advice to give to the user",
+        description="Caso haja informações suficientes para aconselhar, esta lista conterá conselhos a dar ao usuário",
+    )
+    what_you_should_avoid: Optional[List[str]] = Field(
+        ...,
+        description="Caso haja informações suficientes, esta lista conterá conselhos a dar ao usuário para ele evitar",
     )
 
     def to_html(self) -> str:
@@ -61,6 +65,12 @@ class ConditionalAdvice(BaseModel):
             html += f'<li class="onepoint-blue onepoint-advice">{advice}</li>'
         html += "</ul>"
         return html
+    
+    def to_markdown(self) -> str:
+        markdown = ""
+        for advice in self.advices:
+            markdown += f"- {advice}\n"
+        return markdown
 
     def __str__(self) -> str:
         return "\n\n".join(self.advices) if self.advices is not None else ""

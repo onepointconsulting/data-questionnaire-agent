@@ -1,0 +1,20 @@
+.button-cancel {
+  @apply bg-[#a6a6a6] hover:bg-gray-600 px-5 py-2.5 text-sm font-medium text-white focus:outline-none
+        focus:ring-gray-300 rounded-lg text-center dark:bg-gray-600 dark:hover:bg-blue-700 dark:focus:ring-gray-800 uppercase
+        w-24;
+}
+
+.button-ok {
+  @apply bg-[#0084d7] hover:bg-blue-600 px-5 py-2.5 text-sm font-medium text-white focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg
+        text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 uppercase
+        w-24 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.restart-button,
+.info-button {
+  @apply fill-white h-6 w-6 cursor-pointer mx-2;
+}
+
+.info-button {
+  @apply relative top-0.5;
+}

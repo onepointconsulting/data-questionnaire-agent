@@ -1,0 +1,9 @@
+pt:
+  db_insert_failed: "Falha ao adicionar consulta ao banco de dados"
+  db_update_failed: "Falha ao atualizar a resposta no banco de dados"
+  no_report_id: "ID do relatório não disponível"
+  no_answer_from_chatgpt: "Não foi possível obter nenhuma resposta do ChatGPT"
+  failed_insert_question: "Falha ao inserir pergunta no banco de dados"
+  What_you_should_do: "O que você deve fazer"
+  What_you_should_avoid: "O que você deve evitar"
+  Positive_outcomes: "Resultados positivos"

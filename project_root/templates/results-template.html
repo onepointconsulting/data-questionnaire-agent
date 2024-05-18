@@ -10,7 +10,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:wght@500&family=Sen:wght@400;700&display=swap"
         rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;1,400;1,500&family=Lato&family=Montserrat:wght@500&family=Sen:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;1,400;1,500&family=Lato&family=Montserrat:wght@500&family=Sen:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Lato', 'Montserrat', sans-serif;
@@ -22,7 +24,8 @@
             margin-top: 1.75em
         }
 
-        h2.questionnaire, h2.personalOffer {
+        h2.questionnaire,
+        h2.personalOffer {
             margin-bottom: 0;
         }
 
@@ -81,13 +84,15 @@
 </head>
 
 <body>
-    <img src="https://healthcheck.onepointltd.ai/public/images/Hero_Image_with_Logo_and_Titles.jpg" class="banner"/>
+    <img src="https://healthcheck.onepointltd.ai/public/images/Hero_Image_with_Logo_and_Titles.jpg" class="banner" />
     <div class="container">
-        
+
         <p class="date-produced">Produced on: {{timestamp}}</p>
-        <p>A big thank you for completing a session with the&nbsp;<strong><a title="Onepoint Consulting Ltd"
-                    href="https://www.onepointltd.com/" target="_blank">Onepoint</a> Data Wellness Companion™!</strong></p>
-        <p>Here you have the questions we asked and the answers you gave, followed by the recommendations and suggested courses of action. </p>
+        <p>A big thank you for completing a session with the&nbsp;<strong><a title="HopeLink Chat Companion"
+                    href="https://www.onepointltd.com/" target="_blank">Onepoint</a> Data Wellness Companion™!</strong>
+        </p>
+        <p>Here you have the questions we asked and the answers you gave, followed by the recommendations and suggested
+            courses of action. </p>
         <h2 class="questionnaire">Transcript</h2>
         <table>
             <tbody>
@@ -98,11 +103,25 @@
         <ul>
             {{advices}}
         </ul>
-        <h2 class="personalOffer">A personal offer for you</h2>
-        <p>We are offering a free results interpretation call to talk through the Companion's recommendations and suggested courses of action with a real human expert. 
-            If you are open to that, please email us at <a href="mailto:datawellness@onepointltd.com">datawellness@onepointltd.com</a> from your business email address with your request to schedule a call.</p>
-        <p>We would love your feedback: <a href="mailto:feedback@onepointltd.ai">feedback@onepointltd.ai</a>.</p>
-        <p>For more information, please visit us at <a href="https://www.onepointltd.com/data-wellness/">Onepoint Data Wellness</a>.</p>
+        <h2 class="recommendations">What to avoid</h2>
+        <ul>
+            {{avoids}}
+        </ul>
+
+        <h2 class="recommendations">Positive outcomes</h2>
+        <ul>
+            {{positive_outcomes}}
+        </ul>
+
+        <h2 class="personalOffer">Uma oferta pessoal para você</h2>
+        <p>Estamos oferecendo uma consulta gratuita para discutir como o HopeLink Chat Companion™ pode ajudá-lo com seu
+            inquéritos sobre refugiados e fornecer orientação.
+            Se você estiver interessado, envie-nos um e-mail para <a href="mailto:hopelink@gmail.com">hopelink@gmail.com</a> de
+            seu endereço de e-mail oficial com
+            sua solicitação para agendar uma ligação.</p>
+        <p>Seu feedback é valioso para nós: <a href="mailto:feedback@hopelink.com">feedback@hopelink.com</a>.</p>
+        <p>Para obter mais informações, visite-nos em <a href="https://www.hopelink.com/">HopeLink</a>.</p>
+
     </div>
 </body>
 

@@ -10,6 +10,8 @@ from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
 from langchain.chains.llm import LLMChain
+# from langchain_community.vectorstores import FAISS
+# from langchain.chains import LLMChain
 
 from data_questionnaire_agent.model.application_schema import Questionnaire
 
@@ -73,3 +75,4 @@ if __name__ == "__main__":
     questionnaire = create_questionnaire_2_questions()
     docsearch = init_vector_search()
     asyncio.run(process_advice(docsearch, questionnaire, advice_chain))
+    print(asyncio.run(process_advice(docsearch, questionnaire, advice_chain)))

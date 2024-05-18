@@ -1,0 +1,189 @@
+:root {
+    --text_blue: #0066A4;
+    --experimental-blue: #0087d3
+  }
+
+.markdown-body img {
+    width: 100%
+}
+
+.MuiFormControl-root.MuiFormControl-fullWidth.MuiTextField-root {
+    border: 1px var(--text_blue) solid;
+}
+
+.generated-message {
+    color: var(--text_blue)
+}
+
+.MuiButtonBase-root.MuiButtonBase-root.css-1vhtqje {
+    background-color: #edf3f8;
+    color: #91b3d6
+}
+
+.MuiButtonBase-root.MuiButton-root.css-1ruedog {
+    border: 1px solid var(--text_blue);
+    color: #5285be
+}
+
+.MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.MuiAvatar-fallback.css-13y7ul3 {
+    color: #4f83bd
+}
+
+.image-banner {
+    background: url("/public/images/banner_blank.png") center center / cover no-repeat;
+    color: white;
+    min-height: 10em;
+}
+
+.image-banner h1 {
+    margin: 0.5em 0 0 0;
+}
+
+.image-banner h2 {
+    margin: 0.2em 0 0.5em 0;
+}
+
+.logo-box img {
+    position: relative;
+    right: -1em;
+    max-width: 68%
+}
+
+.image-banner > .css-dvxtzn {
+    align-items: start;
+}
+
+/* Hiding chat button */
+.logo-box + .MuiStack-root.css-1mzerio {
+    display: none;
+}
+
+/* Hiding the settings button */
+svg[data-testid=TuneIcon] {
+    display: none;
+}
+
+/* Hiding the message date */
+.message-date {
+    display: none;
+}
+
+/* Hiding the settings button */
+.MuiInputAdornment-root .settings-button {
+    display: none;
+}
+
+/* Aavatar related */
+.MuiAvatar-circular {
+    margin: 0 auto
+}
+
+.css-kt4rn8 {
+    text-align: center;
+}
+/* End Avatar */
+
+/* Hide Github button */
+a[href*='https://onepointltd.com'].css-1deacqj {
+    display: none
+}
+
+button:has(> svg[data-testid=KeyboardDoubleArrowUpIcon]) {
+    display: none;
+}
+
+/** Hide the side menu */
+.experimental {
+    background-color: var(--experimental-blue);
+    padding: 0.2em 0.1em
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (max-width: 1200px) {
+
+    /* Mobile title */
+    .css-17yvo7f {
+        font-size: 74%;
+        padding: 0 0.5em;
+    }
+ }
+
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 1200px) {
+
+    /* Mobile title */
+    .css-17yvo7f {
+        font-size: 84%;
+        padding: 0 1em;
+    }
+ }
+
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 1400px) { 
+
+    .image-banner {
+        min-height: 15em;
+    }
+}
+
+/* Areas of concern */
+.markdown-body .init-options-row  {
+    font-size: small;
+}
+
+.markdown-body .img-cell > img {
+    max-width: 4em;
+    display: block;
+    margin: 0 auto;
+    cursor: pointer
+}
+
+/* Micro framework for responsive layout */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-2 {
+    width: 16.667%
+}
+
+.col-3 {
+    width: 25%
+}
+
+.col-9 {
+    width: 75%
+}
+
+.col-10 {
+    width: 75%
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+
+    /* Tablet  */
+
+    .col-md-1 {
+        width: 8.33%
+    }
+
+    .col-md-2 {
+        width: 16.667%
+    }
+
+    .col-md-4 {
+        width: 33.333%
+    }
+
+    .col-md-5 {
+        width: 41.667%
+    }
+ }
+ /* End micro framework */
+
+
+

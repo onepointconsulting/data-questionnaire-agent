@@ -1,0 +1,37 @@
+.companion-dialogue,
+.email-dialogue {
+  @apply rounded-2xl w-11/12 md:w-8/12 bg-white shadow-lg max-w-6xl outline-0;
+}
+
+.companion-dialogue-content,
+.email-dialogue-content {
+  @apply px-6 py-6;
+}
+
+label[for="expectedInteviewSteps"] {
+  @apply py-1 pr-2;
+}
+
+#expectedInteviewSteps {
+  @apply border-solid border-2 border-[#e6e6e6] rounded-lg w-24 pl-2 py-1;
+}
+
+.companion-dialogue-config {
+  @apply flex flex-row align-middle mt-6 mb-3;
+}
+
+.companion-dialogue-config input {
+  @apply ml-1 pl-3 border-solid border-2 border-[#e6e6e6] rounded-lg;
+}
+
+.companion-dialogue-buttons {
+  @apply flex flex-row justify-end gap-4 px-6 py-4;
+}
+
+.companion-dialogue-buttons button {
+  @apply w-32;
+}
+
+.email-dialogue-form {
+  @apply flex flex-col px-6 pb-8 w-full;
+}

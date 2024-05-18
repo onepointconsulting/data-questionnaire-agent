@@ -1,0 +1,153 @@
+#root {
+  @apply flex flex-col mt-0;
+}
+
+#root {
+  font-family: "Lato", sans-serif;
+}
+
+#root .header {
+  @apply bg-[#0084d7]  min-h-14 mt-0 pt-2 md:pt-3 pb-2 flex items-center;
+}
+
+#root .header-container {
+  @apply flex flex-row justify-between container items-center pr-2 max-w-[1280px] mx-auto;
+}
+
+#root .connection-status {
+  @apply text-white text-sm;
+}
+
+#root .container,
+#root .chat-input,
+#root .final-report {
+  @apply max-w-[1280px] mx-auto;
+}
+
+#root .question {
+  @apply text-xl md:text-2xl font-bold mt-4 flex flex-row justify-center px-4;
+}
+
+#root .question svg,
+#root .question-answer svg {
+  @apply hidden lg:block min-w-8 h-8 mr-2 fill-[#0084d7];
+}
+
+#root .suggestions {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4 pt-8 lg:pt-10 px-8 lg:px-8 xl:px-6 mb-4;
+}
+
+#root .suggestion {
+  @apply flex flex-row px-4 py-2 text-lg md:text-xl cursor-pointer
+    bg-[#f1f4f8] rounded-2xl hover:bg-[#c1d9f9] transition duration-200;
+}
+
+#root .suggestion.active {
+  @apply bg-[#0084d7] text-white;
+}
+
+#root .suggestion .suggestion-img {
+  @apply w-1/12 lg:w-1/6 cursor-pointer;
+}
+
+#root .suggestion .suggestion-text {
+  @apply px-2 flex items-center justify-between no-underline w-full;
+}
+
+#root .chat-container {
+  @apply px-10 pb-5;
+}
+
+#root .chat-input {
+  @apply w-full px-4 flex flex-row items-center justify-center
+    outline rounded-lg outline-offset-2 outline-1 focus:outline-offset-2
+    focus:outline-2 outline-[#0084d7] mt-10 lg:mt-14;
+}
+
+#root .chat-input textarea.chat-textarea {
+  @apply lg:mx-0 overflow-hidden resize-none w-full outline-none
+    flex items-center justify-center h-12 my-4;
+}
+
+#root .chat-input button {
+  @apply w-8 h-8 cursor-pointer flex;
+}
+
+#root .question-answer {
+  @apply text-lg lg:text-xl py-5;
+}
+
+#root .final-report {
+  @apply text-lg lg:text-xl py-5 px-4;
+}
+
+#root .final-report h1 {
+  @apply text-black mb-4;
+}
+
+#root .final-report li {
+  @apply mx-4 px-2;
+}
+
+#root .final-report-download {
+  @apply flex flex-row items-center justify-center md:justify-end pb-8;
+}
+
+#root .final-report-download svg {
+  @apply w-8 h-8 mr-2 md:w-10 md:h-10;
+}
+
+#root .final-report-email svg {
+  @apply mr-0;
+}
+
+#root .final-report-pdf,
+.final-report-email {
+  @apply flex flex-col items-center justify-center;
+}
+
+#root .final-report-pdf a,
+.final-report-email a {
+  @apply text-base underline;
+}
+
+#root .final-report-email {
+  @apply mx-4;
+}
+
+.final-report-message {
+  @apply text-lg lg:text-xl w-full text-center;
+}
+
+#root .registration-alert-container {
+  @apply w-full max-w-[1280px] mx-auto mt-5 mb-10;
+}
+
+#root .registration-alert-container {
+  @apply px-5 lg:px-10;
+}
+
+#root .registration-alert-description {
+  @apply text-lg;
+}
+
+#root .registration-alert-title {
+  @apply text-xl font-bold;
+}
+
+#root .clarification {
+  @apply flex flex-row justify-start w-full max-w-[1280px] mx-auto pl-4 pt-4;
+}
+
+#root .clarification svg {
+  @apply min-w-7 h-7 fill-[#0084d7];
+}
+
+#root .clarification-main,
+#root .disclaimer {
+  @apply px-3;
+}
+
+#root .clarification-main {
+  @apply text-lg md:text-xl;
+}

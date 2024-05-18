@@ -1,0 +1,57 @@
+.node-container {
+  @apply flex flex-row items-center justify-center my-12;
+}
+
+.node {
+  width: 42px;
+  height: 42px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin: 0 -2px;
+  font-size: large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.node.active,
+.connector.active {
+  background-color: #0084d7;
+  color: white;
+}
+
+.node.current {
+  @apply bg-[#4DC48D] text-white;
+}
+
+.node a {
+  @apply block w-full text-center;
+}
+
+.connector {
+  width: 18px;
+  height: 18px;
+  background-color: #ccc;
+}
+
+@media (min-width: 768px) {
+  .connector {
+    width: 50px;
+    height: 20px;
+    background-color: #ccc;
+  }
+}
+
+@media (min-width: 1024px) {
+  .node {
+    width: 55px;
+    height: 55px;
+    font-size: x-large;
+  }
+
+  .connector {
+    width: 100px;
+    height: 20px;
+    background-color: #ccc;
+  }
+}
