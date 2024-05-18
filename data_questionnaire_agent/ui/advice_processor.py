@@ -4,7 +4,11 @@ import chainlit as cl
 from asyncer import asyncify
 
 # from langchain.vectorstores import FAISS
+# from langchain_community.vectorstores import FAISS
+
+from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
+
 from langchain.chains import LLMChain
 
 from data_questionnaire_agent.model.application_schema import Questionnaire

@@ -9,6 +9,8 @@ from langchain_community.document_loaders import TextLoader
 # from langchain.vectorstores import FAISS
 # from langchain_community.vectorstores import FAISS
 # from langchain.vectorstores.faiss import FAISS
+# from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
 from data_questionnaire_agent.log_init import logger

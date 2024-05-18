@@ -17,6 +17,7 @@
 
             // "program": "${file}",
             "console": "integratedTerminal",
+            "justMyCode": false,
             "args": [
                 "run",
                 "${file}",

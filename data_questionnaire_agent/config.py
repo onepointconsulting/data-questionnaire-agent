@@ -11,7 +11,13 @@ from tenacity import stop_after_attempt
 import tenacity
 
 from langchain_openai import ChatOpenAI
+# from langchain_openai import OpenAIEmbeddings
+# from langchain_community.embeddings.openai import OpenAIEmbeddings
+from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
+
+
+from langchain_community.vectorstores import FAISS
 
 # from langchain.llms import OpenAI
 from langchain_openai import OpenAI
@@ -70,6 +76,8 @@ class Config:
     embeddings_persistence_dir = Path(os.getenv("EMBEDDINGS_PERSISTENCE_DIR"))
     chunk_size = int(os.getenv("EMBEDDINGS_CHUNK_SIZE"))
     embeddings = OpenAIEmbeddings(chunk_size=chunk_size)
+    
+    
     search_results_how_many = int(os.getenv("SEARCH_RESULTS_HOW_MANY"))
     token_limit = int(os.getenv("TOKEN_LIMIT"))
 

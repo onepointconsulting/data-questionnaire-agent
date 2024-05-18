@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "data_questionnaire_agent"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

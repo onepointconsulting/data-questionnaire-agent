@@ -16,6 +16,7 @@ def test_initial_question():
     assert initial_question is not None
 
     docsearch = init_vector_search()
+    
     assert docsearch is not None
     answer = "Data Quality"
     search_res = similarity_search(docsearch, answer)
@@ -26,8 +27,11 @@ def test_initial_question():
         knowledge_base=search_res,
     )
     chain = chain_factory_initial_question()
-    res: ResponseQuestions = chain.run(input)
+    # res: ResponseQuestions = chain.run(input)
+    res: ResponseQuestions = chain.invoke(input)
     assert len(res.questions) > 0
 
     logger.info("Results: ")
     logger.info(res)
+
+# test_initial_question()

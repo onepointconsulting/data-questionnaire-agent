@@ -37,7 +37,8 @@
                 "request": "launch",
                 "program": "${file}",
                 "console": "integratedTerminal",
-                "jinja": true
+                "jinja": true,
+                "justMyCode": false
               },
               {
                 "name": "Python Debugger: Current File (External Terminal)",
@@ -45,7 +46,8 @@
                 "request": "launch",
                 "program": "${file}",
                 "console": "externalTerminal",
-                "jinja": true
+                "jinja": true,
+                "justMyCode": false
               },
 
               
