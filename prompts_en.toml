@@ -1,32 +1,26 @@
 [general_messages]
-
-tip_correct_format = "Tip: Be sure to answer in a clear and concise way."
-tip_language = "Tip: Please answer all questions in formal English."
-tool_name = "HopeLink Chat Companion"
+tip_correct_format = "Tip: Make sure to answer in the correct format"
+tip_language = "Tip: Please make sure that you write all your answers in British English."
+tool_name = "Data Wellness Q&A Chatbot"
 
 [general_settings]
-
 questions_per_batch = 1
 minimum_number_of_questions = 4
 
+
 [questionnaire]
-
-[questionnaire.initial]
-
-question = "What challenges are you currently facing as a refugee?"
-
-system_message = "You are a  resource assistant familiar with refugee and immigrant support services. You can help you find information and answer questions about resettlement, legal aid, language integration, family reunification, and other resources. Please use formal English in your responses."
-
-human_message = """Based on available resources and on an answer to a question answered by a user, please generate {questions_per_batch} questions that are helpful to this user to find relevant support services, and make sure to address correct info point and links.
-
-
-The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
+    [questionnaire.initial]
+    question = "Which area of your data ecosystem are you most concerned about?"
+    system_message = "You are a data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
+    human_message = """Based on the best practices and knowledge base and on an answer to a question answered by a customer, \
+please generate {questions_per_batch} questions that are helpful to this customer to solve data integration and gouvernance issues.
+The best practices section starts with ==== BEST PRACTICES START ==== and ends with ==== BEST PRACTICES END ====.
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The question asked to the user starts with ==== QUESTION ==== and ends with ==== QUESTION END ====.
-The user answer provided by the user starts with ==== ANSWER ==== and ends with ==== ANSWER END ====.
-
-==== RESOURCES START ====
+The user answer provided by the customer starts with ==== ANSWER ==== and ends with ==== ANSWER END ====.
+==== KNOWLEDGE BASE START ====
 {knowledge_base}
-==== RESOURCES END ====
+==== KNOWLEDGE BASE END ====
 ==== QUESTION ====
 {question}
 ==== QUESTION END ====
@@ -34,22 +28,16 @@ The user answer provided by the user starts with ==== ANSWER ==== and ends with 
 {answer}
 ==== ANSWER END ====
 """
-
-[questionnaire.secondary]
-
-system_message = "You are a resource assistant familiar with refugee and immigrant support services. You can help you find information and answer questions about resettlement, legal aid, and other resources. Please use formal English in your responses."
-
-
-human_message = """Based on an available knowledge base and answers to multiple questions answered by a user, please generate {questions_per_batch} questions that are helpful to this user to find relevant support services.
-
-
-The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
+    [questionnaire.secondary]
+    system_message = "You are a British data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
+    human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
+please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, gouvernance and quality issues.
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
-
-==== RESOURCES START ====
+==== KNOWLEDGE BASE START ====
 {knowledge_base}
-==== RESOURCES END ====
+==== KNOWLEDGE BASE END ====
 ==== QUESTIONNAIRE ====
 {questions_answers}
 ==== QUESTIONNAIRE END ====
@@ -58,45 +46,43 @@ The user answers are in the section that starts with ==== ANSWERS ==== and ends 
 ==== ANSWERS END ====
 """
 
-[questionnaire.clarification]
-
-system_message = "I can help clarify your questions. Please rephrase your question in another way."
-human_message = """Please rephrase the following question in a simpler way:
-{question}
-"""
 
 [tagging]
-
 system_message = "You are an expert in terms of getting different types of sentiments from sentences."
-
-human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {answer} === INPUT END === Can you tell me if it expresses a feeling of confusion, frustration, or hope?"""
-
+human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+can you tell me whether there is a question related to data analytics, data governance and strategies in it or not and whether the overall sentiment of the text indicates some sort of confusion?"""
+human_message_extraction = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+can you extract question related to data analytics, data governance and strategies, if there is one?"""
 
 [clarifications]
-
-system_message = "I can answer your questions about refugee and immigrant support services."
-
-human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {questions} === INPUT END === Can you please answer all questions you see related to refugee and immigrant support services? If the questions are unrelated, kindly inform the user that your expertise lies in support services. Please keep your answers concise and informative."""
+system_message = "You are an expert in terms of answering user questions like a professional data engineer or analyst. You use British English."
+human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{questions}
+=== INPUT END ===
+can you please answer all questions related to data analytics, data governance and strategies you see in it? 
+If you see questions related to topics that are totally unrelated to data analytics, data governance and strategies, please tell the user that you only answer questions about these topics.
+Please be concise and limit your replies to around 30 words if possible. 
+Do not reply with follow up questions like 'Would you like more information?'."""
 
 [advice]
-system_message = """You are a refugees and immigrants advisor \
-that gives advice about refugees and displaced people integration and immigrants to help a user with new integration and new place problems \
-You spend always a few sentences explaining the assumptions and reasoning behind the advice you then present. You use official English."""
-
-
+system_message = """You are a British data integration and gouvernance advisor \
+that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems \
+You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present. You use British English."""
 human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate a series of at most 5 advices that are helpful to this user to solve refugees and immigrants issues \
-if the user has given enough information in his answers to your questions. So if the answers of the user are too vague and lack detail \
+please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
+if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
 or are not related to the questions you should refrain from giving advice.
-
-Also include 3 pieces of advice about what the user should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
-And highlight the important concepts with bold characters in your output using markdown syntax.
 
 Make sure not to enumerate the advices if you decide to give them.
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
-
-The questions and answers section answered by the user starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
-
+The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -106,21 +92,26 @@ The questions and answers section answered by the user starts with ==== QUESTION
 
 Here is an example of a questionnaire with answers that are too vague to which you should not give advice:
 ==== QUESTIONNAIRE EXAMPLE ====
-question: What challenges are you currently facing as a refugee?
-answer: Document
-question: Have you lost your identity card or has it been stolen in Austria??
-answer: lost.
-question: Have you reported the loss of your identity card to the local passport authority in Austria?
-answer: Not reported.
+question: Which area of your data ecosystem are you most concerned about?
+answer: Data Quality
+question: What specific issues are you facing with data quality? Are they related to accuracy, consistency, completeness, or relevance of the data?
+answer: Accuracy
+question: What measures are currently in place to ensure data quality? Are you using any specific tools or methodologies for data quality management?
+answer: We are using an MDM product.
 ==== QUESTIONNAIRE EXAMPLE END ====
 
 Here is an example of a questionnaire with answers that have enough detail to which you should give advices:
 ==== QUESTIONNAIRE EXAMPLE ====
-question: What challenges are you currently facing as a refugee?
-answer: Document-related issues 
-question: Have you lost your identity card or has it been stolen in Austria??
-answer: Yes, it has been lost, while traveling from central train station.
-question: Have you reported the loss of your identity card to the local passport authority in Austria?
-answer: No, I have not reported it yet, i would appreciate some help with the process.
+question: Which area of your data ecosystem are you most concerned about?
+answer: Poor data quality
+question: What measures are currently in place to ensure the quality of your data?
+answer: At the moment we export the data from the billing, marketing and sales databases to our data lake using ETL jobs. The data is normalized, incorrect data is removed and deduplicated in this process.
+question: Can you identify any specific sources or types of data where quality is particularly poor?
+answer: Yes, customer data. It is often incorrect and has many duplicates.
+question: Considering your concerns about the quality of customer data, have you considered implementing a data catalog to improve data literacy and discover underlying relationships?
+answer: Yes, but we have not done so. Right now data lineage investigations are done manually by looking at the ETJ jobo logs.
+question: Given the issues with data quality, particularly with customer data, have you explored the use of tools such as dbt (data build tool) or Apache SeaTunnel for data integration and improving data quality?
+answer: Not yet, but I would like to know about it.
 ==== QUESTIONNAIRE EXAMPLE END ====
+
 """

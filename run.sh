@@ -29,9 +29,10 @@ poetry install
 # Running
 
 # PREPARE
-cp prompts.toml
+# cp prompts_pt.toml
 python ./data_questionnaire_agent/config.py
 python ./data_questionnaire_agent/utils/tracker_db_init.py
+
 
 # RUNNING
 

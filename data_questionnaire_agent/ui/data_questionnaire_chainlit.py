@@ -111,12 +111,12 @@ clarification_agent = instantiate_clarification_agent()
 
 async def initial_message():
     initial_message = f"""
-### Hello! I will ask you a few questions (around {cfg.minimum_questionnaire_size}) about your data ecosystem. At the end, you will get recommendations and suggested courses of action.
+### Olá! Farei algumas perguntas (cerca de {cfg.minimum_questionnaire_size}) sobre seu ecossistema de dados. No final, você receberá recomendações e sugestões de ações.
 
-- Onepoint’s Data & Analytics Body of Knowledge is the basis for the diagnostics and recommendations.
-- If you’d like, you can ask for a copy of the results to be emailed to you.
-- This is an experimental tool. Any feedback and improvement ideas are always welcome — thank you!
-Let’s get started.
+-O conjunto de conhecimentos de dados e análises da Onepoint é a base para diagnósticos e recomendações.
+-Se desejar, você pode solicitar que uma cópia dos resultados seja enviada para você por e-mail.
+-Esta é uma ferramenta experimental. Qualquer feedback e ideias de melhoria são sempre bem-vindos – obrigado!
+Vamos começar.
 
 """
     await cl.Message(content=initial_message, author=AVATAR["CHATBOT"]).send()
@@ -147,7 +147,7 @@ async def run_agent(settings: cl.ChatSettings):
         advice_sent = await process_questionnaire(settings, cb)
         if advice_sent == APP_STATE.EMPTY_ADVICE:
             await cl.Message(
-                content=f"Session ended. Please restart the chat by pressing the 'New Chat' button."
+                content=f"A sessão terminou. Por favor, reinicie o chat pressionando o botão 'New Chat'."
             ).send()
 
 
@@ -217,50 +217,50 @@ def process_special_question(question: str) -> str:
         {
             "img_src": "poor_data_quality.png",
             "img_alt": "Poor data quality",
-            "title": "Poor data quality",
-            "text": "Low-quality data can lead to incorrect insights and poor decision-making.",
+            "title": "Baixa qualidade dos dados",
+            "text": "Dados de baixa qualidade podem levar a insights incorretos e tomadas de decisão inadequadas.",
         },
         {
             "img_src": "compliance_risks.png",
             "img_alt": "Compliance and security risks",
-            "title": "Compliance and security risks",
-            "text": "Mishandling data can lead to legal troubles and reputational damage.",
+            "title": "Conformidade e riscos de segurança",
+            "text": "O manuseio incorreto de dados pode levar a problemas legais e danos à reputação.",
         },
         {
             "img_src": "data_silos.png",
             "img_alt": "Data silos",
-            "title": "Data silos",
-            "text": "Data trapped in departmental silos can be inaccessible to other parts.",
+            "title": "Silos de dados",
+            "text": "Dados presos em silos departamentais podem ser inacessíveis para outras partes.",
         },
         {
             "img_src": "lack_of_skilled_personnel.png",
             "img_alt": "Lack of skilled personnel",
-            "title": "Lack of skilled personnel",
-            "text": "Missing skills in data science, analytics, AI and ML can impede the effective use of data.",
+            "title": "Falta de pessoal qualificado",
+            "text": "A falta de habilidades em ciência de dados, análise, IA e ML pode impedir o uso eficaz dos dados.",
         },
         {
             "img_src": "data_overload.png",
             "img_alt": "Data overload",
-            "title": "Data overload",
-            "text": '"Data glut" can slow down processes and make it difficult to identify what data is actually useful.',
+            "title": "Sobrecarga de dados",
+            "text": 'O "excesso de dados" pode retardar os processos e dificultar a identificação de quais dados são realmente úteis.',
         },
         {
             "img_src": "cost_and_complexity.png",
             "img_alt": "Cost and complexity",
-            "title": "Cost and complexity",
-            "text": "A robust data analytics infrastructure requires significant investment of resources.",
+            "title": "Custo e complexidade",
+            "text": "Uma infraestrutura robusta de análise de dados requer um investimento significativo de recursos.",
         },
         {
             "img_src": "inconsistent_data_strategies.png",
             "img_alt": "Inconsistent data strategies",
-            "title": "Inconsistent data strategies",
-            "text": "Difficult to align with modern concepts like Data Fabric, Mesh and Generative AI.",
+            "title": "Estratégias de dados inconsistentes",
+            "text": "Difícil de alinhar com conceitos modernos como Data Fabric, Mesh e IA generativa.",
         },
         {
             "img_src": "resistence_to_change.png",
             "img_alt": "Resistance to change",
-            "title": "Resistance to change",
-            "text": "Employees need to adapt to new ways of operating to make data-driven transformation work.",
+            "title": "Resistência à mudança",
+            "text": "Os funcionários precisam se adaptar às novas formas de operar para que a transformação orientada por dados funcione.",
         },
     ]
 
@@ -282,7 +282,7 @@ def process_special_question(question: str) -> str:
     if question == original_question:
         return f"""
 ### {question}
-The table below may help with your response — it captures some of the most common data and analytics challenges our clients face.
+A tabela abaixo pode ajudar na sua resposta – ela captura alguns dos desafios mais comuns de dados e análises que nossos clientes enfrentam.
 {display_options()}
 """
     return question
