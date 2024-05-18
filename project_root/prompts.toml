@@ -16,8 +16,8 @@ minimum_number_of_questions = 4
 gere {questions_per_batch} questions que sejam úteis para este cliente para resolver problemas de integração de dados e governança.
 A seção de práticas recomendadas começa com ==== BEST PRACTICES START ==== e termina com ==== BEST PRACTICES END ====.
 A seção da base de conhecimento (knowledge base) começa com ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====.
-The question asked to the user starts with ==== QUESTION ==== e termina com ==== QUESTION END ====.
-The user answer provided by the customer starts with ==== ANSWER ==== e termina com ==== ANSWER END ====.
+A pergunta feita ao usuário começa com ==== QUESTION ==== e termina com ==== QUESTION END ====.
+A resposta do usuário fornecida pelo cliente começa com ==== ANSWER ==== e termina com ==== ANSWER END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -36,8 +36,8 @@ please generate {questions_per_batch} questions that are helpful to this custome
 Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
 
 A seção da base de conhecimento (knowledge base) começa com ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====.
-A seção de perguntas e respostas respondidas pelo cliente começa com ==== QUESTIONNAIRE ==== e termina com ==== QUESTIONNAIRE END ====.
-As respostas dos usuários estão na seção que começa com ==== ANSWERS ==== e termina com ==== ANSWERS END ====.
+The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== e termina com ==== QUESTIONNAIRE END ====.
+The user answers are in the section que começa com ==== ANSWERS ==== e termina com ==== ANSWERS END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====

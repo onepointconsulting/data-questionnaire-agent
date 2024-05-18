@@ -1,7 +1,3 @@
-########################################
-############## Deprecated ##############
-########################################
-
 from typing import List
 import chainlit as cl
 from enum import Enum
@@ -17,7 +13,7 @@ from data_questionnaire_agent.ui.model.session_number_container import (
     SessionNumberContainer,
 )
 
-from langchain_community.callbacks import get_openai_callback
+from langchain.callbacks import get_openai_callback
 from langchain.callbacks.openai_info import OpenAICallbackHandler
 
 from data_questionnaire_agent.model.application_schema import (
@@ -25,7 +21,6 @@ from data_questionnaire_agent.model.application_schema import (
     Questionnaire,
     convert_to_question_answers,
 )
-from data_questionnaire_agent.model.initial_question_data import special_question_data
 from data_questionnaire_agent.model.openai_schema import (
     ConditionalAdvice,
     ResponseQuestions,
@@ -114,13 +109,12 @@ clarification_agent = instantiate_clarification_agent()
 
 async def initial_message():
     initial_message = f"""
-### Olá! Farei algumas perguntas (cerca de {cfg.minimum_questionnaire_size}) sobre seu ecossistema de dados. No final, você receberá recomendações e sugestões de ações.
+### Hello! I will ask you a few questions (around {cfg.minimum_questionnaire_size}) about your data ecosystem. At the end, you will get recommendations and suggested courses of action.
 
-- O conjunto de conhecimentos de dados e análises da Onepoint é a base para diagnósticos e recomendações.
-- Se desejar, você pode solicitar que uma cópia dos resultados seja enviada para você por e-mail.
-- Esta é uma ferramenta experimental. Qualquer feedback e ideias de melhoria são sempre bem-vindos – obrigado!
-
-Vamos começar.
+- Onepoint’s Data & Analytics Body of Knowledge is the basis for the diagnostics and recommendations.
+- If you’d like, you can ask for a copy of the results to be emailed to you.
+- This is an experimental tool. Any feedback and improvement ideas are always welcome — thank you!
+Let’s get started.
 
 """
     await cl.Message(content=initial_message, author=AVATAR["CHATBOT"]).send()
@@ -129,8 +123,8 @@ Vamos começar.
 @cl.on_chat_start
 async def init():
     """
-    Principal ponto de entrada do aplicativo.
-    Este aplicativo fará perguntas sobre sua estratégia de integração de dados e no final fará algumas avaliações.
+    Main entry point for the application.
+    This application will ask you questions about your data integration strategy and at the end give you some evaluation.
     """
     cl.user_session.set("session_counter", SessionNumberContainer())
     await initial_message()
@@ -217,6 +211,57 @@ async def process_questionnaire(
 def process_special_question(question: str) -> str:
     original_question = prompts["questionnaire"]["initial"]["question"]
 
+    special_question_data = [
+        {
+            "img_src": "poor_data_quality.png",
+            "img_alt": "Poor data quality",
+            "title": "Poor data quality",
+            "text": "Low-quality data can lead to incorrect insights and poor decision-making.",
+        },
+        {
+            "img_src": "compliance_risks.png",
+            "img_alt": "Compliance and security risks",
+            "title": "Compliance and security risks",
+            "text": "Mishandling data can lead to legal troubles and reputational damage.",
+        },
+        {
+            "img_src": "data_silos.png",
+            "img_alt": "Data silos",
+            "title": "Data silos",
+            "text": "Data trapped in departmental silos can be inaccessible to other parts.",
+        },
+        {
+            "img_src": "lack_of_skilled_personnel.png",
+            "img_alt": "Lack of skilled personnel",
+            "title": "Lack of skilled personnel",
+            "text": "Missing skills in data science, analytics, AI and ML can impede the effective use of data.",
+        },
+        {
+            "img_src": "data_overload.png",
+            "img_alt": "Data overload",
+            "title": "Data overload",
+            "text": '"Data glut" can slow down processes and make it difficult to identify what data is actually useful.',
+        },
+        {
+            "img_src": "cost_and_complexity.png",
+            "img_alt": "Cost and complexity",
+            "title": "Cost and complexity",
+            "text": "A robust data analytics infrastructure requires significant investment of resources.",
+        },
+        {
+            "img_src": "inconsistent_data_strategies.png",
+            "img_alt": "Inconsistent data strategies",
+            "title": "Inconsistent data strategies",
+            "text": "Difficult to align with modern concepts like Data Fabric, Mesh and Generative AI.",
+        },
+        {
+            "img_src": "resistence_to_change.png",
+            "img_alt": "Resistance to change",
+            "title": "Resistance to change",
+            "text": "Employees need to adapt to new ways of operating to make data-driven transformation work.",
+        },
+    ]
+
     def display_options():
         it = iter(special_question_data)
         items = zip(it, it)
@@ -235,7 +280,7 @@ def process_special_question(question: str) -> str:
     if question == original_question:
         return f"""
 ### {question}
-A tabela abaixo pode ajudar na sua resposta – ela captura alguns dos desafios mais comuns de dados e análises que nossos clientes enfrentam.
+The table below may help with your response — it captures some of the most common data and analytics challenges our clients face.
 {display_options()}
 """
     return question
@@ -291,6 +336,24 @@ async def process_initial_question(
         with attempt:
             response_questions: ResponseQuestions = await initial_question_chain.arun(
                 input
+            )
+            return convert_to_question_answers(response_questions)
+
+
+async def process_secondary_questions(
+    questionnaire: Questionnaire, question_per_batch: int
+) -> List[QuestionAnswer]:
+    knowledge_base = similarity_search(
+        docsearch, questionnaire.answers_str(), how_many=cfg.search_results_how_many
+    )
+    secondary_question_input = prepare_secondary_question(
+        questionnaire, knowledge_base, question_per_batch
+    )
+
+    async for attempt in AsyncRetrying(**cfg.retry_args):
+        with attempt:
+            response_questions: ResponseQuestions = await secondary_question_chain.arun(
+                secondary_question_input
             )
             return convert_to_question_answers(response_questions)
 
