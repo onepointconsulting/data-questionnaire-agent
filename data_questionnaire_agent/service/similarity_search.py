@@ -2,7 +2,8 @@ from pathlib import Path
 from typing import List
 
 import tiktoken
-from langchain.vectorstores import FAISS
+# from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain.schema import Document
 
 from data_questionnaire_agent.config import cfg

@@ -3,11 +3,13 @@ from typing import TypeVar, List
 from pathlib import Path
 
 from langchain.schema import Document
-from langchain.document_loaders import TextLoader
+# from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 
-from langchain.vectorstores import FAISS
+# from langchain.vectorstores import FAISS
+# from langchain_community.vectorstores import FAISS
+# from langchain.vectorstores.faiss import FAISS
 from langchain_community.vectorstores import FAISS
-from langchain.vectorstores.faiss import FAISS
 
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import cfg

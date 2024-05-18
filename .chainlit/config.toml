@@ -35,17 +35,21 @@ default_expand_messages = false
 hide_cot = false
 
 # Link to your github repo. This will add a github button in the UI's header.
-# github = ""
+github = "https://onepointltd.com"
 
 # Specify a CSS file that can be used to customize the user interface.
-# The CSS file can be served from the public directory or via an external link.
-# custom_css = '/public/test.css'
+custom_css = '/public/css/styles.css'
+
+# Specify a JS file that can be used to customize the user interface.
+custom_js = '/public/js/onepoint.js'
+
+# The text
+watermark_text = "Built by"
 
 # Override default MUI light theme. (Check theme.ts)
 [UI.theme.light]
     #background = "#FAFAFA"
     #paper = "#FFFFFF"
-    #logo = "https://avatars.githubusercontent.com/u/128686189?s=48&v=4"
 
     [UI.theme.light.primary]
         #main = "#F80061"
@@ -56,7 +60,6 @@ hide_cot = false
 [UI.theme.dark]
     #background = "#FAFAFA"
     #paper = "#FFFFFF"
-    #logo = "https://avatars.githubusercontent.com/u/128686189?s=48&v=4"
 
     [UI.theme.dark.primary]
         #main = "#F80061"
@@ -65,4 +68,4 @@ hide_cot = false
 
 
 [meta]
-generated_by = "0.7.8.10"
+generated_by = "0.7.1"

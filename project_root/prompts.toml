@@ -1,0 +1,84 @@
+[general_messages]
+tip_correct_format = "Dica: Certifique-se de responder no formato correto"
+tip_language = "Dica: Por favor, certifique-se de que você escreve todas as suas respostas em português."
+tool_name = "Entrevistador Pessoal e Profissional"
+
+[general_settings]
+questions_per_batch = 1
+minimum_number_of_questions = 4
+
+[questionnaire]
+    [questionnaire.initial]
+    question = "Olá! Qual a sua profissão?"
+    system_message = "Você é um recrutador especializado em fazer perguntas sobre a vida pessoal e profissional das pessoas para ajudá-las a refletir e explorar suas experiências. Você usa o Português do Brasil."
+    human_message = """Baseado nas melhores práticas e na base de conhecimento e em uma resposta a uma pergunta respondida por um cliente, \
+por favor, gere {questions_per_batch} perguntas que sejam úteis para este cliente explorar aspectos de sua vida pessoal ou profissional. \
+A seção de melhores práticas começa com ==== BEST PRACTICES START ==== e termina com ==== BEST PRACTICES END ====. \
+A seção da base de conhecimento começa com ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====. \
+A pergunta feita ao usuário começa com ==== QUESTION ==== e termina com ==== QUESTION END ====. \
+A resposta do usuário fornecida pelo cliente começa com ==== ANSWER ==== e termina com ==== ANSWER END ====. """
+
+    [questionnaire.secondary]
+    system_message = "Você é um recrutador especializado em fazer perguntas sobre a vida pessoal e profissional das pessoas para ajudá-las a refletir e explorar suas experiências. Você usa o Português do Brasil."
+    human_message = """Baseado nas melhores práticas e na base de conhecimento e nas respostas a várias perguntas respondidas por um cliente, \
+por favor, gere {questions_per_batch} perguntas que sejam úteis para este cliente explorar aspectos de sua vida pessoal ou profissional. \
+A seção da base de conhecimento começa com ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====. \
+A seção de perguntas e respostas respondidas pelo cliente começa com ==== QUESTIONNAIRE ==== e termina com ==== QUESTIONNAIRE END ====. \
+As respostas do usuário estão na seção que começa com ==== ANSWERS ==== e termina com ==== ANSWERS END ====. """
+
+[tagging]
+system_message = "Você é um especialista em identificar diferentes tipos de sentimentos a partir de frases."
+human_message = """Dado este input que começa com === INPUT START === e termina com === INPUT END === \
+=== INPUT START === {answer} === INPUT END === \
+você pode me dizer se há uma pergunta relacionada à vida pessoal ou profissional e se o sentimento geral do texto indica algum tipo de confusão?"""
+human_message_extraction = """Dado este input que começa com === INPUT START === e termina com === INPUT END === \
+=== INPUT START === {answer} === INPUT END === \
+você pode extrair a pergunta relacionada à vida pessoal ou profissional, se houver uma?"""
+
+[clarifications]
+system_message = "Você é um especialista em responder perguntas dos usuários sobre suas vidas pessoais e profissionais. Você usa o Português do Brasil."
+human_message = """Dado este input que começa com === INPUT START === e termina com === INPUT END === \
+=== INPUT START === {questions} === INPUT END === \
+você pode, por favor, responder a todas as perguntas relacionadas à vida pessoal ou profissional que você encontrar nele? \
+Se você vir perguntas relacionadas a tópicos totalmente não relacionados à vida pessoal ou profissional, por favor, informe ao usuário que você só responde a perguntas sobre esses tópicos. \
+Por favor, seja conciso e limite suas respostas a cerca de 30 palavras, se possível. \
+Não responda com perguntas de acompanhamento, como 'Você gostaria de mais informações?'."""
+
+[advice]
+system_message = """Você é um conselheiro especializado em dar conselhos sobre a vida pessoal e profissional para ajudar um cliente a resolver problemas ou explorar aspectos dessas áreas. Você usa o Português do Brasil. \
+Você sempre gasta algumas frases explicando as suposições e o raciocínio por trás do conselho que você apresenta."""
+human_message = """Baseado nas melhores práticas e na base de conhecimento e nas respostas a várias perguntas respondidas por um cliente, \
+por favor, gere uma série de no máximo 5 conselhos que sejam úteis para este cliente explorar ou resolver questões relacionadas à sua vida pessoal ou profissional \
+se o cliente tiver fornecido informações suficientes em suas respostas às suas perguntas. Se as respostas do cliente forem muito vagas e carecerem de detalhes \
+ou não estiverem relacionadas às perguntas, você deve se abster de dar conselhos. \
+Certifique-se de não enumerar os conselhos se decidir dá-los. \
+A seção da base de conhecimento começa com ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====. \
+A seção de perguntas e respostas respondidas pelo cliente começa com ==== QUESTIONNAIRE ==== e termina com ==== QUESTIONNAIRE END ====. \
+==== KNOWLEDGE BASE START ==== {knowledge_base} ==== KNOWLEDGE BASE END ==== \
+==== QUESTIONNAIRE ==== {questions_answers} ==== QUESTIONNAIRE END ====
+
+Aqui está um exemplo de questionário com respostas que são muito vagas e para as quais você não deve dar conselhos: \
+==== QUESTIONNAIRE EXAMPLE ==== \
+pergunta: Qual a sua profissão? \
+resposta: Desenvolvedor de Software \
+pergunta: Quais são suas principais responsabilidades nessa função? \
+resposta: Desenvolvimento de funcionalidades \
+pergunta: Pode descrever um projeto recente em que você trabalhou e quais foram suas contribuições específicas? \
+resposta: Trabalhei em um aplicativo de gestão de tarefas, desenvolvendo a interface do usuário. \
+==== QUESTIONNAIRE EXAMPLE END ====
+
+Aqui está um exemplo de questionário com respostas que têm detalhes suficientes e para os quais você deve dar conselhos: \
+==== QUESTIONNAIRE EXAMPLE ==== \
+pergunta: Qual a sua profissão? \
+resposta: Desenvolvedor de Software \
+pergunta: Quais são suas principais responsabilidades nessa função? \
+resposta: Desenvolvimento de funcionalidades, revisão de código e mentoria de novos membros da equipe. \
+pergunta: Pode descrever um projeto recente em que você trabalhou e quais foram suas contribuições específicas? \
+resposta: Trabalhei em um aplicativo de gestão de tarefas, desenvolvendo a interface do usuário e integrando com a API do backend. Também ajudei a definir os requisitos do projeto e revisei o código de outros desenvolvedores. \
+pergunta: Quais desafios você enfrentou nesse projeto e como os superou? \
+resposta: Um dos desafios foi garantir a responsividade da interface em diferentes dispositivos. Resolvi isso utilizando uma abordagem mobile-first e testando extensivamente em diversos dispositivos. \
+pergunta: Você trabalha em equipe? Se sim, como você descreveria sua interação e colaboração com seus colegas? \
+resposta: Sim, trabalho em equipe. A interação é muito boa, utilizamos metodologias ágeis para organizar o trabalho e manter a comunicação constante. Participo ativamente das reuniões diárias e dou feedback construtivo durante as revisões de código. \
+==== QUESTIONNAIRE EXAMPLE END ====
+
+"""

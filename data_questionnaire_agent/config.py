@@ -10,9 +10,11 @@ from dotenv import load_dotenv
 from tenacity import stop_after_attempt
 import tenacity
 
-from langchain.chat_models import ChatOpenAI
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.llms import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
+
+# from langchain.llms import OpenAI
+from langchain_openai import OpenAI
 
 load_dotenv()
 

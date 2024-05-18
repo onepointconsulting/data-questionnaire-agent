@@ -23,15 +23,15 @@ poetry add --editable ./wheels/chainlit-0.7.8.10-py3-none-any.whl
 # pip install langchain-community faiss-cpu langchain-openai tiktoken  
 
 # Installation
-
-poetry install
-poetry add --editable ./wheels/chainlit-0.7.8.10-py3-none-any.whl
-
+# fix the version of poetry pack
+poetry install 
 
 # Running
 
 # PREPARE
-python ./data_questionnaire_agent/utils/tracker_db_init.pypoer
+cp prompts.toml
+python ./data_questionnaire_agent/config.py
+python ./data_questionnaire_agent/utils/tracker_db_init.py
 
 # RUNNING
 
