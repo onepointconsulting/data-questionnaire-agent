@@ -1,6 +1,6 @@
 [general_messages]
-tip_correct_format = "Tip: Make sure to answer in the correct format"
-tip_language = "Tip: Please make sure that you write all your answers in British English."
+tip_correct_format = "Tip: Certifique-se de responder no formato correto"
+tip_language = "Tip: Certifique-se de escrever todas as suas respostas em portugues brasileiro."
 tool_name = "Data Wellness Q&A Chatbot"
 
 [general_settings]

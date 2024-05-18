@@ -39,7 +39,7 @@ A resposta do usuário fornecida pelo usuário começa com ==== ANSWER ==== e te
 system_message = "Você é um assistente de recursos familiarizado com serviços de apoio a refugiados e imigrantes. Você pode ajudá-lo a encontrar informações e responder perguntas sobre reassentamento, assistência jurídica e outros recursos. Use inglês formal em suas respostas."
 
 
-human_message = """Com base em uma base de conhecimento disponível e em respostas a diversas perguntas respondidas por um usuário, gere {questions_per_batch} perguntas que sejam úteis para esse usuário encontrar serviços de suporte relevantes.
+human_message = """Com base em uma base de conhecimento (knowledge base) disponível e em respostas a diversas perguntas respondidas por um usuário, gere {questions_per_batch} perguntas que sejam úteis para esse usuário encontrar serviços de suporte relevantes.
 
 
 A seção de recursos começa com  ==== RESOURCES START ==== e termina com  ==== RESOURCES END ====.
@@ -83,7 +83,7 @@ que dá conselhos sobre integração de refugiados e pessoas deslocadas e imigra
 Você sempre gasta algumas frases explicando as suposições e o raciocínio por trás dos conselhos que apresenta. Você usa o portugues brasileiro oficial."""
 
 
-human_message = """Com base nas melhores práticas e na base de conhecimento e nas respostas a diversas perguntas respondidas por um cliente, \
+human_message = """Com base nas melhores práticas e na base de conhecimento (knowledge base) e nas respostas a diversas perguntas respondidas por um cliente, \
 por favor gere uma série de no máximo 5 conselhos que sejam úteis para este usuário resolver problemas de refugiados e imigrantes \
 se o usuário forneceu informações suficientes nas respostas às suas perguntas. Portanto, se as respostas do usuário forem muito vagas e sem detalhes \
 ou não estão relacionados com as questões que você deve abster-se de dar conselhos.
@@ -91,7 +91,7 @@ Inclua também 3 conselhos sobre o que o usuário deve evitar. No total você de
 E destaque os conceitos importantes com caracteres em negrito em sua saída usando a sintaxe markdown.
 
 Certifique-se de não enumerar os conselhos se decidir dá-los.
-A seção da base de conhecimento começa com ==== KNOWLEDGE BASE START ==== e termina com  ==== KNOWLEDGE BASE END ====.
+A seção da base de conhecimento (knowledge base) começa com ==== KNOWLEDGE BASE START ==== e termina com  ==== KNOWLEDGE BASE END ====.
 
 A seção de perguntas e respostas respondidas pelo usuário começa com ==== QUESTIONNAIRE ==== e termina com  ==== QUESTIONNAIRE END ====.
 

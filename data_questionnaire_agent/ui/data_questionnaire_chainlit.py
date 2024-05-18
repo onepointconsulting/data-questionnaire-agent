@@ -114,12 +114,13 @@ clarification_agent = instantiate_clarification_agent()
 
 async def initial_message():
     initial_message = f"""
-### Hello! I will ask you a few questions (around {cfg.minimum_questionnaire_size}) about your data ecosystem. At the end, you will get recommendations and suggested courses of action.
+### Olá! Farei algumas perguntas (cerca de {cfg.minimum_questionnaire_size}) sobre seu ecossistema de dados. No final, você receberá recomendações e sugestões de ações.
 
-- Onepoint’s Data & Analytics Body of Knowledge is the basis for the diagnostics and recommendations.
-- If you’d like, you can ask for a copy of the results to be emailed to you.
-- This is an experimental tool. Any feedback and improvement ideas are always welcome — thank you!
-Let’s get started.
+- O conjunto de conhecimentos de dados e análises da Onepoint é a base para diagnósticos e recomendações.
+- Se desejar, você pode solicitar que uma cópia dos resultados seja enviada para você por e-mail.
+- Esta é uma ferramenta experimental. Qualquer feedback e ideias de melhoria são sempre bem-vindos – obrigado!
+
+Vamos começar.
 
 """
     await cl.Message(content=initial_message, author=AVATAR["CHATBOT"]).send()
@@ -128,8 +129,8 @@ Let’s get started.
 @cl.on_chat_start
 async def init():
     """
-    Main entry point for the application.
-    This application will ask you questions about your data integration strategy and at the end give you some evaluation.
+    Principal ponto de entrada do aplicativo.
+    Este aplicativo fará perguntas sobre sua estratégia de integração de dados e no final fará algumas avaliações.
     """
     cl.user_session.set("session_counter", SessionNumberContainer())
     await initial_message()
@@ -234,7 +235,7 @@ def process_special_question(question: str) -> str:
     if question == original_question:
         return f"""
 ### {question}
-The table below may help with your response — it captures some of the most common data and analytics challenges our clients face.
+A tabela abaixo pode ajudar na sua resposta – ela captura alguns dos desafios mais comuns de dados e análises que nossos clientes enfrentam.
 {display_options()}
 """
     return question

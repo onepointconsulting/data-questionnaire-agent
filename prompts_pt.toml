@@ -1,6 +1,6 @@
 [general_messages]
-tip_correct_format = "Tip: Make sure to answer in the correct format"
-tip_language = "Tip: Please make sure that you write all your answers in British English."
+tip_correct_format = "Tip: Certifique-se de responder no formato correto"
+tip_language = "Tip: Certifique-se de escrever todas as suas respostas em portugues brasileiro."
 tool_name = "Data Wellness Q&A Chatbot"
 
 [general_settings]
@@ -12,12 +12,12 @@ minimum_number_of_questions = 4
     [questionnaire.initial]
     question = "Com qual área do seu ecossistema de dados você está mais preocupado?"
     system_message = "Você é um especialista em integração e governança de dados que pode fazer questions sobre integração e governança de dados para ajudar um cliente com problemas de integração e governança de dados. Você usa o inglês britânico."
-    human_message = """Com base nas melhores práticas e na base de conhecimento e na resposta a uma question respondida por um cliente, \
+    human_message = """Com base nas melhores práticas e na base de conhecimento (knowledge base) e na resposta a uma question respondida por um cliente, \
 gere {questions_per_batch} questions que sejam úteis para este cliente para resolver problemas de integração de dados e governança.
 A seção de práticas recomendadas começa com ==== BEST PRACTICES START ==== e termina com ==== BEST PRACTICES END ====.
-The knowledge base section starts with ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====.
-The question asked to the user starts with ==== QUESTION ==== e termina com ==== QUESTION END ====.
-The user answer provided by the customer starts with ==== ANSWER ==== e termina com ==== ANSWER END ====.
+A seção da base de conhecimento (knowledge base) começa com ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====.
+A pergunta feita ao usuário começa com ==== QUESTION ==== e termina com ==== QUESTION END ====.
+A resposta do usuário fornecida pelo cliente começa com ==== ANSWER ==== e termina com ==== ANSWER END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -35,7 +35,7 @@ please generate {questions_per_batch} questions that are helpful to this custome
 
 Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
 
-The knowledge base section starts with ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====.
+A seção da base de conhecimento (knowledge base) começa com ==== KNOWLEDGE BASE START ==== e termina com ==== KNOWLEDGE BASE END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== e termina com ==== QUESTIONNAIRE END ====.
 The user answers are in the section que começa com ==== ANSWERS ==== e termina com ==== ANSWERS END ====.
 ==== KNOWLEDGE BASE START ====
@@ -80,7 +80,7 @@ Não responda com questions complementares como 'Deseja mais informações?'."""
 
 [advice]
 system_message = """Você é um consultor britânico de integração e governança de dados que dá conselhos sobre integração e governança de dados para ajudar um cliente com problemas de integração e governança de dados. Você sempre gasta algumas frases explicando as suposições e o raciocínio por trás do conselho que apresenta. Você usa o inglês britânico."""
-human_message = """Com base nas melhores práticas e base de conhecimento e respostas a múltiplas questions respondidas por um cliente, \
+human_message = """Com base nas melhores práticas e base de conhecimento (knowledge base) e respostas a múltiplas questions respondidas por um cliente, \
 gere uma série de no máximo 5 conselhos que sejam úteis para este cliente para resolver problemas de integração de dados e governança \
 se o cliente tiver dado informações suficientes nas respostas às suas questions. Portanto, se as respostas do cliente forem muito vagas e carecem de detalhes \
 ou não estiverem relacionadas às questions, você deve evitar dar conselhos.
