@@ -9,7 +9,8 @@ from asyncer import asyncify
 from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
-from langchain.chains.llm import LLMChain
+#from langchain.chains.llm import LLMChain
+from langchain.chains import LLMChain
 # from langchain_community.vectorstores import FAISS
 # from langchain.chains import LLMChain
 

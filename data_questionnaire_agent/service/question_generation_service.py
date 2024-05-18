@@ -14,7 +14,8 @@
 #     SystemMessagePromptTemplate,
 # )
 # from langchain.chains.openai_functions import create_structured_output_chain
-# from langchain.chains.llm import LLMChain
+# #from langchain.chains.llm import LLMChain
+from langchain.chains import LLMChain
 
 # from data_questionnaire_agent.service.initial_question_service import (
 #     prompt_factory_generic,

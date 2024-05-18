@@ -1,7 +1,8 @@
 from typing import List
 
 
-from langchain.chains.llm import LLMChain
+#from langchain.chains.llm import LLMChain
+from langchain.chains import LLMChain
 #from langchain.chains import LLMChain
 from langchain.chains import create_tagging_chain_pydantic
 from langchain.prompts import (

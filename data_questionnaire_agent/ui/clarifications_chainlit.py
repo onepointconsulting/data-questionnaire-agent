@@ -5,7 +5,8 @@ from data_questionnaire_agent.service.clarifications_agent import (
     create_clarification_agent,
 )
 
-from langchain.chains.llm import LLMChain
+#from langchain.chains.llm import LLMChain
+from langchain.chains import LLMChain
 from langchain.agents import AgentExecutor
 
 from data_questionnaire_agent.model.application_schema import Questionnaire

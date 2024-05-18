@@ -1,5 +1,6 @@
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from langchain.chains.llm import LLMChain
+#from langchain.chains.llm import LLMChain
+from langchain.chains import LLMChain
 # from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
 

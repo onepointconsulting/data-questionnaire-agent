@@ -150,3 +150,4 @@ if __name__ == "__main__":
     logger.info("wkhtmltopdf: %s", cfg.wkhtmltopdf_binary.as_posix())
     logger.info("template_location: %s", cfg.template_location.as_posix())
     logger.info("use_tasklist: %s", cfg.use_tasklist)
+    

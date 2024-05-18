@@ -34,29 +34,29 @@
             "justMyCode": false
         },
        
-              {
-                "name": "Python Debugger: Current File (Integrated Terminal)",
-                "type": "debugpy",
-                "request": "launch",
-                "program": "${file}",
-                "console": "integratedTerminal",
-                "jinja": true,
-                "justMyCode": false
-              },
-              {
-                "name": "Python Debugger: Current File (External Terminal)",
-                "type": "debugpy",
-                "request": "launch",
-                "program": "${file}",
-                "console": "externalTerminal",
-                "jinja": true,
-                "justMyCode": false
-              },
+        {
+        "name": "Python Debugger: Current File (Integrated Terminal)",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal",
+        "jinja": true,
+        "justMyCode": false
+        },
+        {
+        "name": "Python Debugger: Current File (External Terminal)",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${file}",
+        "console": "externalTerminal",
+        "jinja": true,
+        "justMyCode": false
+        },
 
               
         {
-            "name": "Lauch Chainlit",
-			"type": "python",
+            "name": "Python: Module: Chainlit",
+			"type": "debugpy",
             "request": "launch",
             "module": "chainlit",
 			// "debugServer": 4711,
@@ -65,26 +65,24 @@
             "console": "integratedTerminal",
             "args": [
                 "run",
-                "${file}",
+                "data_questionnaire_agent/ui/data_questionnaire_chainlit.py",
                 "--port",
                 "8080"
             ],
-            "host": "0.0.0.0",
-            "port": 5678,
-            "jinja": true,
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "."
-                }
-            ],
-            "justMyCode": false
+            // "host": "0.0.0.0",
+            // "port": 5678,
+            // "jinja": true,
+            // "pathMappings": [
+            //     {
+            //         "localRoot": "${workspaceFolder}",
+            //         "remoteRoot": "."
+            //     }
+            // ],
+            // "justMyCode": false
         }
-            ]
-
-
-
-        }
-
     ]
+
+
+
 }
+

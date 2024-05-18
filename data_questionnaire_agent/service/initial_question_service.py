@@ -2,7 +2,9 @@ from typing import List
 
 # TODO: DEPRECATION
 # from langchain.chains import LLMChain
-from langchain.chains.llm import LLMChain
+##from langchain.chains.llm import LLMChain
+from langchain.chains import LLMChain
+from langchain.chains import LLMChain
 from langchain_community.llms import OpenAI
 from langchain_core.prompts import PromptTemplate
 
