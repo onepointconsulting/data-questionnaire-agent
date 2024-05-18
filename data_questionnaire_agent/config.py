@@ -35,7 +35,7 @@ class Config:
         model=model,
         temperature=0,
         request_timeout=request_timeout,
-        cache=has_langchain_cache,
+        cache=False,
         streaming=streaming,
     )
 

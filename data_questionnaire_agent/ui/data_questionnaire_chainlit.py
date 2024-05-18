@@ -57,6 +57,18 @@ from data_questionnaire_agent.ui.mail_processor import process_send_email
 from data_questionnaire_agent.ui.pdf_processor import generate_display_pdf
 from data_questionnaire_agent.toml_support import prompts
 
+class Node:
+    def __init__(self, name, title):
+        self.name = name
+        self.title = title
+        self.children = []
+
+    def add_child(self, child_node):
+        self.children.append(child_node)
+
+    def __repr__(self):
+        return f"{self.title} ({self.name})"
+    
 
 class APP_STATE(Enum):
     PROCESSED = 1
@@ -109,12 +121,7 @@ clarification_agent = instantiate_clarification_agent()
 
 async def initial_message():
     initial_message = f"""
-### Hello! I will ask you a few questions (around {cfg.minimum_questionnaire_size}) about your data ecosystem. At the end, you will get recommendations and suggested courses of action.
-
-- Onepoint’s Data & Analytics Body of Knowledge is the basis for the diagnostics and recommendations.
-- If you’d like, you can ask for a copy of the results to be emailed to you.
-- This is an experimental tool. Any feedback and improvement ideas are always welcome — thank you!
-Let’s get started.
+### Olá! Farei perguntas sobre sua vida pessoal e profissional. No final, você receberá feedback.
 
 """
     await cl.Message(content=initial_message, author=AVATAR["CHATBOT"]).send()
@@ -134,7 +141,7 @@ async def init():
 
 async def run_agent(settings: cl.ChatSettings):
     """
-    Asks questions and anawers questios until it gives advice if the user does not give up.
+    Asks questions and answers questions until it gives advice if the user does not give up.
 
     Parameters:
     settings cl.ChatSettings: The document list with one page per document.
