@@ -60,6 +60,8 @@ class Config:
     assert template_location.exists()
     pdf_folder = Path(os.getenv("PDF_FOLDER"))
     create_if_not_exists(pdf_folder)
+    pdf_banner = Path(os.getenv("PDF_BANNER"))
+    assert pdf_banner.exists(), f"Cannot find PDF banner: {pdf_banner}"
 
     # Embedding related
     raw_text_folder = Path(os.getenv("RAW_TEXT_FOLDER"))

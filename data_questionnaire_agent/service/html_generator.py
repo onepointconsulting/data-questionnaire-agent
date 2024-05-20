@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from datetime import datetime
 
@@ -17,6 +18,7 @@ from data_questionnaire_agent.log_init import logger
 def generate_html(questionnaire: Questionnaire, advices: ConditionalAdvice) -> str:
     timestamp = datetime.today().strftime("%A, %b %d %Y")
     context = {
+        "banner": re.sub(r"[A-Z]:\/", "", cfg.pdf_banner.absolute().as_uri()),
         "questionnaire": questionnaire.to_html(),
         "advices": replace_bold_markdown(advices.to_advice_html()),
         "avoids": replace_bold_markdown(advices.to_avoid_html()),
@@ -35,11 +37,11 @@ def generate_pdf_from(questionnaire: Questionnaire, advices: ConditionalAdvice) 
     html = generate_html(questionnaire, advices)
     logger.info("PDF html: %s", html)
     file_name = (
-        cfg.pdf_folder / f"Advice from the {cfg.product_title}_{generate_iso()}.pdf"
+        cfg.pdf_folder / f"generated_advice_{generate_iso()}.pdf"
     )
     logger.info("PDF to be created file name: %s", file_name)
     config = pdfkit.configuration(wkhtmltopdf=cfg.wkhtmltopdf_binary.as_posix())
-    pdfkit.from_string(html, file_name, configuration=config)
+    pdfkit.from_string(html, file_name, configuration=config, verbose=True, options={"--enable-local-file-access": True})
     logger.info("Created PDF: %s", file_name)
     return file_name
 

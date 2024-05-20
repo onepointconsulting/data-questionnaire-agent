@@ -30,4 +30,7 @@ RUN apt install nodejs -y
 RUN apt install npm -y
 RUN npm install --global yarn
 
+# Make sure the PDF advice folder is available
+RUN mkdir -p /tmp/data_questionnaire_agent/pdfs
+
 CMD ["/bin/bash", "./start.sh"]

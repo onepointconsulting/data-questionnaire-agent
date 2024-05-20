@@ -2,7 +2,6 @@ Dockerfile
 .chainlit
 .pytest_cache
 .env
-./public
 ./wheels
 .gitignore
 .gitmodules
