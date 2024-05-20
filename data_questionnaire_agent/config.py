@@ -55,13 +55,11 @@ class Config:
 
     create_if_not_exists(question_cache_folder_path)
     wkhtmltopdf_binary = Path(os.getenv("WKHTMLTOPDF_BINARY"))
-    assert wkhtmltopdf_binary.exists()
+    assert wkhtmltopdf_binary.exists(), f"Cannot find {wkhtmltopdf_binary}"
     template_location = Path(os.getenv("TEMPLATE_LOCATION"))
     assert template_location.exists()
     pdf_folder = Path(os.getenv("PDF_FOLDER"))
     create_if_not_exists(pdf_folder)
-    use_tasklist = os.getenv("TASKLIST") == "true"
-    show_chain_of_thought = os.getenv("SHOW_CHAIN_OF_THOUGHT") == "true"
 
     # Embedding related
     raw_text_folder = Path(os.getenv("RAW_TEXT_FOLDER"))
