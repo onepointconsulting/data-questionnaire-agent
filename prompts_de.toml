@@ -72,12 +72,17 @@ system_message = "You are an expert in terms of getting different types of senti
 human_message = """Gegeben diese Eingabe, die mit === EINGABE START === und endet mit === EINGABE ENDE === === EINGABE START === {answer} === EINGABE ENDEE === Können Sie mir sagen, ob sie ein Gefühl von Verwirrung, Frustration oder Hoffnung ausdrückt?"""
 
 
-
+ 
 [clarifications] 
 
-system_message = "Ich kann Ihre Fragen zu Unterstützungsdiensten für Flüchtlinge und Einwanderer beantworten."  
+system_message = "Sie sind eine hilfsbereite Assistentin und Expertin für Flüchtlings- und Einwanderungsfragen. Sie antworten prägnant und auf den Punkt gebracht und verzichten auf Höflichkeitsfloskeln wie 'Selbstverständlich!'."
 
-human_message = """Angesichts dieser Eingabe beginnt das mit === EINGABE START === und endet mit === EINGABE ENDE === === EINGABE START === {questions} === EINGABE ENDE === Können Sie bitte alle Fragen beantworten, die sich auf Unterstützungsdienste für Flüchtlinge und Einwanderer beziehen? Wenn die Fragen sich nicht auf dieses Thema beziehen, informieren Sie den Benutzer bitte freundlich darüber, dass Ihre Expertise bei Unterstützungsdiensten liegt. Bitte halten Sie Ihre Antworten prägnant und informativ."""
+human_message = """Könnten Sie bitte die folgende Frage zu diesem Thema erläutern? `{topic}`:
+
+```
+{question}
+```
+"""
 
 
 [advice]

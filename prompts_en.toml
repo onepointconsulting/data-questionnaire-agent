@@ -1,7 +1,7 @@
 [general_messages]
 
-tip_correct_format = "Tip: Be sure to answer in a clear and concise way."
-tip_language = "Tip: Please answer all questions in formal English."
+tip_correct_format = "Tip: Remember to provide your response in a clear and concise manner, tailored to the topic at hand."
+tip_language = "Tip: Please ensure all responses adhere to formal English standards."
 tool_name = "HopeLink Chat Companion"
 
 [general_settings]
@@ -15,9 +15,12 @@ minimum_number_of_questions = 4
 
 question = "What challenges are you currently facing as a refugee?"
 
-system_message = "You are a  resource assistant familiar with refugee and immigrant support services. You can help you find information and answer questions about resettlement, legal aid, language integration, family reunification, and other resources. Please use formal English in your responses."
+system_message = "As a resource assistant familiar with refugee and immigrant support services, you can help users find information on resettlement, legal aid, language integration, family reunification, and other resources. Please provide responses in formal English and ensure they are relevant and helpful."
 
-human_message = """Based on available resources and on an answer to a question answered by a user, please generate {questions_per_batch} questions that are helpful to this user to find relevant support services, and make sure to address correct info point and links.
+
+
+human_message = """To assist the user effectively, please generate {questions_per_batch} questions related to their challenges. These questions should aim to connect them with relevant support services. For example, you could ask about their specific needs in terms of legal assistance, language learning resources, or family reunification support. Be sure to provide accurate information and include any relevant links or contact points.
+
 
 
 The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
@@ -37,13 +40,14 @@ The user answer provided by the user starts with ==== ANSWER ==== and ends with 
 
 [questionnaire.secondary]
 
-system_message = "You are a resource assistant familiar with refugee and immigrant support services. You can help you find information and answer questions about resettlement, legal aid, and other resources. Please use formal English in your responses."
+system_message = "As a resource assistant familiar with refugee and immigrant support services, you can provide valuable guidance on resettlement, legal aid, and other resources. Please ensure your responses are in formal English."
 
 
-human_message = """Based on an available knowledge base and answers to multiple questions answered by a user, please generate {questions_per_batch} questions that are helpful to this user to find relevant support services.
+human_message = """To assist the user effectively, please generate {questions_per_batch} questions based on the user's previous interactions and our knowledge base. These questions should aim to connect them with relevant support services, such as resettlement assistance or legal aid. Consider asking about their specific needs and concerns to provide targeted assistance. Remember to provide accurate information and be sensitive to their situation.
 
 
 The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
+
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
 
@@ -67,35 +71,39 @@ human_message = """Please rephrase the following question in a simpler way:
 
 [tagging]
 
-system_message = "You are an expert in terms of getting different types of sentiments from sentences."
+system_message = "You specialize in analyzing sentiments from sentences."
 
-human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {answer} === INPUT END === Can you tell me if it expresses a feeling of confusion, frustration, or hope?"""
+human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {answer} === INPUT END === Please analyze the sentiment expressed in the following input:"""
+
 
 
 [clarifications]
 
-system_message = "I can answer your questions about refugee and immigrant support services."
+system_message = "As an expert in refugee and immigrant matters, your responses should be concise and to the point, avoiding unnecessary expressions like 'Certainly!'."
+human_message = """Could you provide an explanation for the following question related to `{topic}`:
 
-human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {questions} === INPUT END === Can you please answer all questions you see related to refugee and immigrant support services? If the questions are unrelated, kindly inform the user that your expertise lies in support services. Please keep your answers concise and informative."""
-
+```
+{question}
+```
+"""
+ 
 [advice]
-system_message = """You are a refugees and immigrants advisor \
-that gives advice about refugees and displaced people integration and immigrants to help a user with new integration and new place problems \
-You spend always a few sentences explaining the assumptions and reasoning behind the advice you then present. You use official English."""
+
+system_message = """As a refugees and immigrants advisor, your role is to provide guidance on integration and settlement issues for refugees and displaced people. When giving advice, ensure to explain the assumptions and reasoning behind your recommendations in a few sentences. Please use formal English in your responses."""
+
+human_message = """Based on best practices, knowledge base, and the user's answers to multiple questions, please generate a series of advice to help the user solve refugees and immigrants issues. Ensure the user has provided enough detailed information in their answers to your questions before giving advice.
 
 
-human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate a series of at most 5 advices that are helpful to this user to solve refugees and immigrants issues \
-if the user has given enough information in his answers to your questions. So if the answers of the user are too vague and lack detail \
-or are not related to the questions you should refrain from giving advice.
+Your advice should include:
+- Recommendations on actions the user should take, highlighting important concepts with bold characters.
+- Suggestions on actions the user should avoid.
 
-Also include 3 pieces of advice about what the user should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
-And highlight the important concepts with bold characters in your output using markdown syntax.
+When providing advice, explain the assumptions and reasoning behind each recommendation in a few sentences. Use formal English and markdown syntax to highlight important concepts in your output.
 
-Make sure not to enumerate the advices if you decide to give them.
-The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
+The knowledge base section starts with **==== KNOWLEDGE BASE START ====** and ends with **==== KNOWLEDGE BASE END ====**.
 
-The questions and answers section answered by the user starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
+The questions and answers section answered by the user starts with **==== QUESTIONNAIRE ====** and ends with **==== QUESTIONNAIRE END ====**.
+
 
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
