@@ -1,28 +1,26 @@
 [general_messages]
-
-tip_correct_format = "Tip: Be sure to answer in a clear and concise way."
-tip_language = "Tip: Please answer all questions in formal English."
-tool_name = "Refugee and Immigrant Support Assistant"
+tip_correct_format = "Tip: Make sure to answer in the correct format"
+tip_language = "Tip: Please make sure that you write all your answers in British English."
+tool_name = "Data Wellness Q&A Chatbot"
 
 [general_settings]
-
 questions_per_batch = 1
 minimum_number_of_questions = 4
 
+
 [questionnaire]
-
-[questionnaire.initial]
-
-question = "What is your situation and what kind of support are you looking for?"
-system_message = "I am a resource assistant familiar with refugee and immigrant support services. I can help you find information and answer questions about resettlement, legal aid, and other resources. Please use formal English in your responses."
-human_message = """Based on available resources and on an answer to a question answered by a user, please generate {questions_per_batch} questions that are helpful to this user to find relevant support services.
-The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
+    [questionnaire.initial]
+    question = "Which area of your data ecosystem are you most concerned about?"
+    system_message = "You are a data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
+    human_message = """Based on the best practices and knowledge base and on an answer to a question answered by a customer, \
+please generate {questions_per_batch} questions that are helpful to this customer to solve data integration and gouvernance issues.
+The best practices section starts with ==== BEST PRACTICES START ==== and ends with ==== BEST PRACTICES END ====.
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The question asked to the user starts with ==== QUESTION ==== and ends with ==== QUESTION END ====.
 The user answer provided by the customer starts with ==== ANSWER ==== and ends with ==== ANSWER END ====.
-
-==== RESOURCES START ====
+==== KNOWLEDGE BASE START ====
 {knowledge_base}
-==== RESOURCES END ====
+==== KNOWLEDGE BASE END ====
 ==== QUESTION ====
 {question}
 ==== QUESTION END ====
@@ -30,18 +28,19 @@ The user answer provided by the customer starts with ==== ANSWER ==== and ends w
 {answer}
 ==== ANSWER END ====
 """
+    [questionnaire.secondary]
+    system_message = "You are a British data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
+    human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
+please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, gouvernance and quality issues. Make sure that you ask the customer about his painpoints and not how to solve specific problems.
 
-[questionnaire.secondary]
+Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
 
-system_message = "I am a resource assistant familiar with refugee and immigrant support services. I can help you find information and answer questions about resettlement, legal aid, and other resources. Please use formal English in your responses."
-human_message = """Based on an available knowledge base and answers to multiple questions answered by a user, please generate {questions_per_batch} questions that are helpful to this user to find relevant support services.
-The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
+The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
-
-==== RESOURCES START ====
+==== KNOWLEDGE BASE START ====
 {knowledge_base}
-==== RESOURCES END ====
+==== KNOWLEDGE BASE END ====
 ==== QUESTIONNAIRE ====
 {questions_answers}
 ==== QUESTIONNAIRE END ====
@@ -49,22 +48,36 @@ The user answers are in the section that starts with ==== ANSWERS ==== and ends 
 {answers}
 ==== ANSWERS END ====
 """
+    [questionnaire.clarification]
+    system_message = "I am a helpful assistant. I explain the meaning of questions step by step. I highlight the main topics in bold markdown. I use British English."
+    human_message = """Please explain the following question in a way that a layman can understand it:
 
-[questionnaire.clarification]
-
-system_message = "I can help clarify your questions. Please rephrase your question in another way."
-human_message = """Please rephrase the following question in a simpler way:
 {question}
 """
 
 [tagging]
+system_message = "You are an expert in terms of getting different types of sentiments from sentences."
+human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+can you tell me whether there is a question related to data analytics, data governance and strategies in it or not and whether the overall sentiment of the text indicates some sort of confusion?"""
+human_message_extraction = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+can you extract question related to data analytics, data governance and strategies, if there is one?"""
 
-system_message = "I can analyze the sentiment of your answers."
-human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {answer} === INPUT END === Can you tell me if it expresses a feeling of confusion, frustration, or hope?"""
 [clarifications]
-
-system_message = "I can answer your questions about refugee and immigrant support services."
-human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END === === INPUT START === {questions} === INPUT END === Can you please answer all questions you see related to refugee and immigrant support services? If the questions are unrelated, kindly inform the user that your expertise lies in support services. Please keep your answers concise and informative."""
+system_message = "You are an expert in terms of answering user questions like a professional data engineer or analyst. You use British English."
+human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
+=== INPUT START ===
+{questions}
+=== INPUT END ===
+can you please answer all questions related to data analytics, data governance and strategies you see in it? 
+If you see questions related to topics that are totally unrelated to data analytics, data governance and strategies, please tell the user that you only answer questions about these topics.
+Please be concise and limit your replies to around 30 words if possible. 
+Do not reply with follow up questions like 'Would you like more information?'."""
 
 [advice]
 system_message = """You are a British data integration and gouvernance advisor \

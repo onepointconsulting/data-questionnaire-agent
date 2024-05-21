@@ -168,8 +168,9 @@ async def client_message(sid: str, session_id: str, answer: str):
 
 
 @sio.event
-async def clarify_question(sid: str, session_id: str, question: str):
-    async for token in await chain_factory_question_clarifications(question):
+async def clarify_question(sid: str, session_id: str, question: str, language: str = "en"):
+    language = adapt_language(language)
+    async for token in await chain_factory_question_clarifications(question, language):
         content = token.content
         await sio.emit(
             Commands.CLARIFICATION_TOKEN,
