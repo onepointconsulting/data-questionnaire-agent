@@ -14,7 +14,7 @@ def read_toml(file: Path) -> dict:
 # Default to English if the language is not supported.
 
 DEFAULT_LANGUAGE = "en"
-SUPPORTED_LANGUAGES = ["en", "fa"]
+SUPPORTED_LANGUAGES = ["en", "de"]
 
 
 def read_prompts_toml(language: str = DEFAULT_LANGUAGE) -> dict:

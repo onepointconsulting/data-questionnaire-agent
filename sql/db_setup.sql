@@ -158,5 +158,5 @@ INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION
 	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
 
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
-	VALUES('resistence_to_change.png', 'Resistance to change', 'Resistance to change', 'Employees need to adapt to new ways of operating to make data-driven transformation work.', 
+	VALUES('resistence_to_change.png', 'Widerstand gegen Veränderung', 'Widerstand gegen Veränderung', 'Mitarbeiter müssen sich an neue Arbeitsweisen anpassen, um eine datengesteuerte Transformation zu ermöglichen.', 
 	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));

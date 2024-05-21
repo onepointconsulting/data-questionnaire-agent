@@ -402,7 +402,7 @@ WHERE SESSION_ID = %(session_id)s
         language = default_values[1]
         for r in res:
             if r[0] == SESSION_STEPS_CONFIG_KEY:
-                steps = int(r[1])
+                steps = int(r[1]) if r[1] != 'None' else steps
             elif r[0] == SESSION_STEPS_LANGUAGE_KEY:
                 language = str(r[1])
         return (steps, language)
