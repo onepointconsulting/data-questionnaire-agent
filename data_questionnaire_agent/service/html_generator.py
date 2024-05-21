@@ -36,12 +36,16 @@ def generate_pdf_from(questionnaire: Questionnaire, advices: ConditionalAdvice) 
         return None
     html = generate_html(questionnaire, advices)
     logger.info("PDF html: %s", html)
-    file_name = (
-        cfg.pdf_folder / f"generated_advice_{generate_iso()}.pdf"
-    )
+    file_name = cfg.pdf_folder / f"generated_advice_{generate_iso()}.pdf"
     logger.info("PDF to be created file name: %s", file_name)
     config = pdfkit.configuration(wkhtmltopdf=cfg.wkhtmltopdf_binary.as_posix())
-    pdfkit.from_string(html, file_name, configuration=config, verbose=True, options={"--enable-local-file-access": True})
+    pdfkit.from_string(
+        html,
+        file_name,
+        configuration=config,
+        verbose=True,
+        options={"--enable-local-file-access": True},
+    )
     logger.info("Created PDF: %s", file_name)
     return file_name
 

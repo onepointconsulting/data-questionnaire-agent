@@ -3,7 +3,11 @@ import asyncio
 from aiohttp import web
 from data_questionnaire_agent.config import websocket_cfg
 from data_questionnaire_agent.config import web_server_cfg
-from data_questionnaire_agent.server.questionnaire_server import MAX_SESSION_STEPS, app, routes
+from data_questionnaire_agent.server.questionnaire_server import (
+    MAX_SESSION_STEPS,
+    app,
+    routes,
+)
 
 
 FILE_INDEX = "index.html"

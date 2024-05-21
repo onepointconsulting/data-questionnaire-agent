@@ -111,7 +111,9 @@ class ConditionalAdvice(BaseModel):
 
         markdown = convert_to_text(self.advices, "What you should do")
         markdown += convert_to_text(self.what_you_should_avoid, "What you should avoid")
-        markdown += convert_to_text(self.positive_outcomes, "Positive outcomes if you follow the advices")
+        markdown += convert_to_text(
+            self.positive_outcomes, "Positive outcomes if you follow the advices"
+        )
 
         return markdown
 
