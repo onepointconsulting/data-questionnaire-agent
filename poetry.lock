@@ -2082,6 +2082,23 @@ client = ["requests (>=2.21.0)", "websocket-client (>=0.54.0)"]
 docs = ["sphinx"]
 
 [[package]]
+name = "python-i18n"
+version = "0.3.9"
+description = "Translation library for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "python-i18n-0.3.9.tar.gz", hash = "sha256:df97f3d2364bf3a7ebfbd6cbefe8e45483468e52a9e30b909c6078f5f471e4e8"},
+    {file = "python_i18n-0.3.9-py3-none-any.whl", hash = "sha256:bda5b8d889ebd51973e22e53746417bd32783c9bd6780fd27cadbb733915651d"},
+]
+
+[package.dependencies]
+pyyaml = {version = ">=3.10", optional = true, markers = "extra == \"yaml\""}
+
+[package.extras]
+yaml = ["pyyaml (>=3.10)"]
+
+[[package]]
 name = "python-socketio"
 version = "5.11.2"
 description = "Socket.IO server and client for Python"
@@ -2835,4 +2852,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3df67568f399e085940eab055e95e846c8f388c1b8090e10bd4d2cbb31900427"
+content-hash = "c7888e9396e709ff2b40b709b8c886c72751320c40b07b45ebb9eaa403f600ee"

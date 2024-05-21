@@ -88,6 +88,6 @@ def num_tokens_from_string(string: str) -> int:
 
 if __name__ == "__main__":
     docsearch = init_vector_search()
-    search_res = similarity_search(docsearch, "Data Quality")
+    search_res = similarity_search(docsearch, "Passport")
     print(search_res)
     print(num_tokens_from_string(search_res))

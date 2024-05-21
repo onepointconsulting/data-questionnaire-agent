@@ -1,0 +1,6 @@
+fa:
+  db_insert_failed: "عدم موفقیت در افزودن سوال به پایگاه داده"
+  db_update_failed: "پاسخ در پایگاه داده به روز نشد"
+  no_report_id: "شناسه گزارش در دسترس نیست"
+  no_answer_from_chatgpt: "هیچ پاسخی از ChatGPT دریافت نشد"
+  failed_insert_question: "عدم موفقیت در وارد کردن سوال در پایگاه داده"

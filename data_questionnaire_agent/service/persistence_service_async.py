@@ -1,6 +1,6 @@
 import sys
 import asyncio
-from typing import Callable, Coroutine, Any, Union, List
+from typing import Callable, Coroutine, Any, Union, List, Tuple
 from psycopg import AsyncCursor, AsyncConnection
 
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
@@ -8,19 +8,21 @@ from data_questionnaire_agent.model.question_suggestion import QuestionSuggestio
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import db_cfg
-from data_questionnaire_agent.toml_support import prompts
+from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.model.application_schema import (
     Questionnaire,
     QuestionAnswer,
 )
 from data_questionnaire_agent.model.session_configuration import (
     SESSION_STEPS_CONFIG_KEY,
+    SESSION_STEPS_LANGUAGE_KEY,
     DEFAULT_SESSION_STEPS,
 )
 from data_questionnaire_agent.model.session_configuration import (
     SessionConfigurationEntry,
     SessionConfiguration,
 )
+from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -75,17 +77,18 @@ async def select_from(query: str, parameter_map: dict) -> list:
     return await create_cursor(handle_select)
 
 
-async def select_initial_question() -> str:
+async def select_initial_question(language: str) -> str:
     res = await select_from(
         """
-SELECT question FROM TB_QUESTION
+SELECT question FROM TB_QUESTION Q INNER JOIN public.tb_language L on Q.language_id = L.id
+WHERE LANGUAGE_CODE = %(language)s
 ORDER BY PREFERRED_QUESTION_ORDER
 LIMIT 1
 """,
-        {},
+        {"language": language},
     )
     if len(res) == 0:
-        return prompts["questionnaire"]["initial"]["question"]
+        return get_prompts(language)["questionnaire"]["initial"]["question"]
     else:
         return res[0][0]
 
@@ -359,28 +362,53 @@ WHERE SESSION_ID = %(session_id)s AND CONFIG_KEY = %(config_key)s RETURNING ID
     return await create_cursor(process_update, True)
 
 
-async def select_current_session_steps(session_id: str) -> int:
+async def update_session_steps(session_id: str, session_steps: int) -> Union[int, None]:
+    async def process_update(cur: AsyncCursor):
+        await cur.execute(
+            """
+UPDATE TB_SESSION_CONFIGURATION SET CONFIG_VALUE = %(config_value)s
+WHERE SESSION_ID = %(session_id)s AND CONFIG_KEY = %(config_key)s RETURNING ID
+            """,
+            {
+                "session_id": session_id,
+                "config_key": SESSION_STEPS_CONFIG_KEY,
+                "config_value": session_steps,
+            },
+        )
+        created_row = await cur.fetchone()
+        if created_row is None:
+            return None
+        updated_id = created_row[0]
+        return updated_id
+
+    return await create_cursor(process_update, True)
+
+
+async def select_current_session_steps_and_language(session_id: str) -> Tuple[int, str]:
     res = await select_from(
         f"""
-SELECT CONFIG_VALUE
+SELECT CONFIG_KEY, CONFIG_VALUE
 FROM TB_SESSION_CONFIGURATION
 WHERE SESSION_ID = %(session_id)s
-	AND CONFIG_KEY = '{SESSION_STEPS_CONFIG_KEY}'
+        AND CONFIG_KEY in ('{SESSION_STEPS_CONFIG_KEY}', '{SESSION_STEPS_LANGUAGE_KEY}')
 """,
         {"session_id": session_id},
     )
-    if (
-        len(res) == 0
-        or len(res[0]) == 0
-        or res[0][0] == None
-        # or not isinstance(res[0][0], int)
-    ):
-        return DEFAULT_SESSION_STEPS
+    default_values = (DEFAULT_SESSION_STEPS, DEFAULT_LANGUAGE)
+    if len(res) == 0 or len(res[0]) == 0 or res[0][0] == None:
+        return default_values
     try:
-        return int(res[0][0])
+        steps = default_values[0]
+        language = default_values[1]
+        for r in res:
+            if r[0] == SESSION_STEPS_CONFIG_KEY:
+                steps = int(r[1])
+            elif r[0] == SESSION_STEPS_LANGUAGE_KEY:
+                language = str(r[1])
+        return (steps, language)
     except:
         logger.exception("Cannot select current session steps")
-        return DEFAULT_SESSION_STEPS
+        return default_values
 
 
 async def save_report(
@@ -470,13 +498,13 @@ if __name__ == "__main__":
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 
-    async def test_select_initial():
-        question = await select_initial_question()
+    async def test_select_initial_fa():
+        question = await select_initial_question("fa")
         assert question is not None
         print(question)
 
-    async def test_select_initial():
-        question = await select_initial_question()
+    async def test_select_initial_en():
+        question = await select_initial_question("en")
         assert question is not None
         suggestions = await select_suggestions(question)
         assert len(suggestions) > 0
@@ -527,7 +555,10 @@ if __name__ == "__main__":
         session_configuration = create_session_configuration()
         saved = await save_session_configuration(session_configuration)
         assert isinstance(saved, SessionConfigurationEntry)
-        current_session_steps = await select_current_session_steps(saved.session_id)
+        (
+            current_session_steps,
+            language,
+        ) = await select_current_session_steps_and_language(saved.session_id)
         assert current_session_steps == DEFAULT_SESSION_STEPS
         deleted = await delete_session_configuration(saved.id)
         assert deleted == 1
@@ -566,7 +597,8 @@ if __name__ == "__main__":
         assert deleted == 1
 
     # asyncio.run(test_insert_questionnaire_status())
-    # asyncio.run(test_select_initial())
+    # asyncio.run(test_select_initial_fa())
+    asyncio.run(test_select_initial_en())
     # asyncio.run(test_insert_answer())
     # asyncio.run(test_select_answers())
     asyncio.run(test_session_configuration_save())

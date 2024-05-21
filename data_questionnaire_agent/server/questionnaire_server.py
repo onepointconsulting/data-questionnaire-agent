@@ -20,6 +20,7 @@ from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.session_configuration import (
     SessionConfigurationEntry,
     SESSION_STEPS_CONFIG_KEY,
+    SESSION_STEPS_LANGUAGE_KEY,
     DEFAULT_SESSION_STEPS,
     SessionConfiguration,
 )
@@ -36,7 +37,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_report,
     save_session_configuration,
     select_session_configuration,
-    select_current_session_steps,
+    select_current_session_steps_and_language,
     save_report,
     insert_questionnaire_status_suggestions,
     select_questionnaire_status_suggestions,
@@ -58,7 +59,7 @@ from data_questionnaire_agent.service.mail_sender import create_mail_body
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
 )
-
+from data_questionnaire_agent.translation import t
 
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 FAILED_SESSION_STEPS = -1
@@ -66,7 +67,6 @@ MAX_SESSION_STEPS = 14
 
 docsearch = init_vector_search()
 
-advice_chain = chain_factory_advice()
 
 sio = socketio.AsyncServer(
     cors_allowed_origins=websocket_cfg.websocket_cors_allowed_origins
@@ -96,7 +96,9 @@ def disconnect(sid):
 
 
 @sio.event
-async def start_session(sid: str, client_session: str, session_steps: int = 6):
+async def start_session(
+    sid: str, client_session: str, session_steps: int = 6, language: str = "en"
+):
     """
     Start the session by setting the main topic.
     """
@@ -108,13 +110,13 @@ async def start_session(sid: str, client_session: str, session_steps: int = 6):
 
     if len(questionnaire_messages) == 0:
         # No question yet. Start from scratch
-        question = await select_initial_question()
+        question = await select_initial_question(language)
         qs, qs_res = await persist_question(session_id, question)
         if qs_res.id is None:
-            await send_error(sid, session_id, "Failed to insert question in database.")
+            await send_error(sid, session_id, t("db_insert_failed", locale=language))
             return
         server_messages = server_messages_factory([qs])
-        await insert_configuration(server_messages, session_steps)
+        await insert_configuration(server_messages, session_steps, language)
     else:
         # Get all messages on this session
         server_messages = server_messages_factory(questionnaire_messages)
@@ -138,22 +140,23 @@ async def client_message(sid: str, session_id: str, answer: str):
         await start_session(sid, session_id)
     else:
         update_id = await update_answer(session_id, answer)
+        (
+            current_session_steps,
+            language,
+        ) = await select_current_session_steps_and_language(session_id)
         if update_id is None:
-            await send_error(
-                sid, session_id, "Failed to update the answer in database."
-            )
+            await send_error(sid, session_id, t("db_update_failed", locale=language))
             return
         questionnaire = await select_questionnaire(session_id)
-        current_session_steps = await select_current_session_steps(session_id)
         if current_session_steps - 1 > len(questionnaire):
-            await handle_secondary_question(sid, session_id, questionnaire)
+            await handle_secondary_question(sid, session_id, questionnaire, language)
         else:
             # Check if report is available
             report = await select_report(session_id)
 
             if report is None:
                 # Generate the report.
-                await generate_report(session_id, questionnaire)
+                await generate_report(session_id, questionnaire, language)
 
             questionnaire_messages = await select_questionnaire_statuses(session_id)
             server_messages = server_messages_factory(questionnaire_messages)
@@ -185,28 +188,28 @@ async def extend_session(sid: str, session_id: str, session_steps: int):
     )
 
 
-async def generate_report(session_id: str, questionnaire: Questionnaire):
+async def generate_report(session_id: str, questionnaire: Questionnaire, language: str):
     total_cost = 0
     with get_openai_callback() as cb:
         conditional_advice: ConditionalAdvice = await process_advice(
-            docsearch, questionnaire, advice_chain
+            docsearch, questionnaire, chain_factory_advice(language)
         )
         total_cost = cb.total_cost
     report_id = await save_report(session_id, conditional_advice, total_cost)
-    assert report_id is not None, "Report ID is not available."
+    assert report_id is not None, t("no_report_id", locale=language)
 
 
 async def handle_secondary_question(
-    sid: str, session_id: str, questionnaire: Questionnaire
+    sid: str, session_id: str, questionnaire: Questionnaire, language: str
 ):
     total_cost = 0
     with get_openai_callback() as cb:
         question_answers = await process_secondary_questions(
-            questionnaire, cfg.questions_per_batch
+            questionnaire, cfg.questions_per_batch, language
         )
         total_cost = cb.total_cost
     if len(question_answers) == 0:
-        await send_error(sid, session_id, "Could not get any answers from ChatGPT.")
+        await send_error(sid, session_id, t("no_answer_from_chatgpt", locale=language))
         return
     last_question_answer = question_answers[-1]
     # Save the generated question
@@ -215,7 +218,7 @@ async def handle_secondary_question(
     )
     # Persist the suggestions for this answer
     if qs_res.id is None:
-        await send_error(sid, session_id, "Failed to insert question in database.")
+        await send_error(sid, session_id, t("failed_insert_question", locale=language))
         return
     await insert_questionnaire_status_suggestions(qs_res.id, last_question_answer)
     questionnaire_messages = await select_questionnaire_statuses(session_id)
@@ -261,20 +264,36 @@ async def append_first_suggestion(server_messages: ServerMessages, question: str
     server_messages.server_messages[0].suggestions = await select_suggestions(question)
 
 
-async def insert_configuration(server_messages: ServerMessages, session_steps: int):
+async def insert_configuration(
+    server_messages: ServerMessages, session_steps: int, language: str
+):
     session_id = server_messages.session_id
     session_configuration_entry = SessionConfigurationEntry(
         session_id=session_id,
         config_key=SESSION_STEPS_CONFIG_KEY,
         config_value=str(session_steps),
     )
-    saved_entry = await save_session_configuration(session_configuration_entry)
-    if saved_entry is None:
-        # Something went wrong. We will use the dafault value.
-        logger.error(f"Could not save configuration with {session_steps}")
-    session_configuration = SessionConfiguration(
-        configuration_entries=[session_configuration_entry]
+    session_configuration_language = SessionConfigurationEntry(
+        session_id=session_id,
+        config_key=SESSION_STEPS_LANGUAGE_KEY,
+        config_value=language,
     )
+    session_keys = [session_configuration_entry, session_configuration_language]
+    accepted_keys = []
+    for session_key in session_keys:
+        saved_entry = await save_session_configuration(session_key)
+        if saved_entry is None:
+            # Something went wrong. We will use the dafault value.
+            # logger.error(
+            #     f"Could not save configuration with {
+            #         session_key.config_key}: {session_key.config_value}"
+            # )
+            logger.error(
+                f"Could not save configuration with {session_key.config_key}: {session_key.config_value}"
+            )
+        else:
+            accepted_keys.append(session_key)
+    session_configuration = SessionConfiguration(configuration_entries=accepted_keys)
     server_messages.session_configuration = session_configuration
 
 

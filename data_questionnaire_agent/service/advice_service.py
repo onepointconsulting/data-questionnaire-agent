@@ -6,23 +6,26 @@ from langchain.prompts import ChatPromptTemplate
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,
 )
-from data_questionnaire_agent.toml_support import prompts
+from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.config import cfg
 
 
-def prompt_factory_conditional_advice() -> ChatPromptTemplate:
+def prompt_factory_conditional_advice(language: str) -> ChatPromptTemplate:
+    # Assuming get_prompts() returns the required dictionary
+    prompts = get_prompts(language)
     section = prompts["advice"]
     return prompt_factory_generic(
-        section,
-        ["knowledge_base", "questions_answers"],
+        section=section,
+        input_variables=["knowledge_base", "questions_answers"],
+        prompts=prompts,
     )
 
 
-def chain_factory_advice() -> LLMChain:
+def chain_factory_advice(language: str) -> LLMChain:
     return create_structured_output_chain(
         ConditionalAdvice,
         cfg.llm,
-        prompt_factory_conditional_advice(),
+        prompt_factory_conditional_advice(language),
         verbose=cfg.verbose_llm,
     )
 
