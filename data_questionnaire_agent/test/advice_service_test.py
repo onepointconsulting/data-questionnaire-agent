@@ -10,6 +10,7 @@ from data_questionnaire_agent.test.provider.question_answers_provider import (
     provide_dummy_questionnaire,
 )
 
+
 def create_chain():
     chain = chain_factory_advice("en")
     assert chain is not None

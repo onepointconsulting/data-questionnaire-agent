@@ -59,6 +59,7 @@ from data_questionnaire_agent.service.mail_sender import create_mail_body
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
 )
+from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.translation import t
 
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
@@ -102,6 +103,7 @@ async def start_session(
     """
     Start the session by setting the main topic.
     """
+    language = adapt_language(language)
     agent_session = AgentSession(sid, client_session)
     session_id = agent_session.session_id
     questionnaire_messages = await select_questionnaire_statuses(session_id)
@@ -189,6 +191,7 @@ async def extend_session(sid: str, session_id: str, session_steps: int):
 
 
 async def generate_report(session_id: str, questionnaire: Questionnaire, language: str):
+    language = adapt_language(language)
     total_cost = 0
     with get_openai_callback() as cb:
         conditional_advice: ConditionalAdvice = await process_advice(

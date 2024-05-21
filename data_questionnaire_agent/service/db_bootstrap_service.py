@@ -33,14 +33,14 @@ async def execute_script(path: Path) -> Union[str, bool]:
 
 async def table_exists(table: str, cursor: AsyncCursor) -> bool:
     await cursor.execute(
-            """
+        """
 SELECT EXISTS (
    SELECT FROM information_schema.tables 
    WHERE  table_schema = 'public'
    AND    table_name   = %(table)s
    );
             """,
-            {"table": table},
-        )
+        {"table": table},
+    )
     rows = await cursor.fetchone()
     return rows[0]

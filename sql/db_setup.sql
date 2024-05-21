@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS PUBLIC.TB_QUESTION_SUGGESTIONS;
 DROP TABLE IF EXISTS PUBLIC.TB_QUESTION;
 DROP TABLE IF EXISTS PUBLIC.TB_QUESTIONNAIRE_STATUS_SUGGESTIONS;
 DROP TABLE IF EXISTS PUBLIC.TB_QUESTIONNAIRE_STATUS;
+DROP TABLE IF EXISTS PUBLIC.TB_LANGUAGE;
 
 
 CREATE TABLE PUBLIC.TB_LANGUAGE (
@@ -80,12 +81,12 @@ CREATE TABLE PUBLIC.TB_QUESTIONNAIRE_STATUS_SUGGESTIONS(
 		MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE
 );
 
-
-
+INSERT INTO public.tb_language(language_code) VALUES ('en');
 
 -- Initial question
-INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER)
-VALUES('Which area of your data ecosystem are you most concerned about?', 1);
+INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER, LANGUAGE_ID)
+VALUES('Which area of your data ecosystem are you most concerned about?', 1, 
+	(SELECT ID FROM public.tb_language language_code where language_code='en'));
 
 -- Suggestions
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
@@ -119,3 +120,43 @@ INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION
 INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
 	VALUES('resistence_to_change.png', 'Resistance to change', 'Resistance to change', 'Employees need to adapt to new ways of operating to make data-driven transformation work.', 
 	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Which area of your data ecosystem are you most concerned about?'));
+
+-- German
+INSERT INTO public.tb_language(language_code) VALUES ('de');
+
+INSERT INTO TB_QUESTION(QUESTION, PREFERRED_QUESTION_ORDER, LANGUAGE_ID)
+VALUES('Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?', 1, 
+	(SELECT ID FROM public.tb_language language_code where language_code='de'));
+
+-- Suggestions
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('poor_data_quality.png', 'Schlechte Datenqualität', 'Schlechte Datenqualität', 'Daten von minderer Qualität können zu falschen Erkenntnissen und schlechten Entscheidungen führen.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
+	   
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('compliance_risks.png', 'Compliance- und Sicherheitsrisiken', 'Compliance- und Sicherheitsrisiken', 'Der unsachgemäße Umgang mit Daten kann zu rechtlichen Problemen und Rufschädigung führen.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('data_silos.png', 'Datensilos', 'Datensilos', 'Daten, die in Abteilungssilos gefangen sind, können für andere Teile unzugänglich sein.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('lack_of_skilled_personnel.png', 'Mangel an qualifiziertem Personal', 'Mangel an qualifiziertem Personal', 'Fehlende Fähigkeiten in Data Science, Analytik, KI und ML können die effektive Nutzung von Daten behindern.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('data_overload.png', 'Datenüberlastung', 'Datenüberlastung', 'Eine "Datenflut" kann Prozesse verlangsamen und es schwierig machen, herauszufinden, welche Daten tatsächlich nützlich sind.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('cost_and_complexity.png', 'Kosten und Komplexität', 'Kosten und Komplexität', 'Eine robuste Datenanalyse-Infrastruktur erfordert eine erhebliche Investition von Ressourcen.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('inconsistent_data_strategies.png', 'Inkonsistente Datenstrategien', 'Inkonsistente Datenstrategien', 'Schwer mit modernen Konzepten wie Data Fabric, Mesh und generativer KI in Einklang zu bringen.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
+
+INSERT INTO TB_QUESTION_SUGGESTIONS(IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID)
+	VALUES('resistence_to_change.png', 'Resistance to change', 'Resistance to change', 'Employees need to adapt to new ways of operating to make data-driven transformation work.', 
+	   (SELECT ID FROM TB_QUESTION WHERE QUESTION = 'Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?'));
