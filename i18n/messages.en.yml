@@ -4,3 +4,6 @@ en:
   no_report_id: "Report ID is not available"
   no_answer_from_chatgpt: "Could not get any answers from ChatGPT"
   failed_insert_question: "Failed to insert question in database"
+  "What you should do": "What you should do"
+  "What you should avoid": "What you should avoid"
+  "Positive outcomes (if you follow the advices)": "Positive outcomes (if you follow the advices)"

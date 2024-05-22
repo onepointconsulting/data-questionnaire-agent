@@ -21,6 +21,9 @@ class ServerMessage(BaseModel):
     suggestions: List[Any] = Field(
         default=[], description="The list of suggested responses"
     )
+    clarification: Union[str, None] = Field(
+        ..., description="The clarification or explanation of the question"
+    )
 
 
 class ServerMessages(BaseModel):
@@ -47,6 +50,7 @@ def convert_questionnaire(
             question=q.question,
             answer="" if q.answer is None else q.answer,
             final_report=q.final_report,
+            clarification=q.clarification
         )
         for q in questionnaire
     ]

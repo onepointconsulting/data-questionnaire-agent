@@ -95,8 +95,20 @@ LIMIT 1
 
 async def select_questionnaire_statuses(session_id: str) -> List[QuestionnaireStatus]:
     res = await select_from(
-        """select id, session_id, question, answer, final_report, created_at, updated_at from tb_questionnaire_status
-where session_id = %(session_id)s order by id asc""",
+        """SELECT S.ID,
+	S.SESSION_ID,
+	QUESTION,
+	ANSWER,
+	FINAL_REPORT,
+	CREATED_AT,
+	UPDATED_AT,
+	C.CONFIG_VALUE LANGUAGE,
+    CLARIFICATION
+FROM TB_QUESTIONNAIRE_STATUS S
+INNER JOIN PUBLIC.TB_SESSION_CONFIGURATION C ON S.SESSION_ID = C.SESSION_ID
+AND C.CONFIG_KEY = 'session-language'
+WHERE S.SESSION_ID = %(session_id)s
+ORDER BY ID ASC""",
         {
             "session_id": session_id,
         },
@@ -108,19 +120,23 @@ where session_id = %(session_id)s order by id asc""",
     FINAL_REPORT = 4
     CREATED_AT = 5
     UPDATED_AT = 6
+    LANGUAGE = 7
+    CLARIFICATION = 8
     final_res = []
     for r in res:
         final_report = r[FINAL_REPORT]
         question = r[QUESTION]
+        language = r[LANGUAGE]
         if final_report:
             conditional_advice = ConditionalAdvice.parse_raw(question)
-            question = conditional_advice.to_markdown()
+            question = conditional_advice.to_markdown(language)
         final_res.append(
             QuestionnaireStatus(
                 id=r[ID],
                 session_id=r[SESSION_ID],
                 question=question,
                 answer=r[ANSWER],
+                clarification=r[CLARIFICATION],
                 final_report=final_report,
                 created_at=r[CREATED_AT],
                 updated_at=r[UPDATED_AT],
@@ -161,14 +177,36 @@ RETURNING ID
     return await create_cursor(process_save, True)
 
 
+async def update_clarification(session_id: str, question: str, clarification: str) -> Union[int, None]:
+    async def process_save(cur: AsyncCursor):
+        await cur.execute(
+            """
+UPDATE TB_QUESTIONNAIRE_STATUS
+SET CLARIFICATION = %(clarification)s 
+WHERE SESSION_ID = %(session_id)s
+	AND QUESTION = %(question)s
+RETURNING ID
+            """,
+            {"session_id": session_id, "question": question, "clarification": clarification},
+        )
+        rows = await cur.fetchone()
+        if len(rows) == 0:
+            return None
+        return rows[0]
+
+    return await create_cursor(process_save, True)
+
+
 async def select_questionnaire(
     session_id: str, include_last: bool = True
 ) -> Questionnaire:
     include_last_sql = "" if include_last else " AND FINAL_REPORT != true "
     res = await select_from(
-        f"""SELECT QUESTION, ANSWER, FINAL_REPORT
-FROM TB_QUESTIONNAIRE_STATUS
-WHERE SESSION_ID = %(session_id)s {include_last_sql} ORDER BY ID""",
+        f"""SELECT QUESTION, ANSWER, FINAL_REPORT, C.CONFIG_VALUE LANGUAGE
+FROM TB_QUESTIONNAIRE_STATUS S
+INNER JOIN PUBLIC.TB_SESSION_CONFIGURATION C ON S.SESSION_ID = C.SESSION_ID
+AND C.CONFIG_KEY = 'session-language'
+WHERE S.SESSION_ID = %(session_id)s {include_last_sql} ORDER BY S.ID""",
         {
             "session_id": session_id,
         },
@@ -182,9 +220,11 @@ WHERE SESSION_ID = %(session_id)s {include_last_sql} ORDER BY ID""",
             )
         else:
             conditional_advice = ConditionalAdvice.parse_raw(r[0])
+            LANGUAGE = 3
+            language = r[LANGUAGE]
             questions.append(
                 QuestionAnswer(
-                    question=conditional_advice.to_markdown(),
+                    question=conditional_advice.to_markdown(language),
                     answer=r[1],
                     clarification=None,
                 )

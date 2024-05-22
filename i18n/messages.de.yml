@@ -1,0 +1,9 @@
+de:
+  db_insert_failed: "Fehler beim Hinzufügen der Abfrage"
+  db_update_failed: "Fehler beim Hinzufügen der Antwort"
+  no_report_id: "Berichts-ID ist nicht verfügbar"
+  no_answer_from_chatgpt: "Konnte keine Antworten von ChatGPT erhalten"
+  failed_insert_question: "Fehler beim Einfügen der Frage in die Datenbank"
+  "What you should do": "Empfehlungen"
+  "What you should avoid": "Was Sie vermeiden sollten"
+  "Positive outcomes (if you follow the advices)": "Positive Ergebnisse (wenn Sie den Ratschlägen folgen)"

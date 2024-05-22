@@ -1,8 +1,9 @@
 from typing import List, Optional, Union
 
 from pydantic import Field
-
 from pydantic import BaseModel as PydanticBaseModel
+
+from data_questionnaire_agent.translation import t
 
 
 class BaseModel(PydanticBaseModel):
@@ -101,7 +102,7 @@ class ConditionalAdvice(BaseModel):
         html += "</ul>"
         return html
 
-    def to_markdown(self) -> str:
+    def to_markdown(self, language: str = "en") -> str:
         def convert_to_text(text_list: List[str], title: str):
             md = f"# {title} ...\n\n"
             if text_list is not None:
@@ -109,10 +110,10 @@ class ConditionalAdvice(BaseModel):
                     md += f"- {text}\n\n"
             return md
 
-        markdown = convert_to_text(self.advices, "What you should do")
-        markdown += convert_to_text(self.what_you_should_avoid, "What you should avoid")
+        markdown = convert_to_text(self.advices, t("What you should do", language))
+        markdown += convert_to_text(self.what_you_should_avoid, t("What you should avoid", language))
         markdown += convert_to_text(
-            self.positive_outcomes, "Positive outcomes if you follow the advices"
+            self.positive_outcomes, t("Positive outcomes (if you follow the advices)", language)
         )
 
         return markdown

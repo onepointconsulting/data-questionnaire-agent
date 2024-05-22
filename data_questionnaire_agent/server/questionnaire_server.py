@@ -42,6 +42,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     insert_questionnaire_status_suggestions,
     select_questionnaire_status_suggestions,
     update_session_steps,
+    update_clarification
 )
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.similarity_search import (
@@ -170,13 +171,16 @@ async def client_message(sid: str, session_id: str, answer: str):
 @sio.event
 async def clarify_question(sid: str, session_id: str, question: str, language: str = "en"):
     language = adapt_language(language)
+    clarification = ""
     async for token in await chain_factory_question_clarifications(question, language):
         content = token.content
+        clarification += content
         await sio.emit(
             Commands.CLARIFICATION_TOKEN,
             content,
             room=sid,
         )
+    await update_clarification(session_id, question, clarification)
 
 
 @sio.event

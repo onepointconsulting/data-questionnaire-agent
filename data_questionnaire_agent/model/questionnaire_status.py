@@ -16,3 +16,4 @@ class QuestionnaireStatus(BaseModel):
         default=None, description="The updated timestamp"
     )
     total_cost: float = Field(default=0, description="")
+    clarification: Union[str, None] = Field(default=None, description="The clarification or explanation of the question")
