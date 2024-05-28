@@ -42,7 +42,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     insert_questionnaire_status_suggestions,
     select_questionnaire_status_suggestions,
     update_session_steps,
-    update_clarification
+    update_clarification,
 )
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.similarity_search import (
@@ -115,7 +115,7 @@ async def start_session(
         # No question yet. Start from scratch
         question = await select_initial_question(language)
         qs, qs_res = await persist_question(session_id, question)
-        if qs_res.id is None:
+        if qs_res is None or qs_res.id is None:
             await send_error(sid, session_id, t("db_insert_failed", locale=language))
             return
         server_messages = server_messages_factory([qs])
@@ -169,7 +169,9 @@ async def client_message(sid: str, session_id: str, answer: str):
 
 
 @sio.event
-async def clarify_question(sid: str, session_id: str, question: str, language: str = "en"):
+async def clarify_question(
+    sid: str, session_id: str, question: str, language: str = "en"
+):
     language = adapt_language(language)
     clarification = ""
     async for token in await chain_factory_question_clarifications(question, language):
@@ -326,8 +328,9 @@ async def send_error(sid: str, session_id: str, error_message: str):
     await sio.emit(
         Commands.ERROR,
         ServerMessage(
-            response=error_message,
-            sessionId=session_id,
+            question=error_message,
+            session_id=session_id,
+            clarification="",
             suggestions=[],
         ).json(),
         room=sid,
@@ -339,7 +342,8 @@ async def get_pdf(request: web.Request) -> web.Response:
     session_id = extract_session(request)
     questionnaire, advices = await query_questionnaire_advices(session_id)
     logger.info("PDF advices: %s", advices)
-    report_path = generate_pdf_from(questionnaire, advices)
+    language = extract_language(request)
+    report_path = generate_pdf_from(questionnaire, advices, language)
     logger.info("PDF report_path: %s", report_path)
     content_disposition = "attachment"
     return web.FileResponse(
@@ -367,9 +371,10 @@ async def send_email_request(request: web.Request) -> web.Response:
             headers=CORS_HEADERS,
         )
     try:
+        language = extract_language(request)
         data: Any = await request.json()
         mail_data = MailData.parse_obj(data)
-        mail_body = create_mail_body(questionnaire, advices)
+        mail_body = create_mail_body(questionnaire, advices, language=language)
         # Respond with a JSON message indicating success
         await asyncify(send_email)(
             mail_data.person_name, mail_data.email, mail_config.mail_subject, mail_body
@@ -385,6 +390,10 @@ async def send_email_request(request: web.Request) -> web.Response:
             content_type="application/json",
             headers=CORS_HEADERS,
         )
+
+
+def extract_language(request: web.Request):
+    return request.rel_url.query.get("language", "en")
 
 
 def extract_session(request):

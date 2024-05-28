@@ -50,7 +50,7 @@ def convert_questionnaire(
             question=q.question,
             answer="" if q.answer is None else q.answer,
             final_report=q.final_report,
-            clarification=q.clarification
+            clarification=q.clarification,
         )
         for q in questionnaire
     ]

@@ -41,8 +41,9 @@ async def create_cursor(func: Callable, commit=False) -> Any:
             return await func(cur)
     except:
         logger.exception("Could not create cursor.")
+        return None
     finally:
-        if conn is not None:
+        if "conn" in locals() and conn is not None:
             if commit:
                 await conn.commit()
             await conn.close()
@@ -87,7 +88,7 @@ LIMIT 1
 """,
         {"language": language},
     )
-    if len(res) == 0:
+    if res is None or len(res) == 0:
         return get_prompts(language)["questionnaire"]["initial"]["question"]
     else:
         return res[0][0]
@@ -123,6 +124,8 @@ ORDER BY ID ASC""",
     LANGUAGE = 7
     CLARIFICATION = 8
     final_res = []
+    if res == None:
+        return final_res
     for r in res:
         final_report = r[FINAL_REPORT]
         question = r[QUESTION]
@@ -177,7 +180,9 @@ RETURNING ID
     return await create_cursor(process_save, True)
 
 
-async def update_clarification(session_id: str, question: str, clarification: str) -> Union[int, None]:
+async def update_clarification(
+    session_id: str, question: str, clarification: str
+) -> Union[int, None]:
     async def process_save(cur: AsyncCursor):
         await cur.execute(
             """
@@ -187,7 +192,11 @@ WHERE SESSION_ID = %(session_id)s
 	AND QUESTION = %(question)s
 RETURNING ID
             """,
-            {"session_id": session_id, "question": question, "clarification": clarification},
+            {
+                "session_id": session_id,
+                "question": question,
+                "clarification": clarification,
+            },
         )
         rows = await cur.fetchone()
         if len(rows) == 0:
@@ -442,7 +451,7 @@ WHERE SESSION_ID = %(session_id)s
         language = default_values[1]
         for r in res:
             if r[0] == SESSION_STEPS_CONFIG_KEY:
-                steps = int(r[1]) if r[1] != 'None' else steps
+                steps = int(r[1]) if r[1] != "None" else steps
             elif r[0] == SESSION_STEPS_LANGUAGE_KEY:
                 language = str(r[1])
         return (steps, language)

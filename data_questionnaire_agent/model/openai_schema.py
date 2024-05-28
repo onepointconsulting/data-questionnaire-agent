@@ -76,13 +76,13 @@ class ConditionalAdvice(BaseModel):
         description="A list of potential positive outcomes in case the user follows the advice.",
     )
 
-    def to_html(self) -> str:
+    def to_html(self, language: str = "en") -> str:
         return f"""{self.to_advice_html()}
 
-<h2>What to avoid</h2>
+<h2>{t("What to avoid", locale=language)}</h2>
 {self.to_avoid_html()}
 
-<h2>Potential positive outcomes</h2>
+<h2>{t("Potential positive outcomes", locale=language)}</h2>
 {self.positive_outcomes_html()}
 """
 
@@ -110,10 +110,15 @@ class ConditionalAdvice(BaseModel):
                     md += f"- {text}\n\n"
             return md
 
-        markdown = convert_to_text(self.advices, t("What you should do", language))
-        markdown += convert_to_text(self.what_you_should_avoid, t("What you should avoid", language))
+        markdown = convert_to_text(
+            self.advices, t("What you should do", locale=language)
+        )
         markdown += convert_to_text(
-            self.positive_outcomes, t("Positive outcomes (if you follow the advices)", language)
+            self.what_you_should_avoid, t("What you should avoid", locale=language)
+        )
+        markdown += convert_to_text(
+            self.positive_outcomes,
+            t("Positive outcomes (if you follow the advices)", locale=language),
         )
 
         return markdown

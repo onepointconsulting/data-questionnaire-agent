@@ -14,6 +14,7 @@ from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.report_enhancement_service import (
     replace_bold_markdown,
 )
+from data_questionnaire_agent.translation import t
 
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 
@@ -69,6 +70,7 @@ def create_mail_body(
     questionnaire: Questionnaire,
     advices: ConditionalAdvice,
     feedback_email: str = mail_config.feedback_email,
+    language: str = "en",
 ) -> str:
     mail_template = cfg.template_location / "mail-template.html"
     mail_template_text = mail_template.read_text(encoding="utf-8")
@@ -76,18 +78,17 @@ def create_mail_body(
 
     <img src="https://healthcheck.onepointltd.ai/banner/Hero_Image_with_Logo_and_Titles.jpg" style="width: 100%;" />
 
-    <p>A big thank you for completing a session with the <b>{cfg.product_title}</b>.</p>
-    <h2>Transcript</h2>
+    <p>{t("A big thank you for completing a session with", name=cfg.product_title, locale=language)}</p>
+    <h2>{t("Transcript", locale=language)}</h2>
     {replace_bold_markdown(questionnaire.to_html())}
-    <h2>Advice</h2>
-    {replace_bold_markdown(advices.to_html()) if advices is not None else ""}
+    <h2>{t("Advice", locale=language)}</h2>
+    {replace_bold_markdown(advices.to_html(language)) if advices is not None else ""}
 
-    <h2 class="personalOffer">A personal offer for you</h2>
-    <p>We are offering a free results interpretation call to talk through the Companion's recommendations and suggested courses of action with a real human expert. 
-        If you are open to that, please email us at <a href="mailto:datawellness@onepointltd.com">datawellness@onepointltd.com</a> from your business email address with your request to schedule a call.</p>
+    <h2 class="personalOffer">{t("A personal offer for you", locale=language)}</h2>
+    <p>{t("offering_long", locale=language)}</p>
 
-    <p>We would love your feedback: <a href="mailto:{feedback_email}">{feedback_email}</a>.</p>
-    <p>For more information, please visit us at <a href="https://www.onepointltd.com/data-wellness/">Onepoint Data Wellness</a>.</p>
+    <p>{t("We would love your feedback", locale=language)}: <a href="mailto:{feedback_email}">{feedback_email}</a>.</p>
+    <p>{t("for_more_info", locale=language)}</p>
     """
     return mail_template_text.format(content, text=content)
 

@@ -13,9 +13,12 @@ import pdfkit
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.translation import t
 
 
-def generate_html(questionnaire: Questionnaire, advices: ConditionalAdvice) -> str:
+def generate_html(
+    questionnaire: Questionnaire, advices: ConditionalAdvice, language: str = "en"
+) -> str:
     timestamp = datetime.today().strftime("%A, %b %d %Y")
     context = {
         "banner": re.sub(r"[A-Z]:\/", "", cfg.pdf_banner.absolute().as_uri()),
@@ -24,6 +27,21 @@ def generate_html(questionnaire: Questionnaire, advices: ConditionalAdvice) -> s
         "avoids": replace_bold_markdown(advices.to_avoid_html()),
         "positive_outcomes": replace_bold_markdown(advices.positive_outcomes_html()),
         "timestamp": timestamp,
+        "big_thank_you": t(
+            "A big thank you for completing a session with",
+            name=cfg.product_title,
+            locale=language,
+        ),
+        "intro_advice": t("intro_advice", locale=language),
+        "offering_long": t("offering_long", locale=language),
+        "personal_offer": t("A personal offer for you", locale=language),
+        "produced_on": t("Produced on", locale=language),
+        "love_feedback": t("We would love your feedback", locale=language),
+        "for_more_info": t("for_more_info", locale=language),
+        "title_potential_outcomes": t("Potential positive outcomes", locale=language),
+        "title_transcript": t("Transcript", locale=language),
+        "title_what_to_do": t("What you should do", locale=language),
+        "title_what_to_avoid": t("What to avoid", locale=language),
     }
     template_loader = jinja2.FileSystemLoader(cfg.template_location)
     template_env = jinja2.Environment(loader=template_loader)
@@ -31,10 +49,12 @@ def generate_html(questionnaire: Questionnaire, advices: ConditionalAdvice) -> s
     return template.render(context)
 
 
-def generate_pdf_from(questionnaire: Questionnaire, advices: ConditionalAdvice) -> Path:
+def generate_pdf_from(
+    questionnaire: Questionnaire, advices: ConditionalAdvice, language: str = "en"
+) -> Path:
     if questionnaire is None:
         return None
-    html = generate_html(questionnaire, advices)
+    html = generate_html(questionnaire, advices, language)
     logger.info("PDF html: %s", html)
     file_name = cfg.pdf_folder / f"generated_advice_{generate_iso()}.pdf"
     logger.info("PDF to be created file name: %s", file_name)

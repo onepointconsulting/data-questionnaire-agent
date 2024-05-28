@@ -1,6 +1,6 @@
 [general_messages]
 tip_correct_format = "Tipp: Stellen Sie sicher, dass Sie im richtigen Format antworten"
-tip_language = "Tipp: Bitte stellen Sie sicher, dass Sie alle Ihre Antworten auf Britisch-Englisch schreiben."
+tip_language = "Tipp: Bitte stellen Sie sicher, dass Sie alle Ihre Antworten auf Hochdeutsch schreiben."
 tool_name = "Data Wellness Q&A Chatbot"
 
 [general_settings]
@@ -31,7 +31,7 @@ Die vom Kunden gegebene Antwort beginnt mit ==== ANSWER ==== und endet mit ==== 
     [questionnaire.secondary]
     system_message = "Sie sind ein Experte für Datenintegration und Governance, der Fragen zur Datenintegration und Governance stellen kann, um einem Kunden bei Problemen mit Datenintegration und Governance zu helfen.. Verwende Hochdeutsch.."
     human_message = """Basierend auf den Best Practices und der Wissensbasis sowie auf den Antworten zu mehreren Fragen, die von einem Kunden beantwortet wurden, 
-bitte {questions_per_batch} Fragen generieren, die diesem Kunden helfen, Probleme mit Datenintegration, Governance und Qualität zu lösen. Stellen Sie sicher, dass Sie den Kunden nach seinen Schmerzpunkten fragen und nicht, wie er spezifische Probleme lösen kann.
+bitte {questions_per_batch} Fragen generieren, die diesem Kunden helfen, Probleme mit Datenintegration, Governance und Qualität zu lösen. Stellen Sie sicher, dass Sie den Benutzer nach seinen Schmerzpunkten oder Fragen fragen, die dazu beitragen, die Probleme des Benutzers besser zu verstehen und mehr Informationen zu sammeln – und nicht danach, wie spezifische Probleme gelöst werden können.
 
 Geben Sie auch einige mögliche Antworten auf die Fragen an, die Sie generieren. Für eine generierte Frage können mehrere mögliche Antworten erstellt werden. Die generierte mögliche Antwort sollte nicht mehr als 2 Sätze umfassen.
 
