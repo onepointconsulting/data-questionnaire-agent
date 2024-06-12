@@ -2,24 +2,17 @@
 ############## Deprecated ##############
 ########################################
 
-from typing import List
-import chainlit as cl
 from enum import Enum
-from asyncer import asyncify
+from typing import List
 
+import chainlit as cl
+from asyncer import asyncify
+from langchain.callbacks.openai_info import OpenAICallbackHandler
+from langchain_community.callbacks import get_openai_callback
 from tenacity import AsyncRetrying
 
-from data_questionnaire_agent.service.clarifications_agent import (
-    create_clarification_agent,
-)
-from data_questionnaire_agent.service.tagging_service import sentiment_chain_factory
-from data_questionnaire_agent.ui.model.session_number_container import (
-    SessionNumberContainer,
-)
-
-from langchain_community.callbacks import get_openai_callback
-from langchain.callbacks.openai_info import OpenAICallbackHandler
-
+from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
@@ -31,36 +24,41 @@ from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
 )
 from data_questionnaire_agent.service.advice_service import chain_factory_advice
+from data_questionnaire_agent.service.clarifications_agent import (
+    create_clarification_agent,
+)
 from data_questionnaire_agent.service.initial_question_service import (
     chain_factory_initial_question,
     prepare_initial_question,
 )
 from data_questionnaire_agent.service.question_generation_service import (
     chain_factory_secondary_question,
-    prepare_secondary_question,
 )
+from data_questionnaire_agent.service.secondary_question_processor import (
+    process_secondary_questions,
+)
+from data_questionnaire_agent.service.similarity_search import (
+    init_vector_search,
+    similarity_search,
+)
+from data_questionnaire_agent.service.tagging_service import sentiment_chain_factory
+from data_questionnaire_agent.toml_support import prompts
 from data_questionnaire_agent.ui.advice_processor import display_advice, process_advice
-
+from data_questionnaire_agent.ui.avatar_factory import AVATAR, setup_avatar
 from data_questionnaire_agent.ui.chat_settings_factory import (
     INITIAL_QUESTION,
     MINIMUM_NUMBER_OF_QUESTIONS,
     QUESTION_PER_BATCH,
     create_chat_settings,
 )
-from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.config import cfg
-from data_questionnaire_agent.ui.avatar_factory import AVATAR, setup_avatar
-
-from data_questionnaire_agent.service.similarity_search import (
-    init_vector_search,
-    similarity_search,
-)
 from data_questionnaire_agent.ui.clarifications_chainlit import (
     process_clarifications_chainlit,
 )
 from data_questionnaire_agent.ui.mail_processor import process_send_email
+from data_questionnaire_agent.ui.model.session_number_container import (
+    SessionNumberContainer,
+)
 from data_questionnaire_agent.ui.pdf_processor import generate_display_pdf
-from data_questionnaire_agent.toml_support import prompts
 
 
 class APP_STATE(Enum):
@@ -150,7 +148,7 @@ async def run_agent(settings: cl.ChatSettings):
         advice_sent = await process_questionnaire(settings, cb)
         if advice_sent == APP_STATE.EMPTY_ADVICE:
             await cl.Message(
-                content=f"Session ended. Please restart the chat by pressing the 'New Chat' button."
+                content="Session ended. Please restart the chat by pressing the 'New Chat' button."
             ).send()
 
 

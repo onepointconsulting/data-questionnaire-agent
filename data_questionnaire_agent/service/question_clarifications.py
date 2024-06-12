@@ -3,8 +3,8 @@ from typing import AsyncIterator
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.messages import BaseMessageChunk
 
-from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.toml_support import get_prompts
 
 
 def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:

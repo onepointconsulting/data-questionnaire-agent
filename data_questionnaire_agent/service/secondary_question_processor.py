@@ -2,23 +2,22 @@ from typing import List
 
 from tenacity import AsyncRetrying
 
+from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
     convert_to_question_answers,
 )
-from data_questionnaire_agent.service.similarity_search import (
-    init_vector_search,
-    similarity_search,
+from data_questionnaire_agent.model.openai_schema import (
+    ResponseQuestions,
 )
-from data_questionnaire_agent.config import cfg
-
 from data_questionnaire_agent.service.question_generation_service import (
     chain_factory_secondary_question,
     prepare_secondary_question,
 )
-from data_questionnaire_agent.model.openai_schema import (
-    ResponseQuestions,
+from data_questionnaire_agent.service.similarity_search import (
+    init_vector_search,
+    similarity_search,
 )
 
 docsearch = init_vector_search()

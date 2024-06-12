@@ -1,7 +1,6 @@
 import re
 from urllib.parse import quote
 
-
 PATTERN_MARKDOWN_BOLD = re.compile(r"\*\*(?P<content>.+?)\*\*")
 
 

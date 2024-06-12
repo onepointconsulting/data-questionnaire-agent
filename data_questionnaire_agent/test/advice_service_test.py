@@ -25,7 +25,7 @@ def test_has_advice_questionnaire():
         knowledge_base, questions_answers
     )
     res: ConditionalAdvice = chain.run(conditional_advice_input)
-    assert res.has_advice is True
+    assert res.has_advice is True, f"{res}"
     print("************ ADIVCE ***************")
     print(res.to_html())
 

@@ -127,3 +127,22 @@ answer: Not yet, but I would like to know about it.
 ==== QUESTIONNAIRE EXAMPLE END ====
 
 """
+
+[extract_ontology]
+    system_message = """You are an expert at creating ontologies"""
+    human_message = """# Ontology from text:
+
+Extract an ontology. Do not draw it, but create a markdown table of relations with 3 columns in this order: source, target, relation name. And also create a list with 2 columns: the first contains the term name and the second column contains the term definition.
+the relations should only be mappeded to source, target, relations
+Use this text as a basis:
+
+
+```
+{questions_answers}
+
+{conditional_advice}
+
+```
+
+
+"""

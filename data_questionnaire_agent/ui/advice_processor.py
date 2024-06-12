@@ -1,21 +1,17 @@
+from asyncer import asyncify
+from langchain.chains import LLMChain
+from langchain_community.vectorstores import FAISS
 from tenacity import AsyncRetrying
 
-from asyncer import asyncify
-
-from langchain_community.vectorstores import FAISS
-from langchain.chains import LLMChain
-
+from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
-
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.advice_service import (
     chain_factory_advice,
     prepare_conditional_advice,
 )
 from data_questionnaire_agent.service.similarity_search import similarity_search
-
-from data_questionnaire_agent.config import cfg
-from data_questionnaire_agent.log_init import logger
 
 
 async def process_advice(
@@ -42,6 +38,7 @@ async def process_advice(
 
 if __name__ == "__main__":
     import asyncio
+
     from data_questionnaire_agent.service.similarity_search import init_vector_search
     from data_questionnaire_agent.test.provider.questionnaire_provider import (
         create_questionnaire_2_questions,

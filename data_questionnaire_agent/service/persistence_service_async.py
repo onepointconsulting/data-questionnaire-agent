@@ -1,28 +1,27 @@
-import sys
 import asyncio
-from typing import Callable, Coroutine, Any, Union, List, Tuple
-from psycopg import AsyncCursor, AsyncConnection
+import sys
+from typing import Any, Callable, Coroutine, List, Tuple, Union
 
-from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
-from data_questionnaire_agent.model.question_suggestion import QuestionSuggestion
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.log_init import logger
+from psycopg import AsyncConnection, AsyncCursor
+
 from data_questionnaire_agent.config import db_cfg
-from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import (
-    Questionnaire,
     QuestionAnswer,
-)
-from data_questionnaire_agent.model.session_configuration import (
-    SESSION_STEPS_CONFIG_KEY,
-    SESSION_STEPS_LANGUAGE_KEY,
-    DEFAULT_SESSION_STEPS,
-)
-from data_questionnaire_agent.model.session_configuration import (
-    SessionConfigurationEntry,
-    SessionConfiguration,
+    Questionnaire,
 )
 from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
+from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.model.question_suggestion import QuestionSuggestion
+from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
+from data_questionnaire_agent.model.session_configuration import (
+    DEFAULT_SESSION_STEPS,
+    SESSION_STEPS_CONFIG_KEY,
+    SESSION_STEPS_LANGUAGE_KEY,
+    SessionConfiguration,
+    SessionConfigurationEntry,
+)
+from data_questionnaire_agent.toml_support import get_prompts
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -124,7 +123,7 @@ ORDER BY ID ASC""",
     LANGUAGE = 7
     CLARIFICATION = 8
     final_res = []
-    if res == None:
+    if res is None:
         return final_res
     for r in res:
         final_report = r[FINAL_REPORT]
@@ -244,7 +243,7 @@ WHERE S.SESSION_ID = %(session_id)s {include_last_sql} ORDER BY S.ID""",
 
 async def select_report(session_id: str) -> Union[ConditionalAdvice, None]:
     res = await select_from(
-        f"""SELECT QUESTION
+        """SELECT QUESTION
 FROM TB_QUESTIONNAIRE_STATUS
 WHERE SESSION_ID = %(session_id)s AND FINAL_REPORT = true limit 1""",
         {
@@ -411,28 +410,6 @@ WHERE SESSION_ID = %(session_id)s AND CONFIG_KEY = %(config_key)s RETURNING ID
     return await create_cursor(process_update, True)
 
 
-async def update_session_steps(session_id: str, session_steps: int) -> Union[int, None]:
-    async def process_update(cur: AsyncCursor):
-        await cur.execute(
-            """
-UPDATE TB_SESSION_CONFIGURATION SET CONFIG_VALUE = %(config_value)s
-WHERE SESSION_ID = %(session_id)s AND CONFIG_KEY = %(config_key)s RETURNING ID
-            """,
-            {
-                "session_id": session_id,
-                "config_key": SESSION_STEPS_CONFIG_KEY,
-                "config_value": session_steps,
-            },
-        )
-        created_row = await cur.fetchone()
-        if created_row is None:
-            return None
-        updated_id = created_row[0]
-        return updated_id
-
-    return await create_cursor(process_update, True)
-
-
 async def select_current_session_steps_and_language(session_id: str) -> Tuple[int, str]:
     res = await select_from(
         f"""
@@ -444,7 +421,7 @@ WHERE SESSION_ID = %(session_id)s
         {"session_id": session_id},
     )
     default_values = (DEFAULT_SESSION_STEPS, DEFAULT_LANGUAGE)
-    if len(res) == 0 or len(res[0]) == 0 or res[0][0] == None:
+    if len(res) == 0 or len(res[0]) == 0 or res[0][0] is None:
         return default_values
     try:
         steps = default_values[0]
@@ -505,7 +482,7 @@ async def select_questionnaire_status_suggestions(
     questionnaire_status_id: id,
 ) -> List[QuestionSuggestion]:
     res = await select_from(
-        f"""
+        """
 SELECT ID, MAIN_TEXT
 FROM PUBLIC.TB_QUESTIONNAIRE_STATUS_SUGGESTIONS
 WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire_status_id)s
@@ -514,7 +491,7 @@ WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire_status_id)s
     )
     ID = 0
     MAIN_TEXT = 1
-    if res == None:
+    if res is None:
         return []
     return [
         QuestionSuggestion(

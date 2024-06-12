@@ -1,11 +1,8 @@
-import itertools
-import datetime
-
 import chainlit as cl
 from chainlit import context
 
-from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.ui.chat_settings_factory import create_chat_settings
 from data_questionnaire_agent.ui.model.session_number_container import (
     SessionNumberContainer,
@@ -32,7 +29,7 @@ async def run_agent(settings: cl.ChatSettings, from_settings: bool):
     logger.info("start id: %s", local_context.session.id)
     await cl.Message(content=f"Start {local_context.session.id}").send()
     response = None
-    while response == None:
+    while response is None:
         latest_counter = cl.user_session.get("session_counter")
         response = await cl.AskUserMessage(
             content=f"Please reply something {from_settings} {my_counter} {latest_counter} ...",

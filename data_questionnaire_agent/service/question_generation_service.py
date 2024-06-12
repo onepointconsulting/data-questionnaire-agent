@@ -1,14 +1,14 @@
+from langchain.chains import LLMChain
+from langchain.chains.openai_functions import create_structured_output_chain
+from langchain.prompts import ChatPromptTemplate
+
+from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
-from langchain.prompts import ChatPromptTemplate
-from langchain.chains.openai_functions import create_structured_output_chain
-from langchain.chains import LLMChain
-
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
-from data_questionnaire_agent.config import cfg
 
 
 def prompt_factory_secondary_questions(language: str) -> ChatPromptTemplate:
@@ -49,22 +49,24 @@ def prepare_secondary_question(
 
 
 if __name__ == "__main__":
-    from data_questionnaire_agent.test.provider.questionnaire_provider import (
-        create_questionnaire_2_questions,
-        create_questionnaire_2_questions_refugees,
-        create_questionnaire_2_questions__refugees_fa,
-    )
+    import asyncio
+
+    from langchain_community.callbacks import get_openai_callback
+
+    from data_questionnaire_agent.log_init import logger
     from data_questionnaire_agent.test.provider.knowledge_base_provider import (
         provide_knowledge_base,
     )
-    from data_questionnaire_agent.log_init import logger
-    from langchain_community.callbacks import get_openai_callback
-    import asyncio
+    from data_questionnaire_agent.test.provider.questionnaire_provider import (
+        create_questionnaire_2_questions,
+        create_questionnaire_2_questions__refugees_fa,
+        create_questionnaire_2_questions_refugees,
+    )
 
     def test_en():
         questionnaire = (
             create_questionnaire_2_questions()
-            if not "refugee" in str(cfg.raw_text_folder)
+            if "refugee" not in str(cfg.raw_text_folder)
             else create_questionnaire_2_questions_refugees()
         )
         knowledge_base = provide_knowledge_base()
@@ -81,7 +83,7 @@ if __name__ == "__main__":
     def test_fa():
         questionnaire = (
             create_questionnaire_2_questions()
-            if not "refugee" in str(cfg.raw_text_folder)
+            if "refugee" not in str(cfg.raw_text_folder)
             else create_questionnaire_2_questions__refugees_fa()
         )
         knowledge_base = provide_knowledge_base()

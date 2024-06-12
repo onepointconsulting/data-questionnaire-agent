@@ -1,7 +1,5 @@
-from typing import List
-
 from dataclasses import dataclass, field
-from typing import Union, Optional
+from typing import List, Optional, Union
 
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 

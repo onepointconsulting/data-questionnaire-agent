@@ -1,4 +1,4 @@
-from data_questionnaire_agent.toml_support import get_prompts, DEFAULT_LANGUAGE
+from data_questionnaire_agent.toml_support import DEFAULT_LANGUAGE, get_prompts
 
 
 def test_english_prompt():

@@ -124,3 +124,16 @@ question: Angesichts der Probleme mit der Datenqualität, insbesondere bei Kunde
 answer: Noch nicht, aber ich möchte mehr darüber wissen.
 ==== QUESTIONNAIRE EXAMPLE END ====
 """
+
+[extract_ontology]
+    system_message = """Sie sind ein Experte für die Erstellung von Ontologien"""
+    human_message = """# Ontologie aus Text:
+
+Extrahieren Sie eine Ontologie. Zeichnen Sie sie nicht, sondern erstellen Sie eine Markdown-Tabelle der Beziehungen mit 3 Spalten in dieser Reihenfolge: Quelle, Ziel, Beziehungsname. Und erstellen Sie auch eine Liste mit 2 Spalten: Die erste enthält den Begriffsnamen und die zweite Spalte enthält die Begriffsdefinition.
+Die Beziehungen sollten nur auf Quelle, Ziel, Beziehungen abgebildet werden.
+Verwenden Sie diesen Text als Grundlage:
+
+```
+{questions_answers}
+```
+"""

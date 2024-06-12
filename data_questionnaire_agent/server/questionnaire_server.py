@@ -1,67 +1,63 @@
-from typing import List, Any, Tuple, Union
+import json
 from enum import StrEnum
+from typing import Any, List, Tuple, Union
 
 import socketio
-import json
 from aiohttp import web
 from asyncer import asyncify
-
 from langchain_community.callbacks import get_openai_callback
 
-from data_questionnaire_agent.config import websocket_cfg, mail_config
+from data_questionnaire_agent.config import cfg, mail_config, websocket_cfg
 from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
+from data_questionnaire_agent.model.application_schema import Questionnaire
+from data_questionnaire_agent.model.mail_data import MailData
+from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.server_model import (
     ServerMessage,
     ServerMessages,
     server_messages_factory,
 )
-from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.session_configuration import (
-    SessionConfigurationEntry,
+    DEFAULT_SESSION_STEPS,
     SESSION_STEPS_CONFIG_KEY,
     SESSION_STEPS_LANGUAGE_KEY,
-    DEFAULT_SESSION_STEPS,
     SessionConfiguration,
+    SessionConfigurationEntry,
 )
-from data_questionnaire_agent.model.mail_data import MailData
-from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
+from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
+from data_questionnaire_agent.service.advice_service import chain_factory_advice
+from data_questionnaire_agent.service.html_generator import generate_pdf_from
+from data_questionnaire_agent.service.language_adapter import adapt_language
+from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.persistence_service_async import (
     insert_questionnaire_status,
-    select_questionnaire,
+    insert_questionnaire_status_suggestions,
+    save_report,
+    save_session_configuration,
+    select_current_session_steps_and_language,
     select_initial_question,
-    select_suggestions,
-    update_answer,
     select_questionnaire,
+    select_questionnaire_status_suggestions,
     select_questionnaire_statuses,
     select_report,
-    save_session_configuration,
     select_session_configuration,
-    select_current_session_steps_and_language,
-    save_report,
-    insert_questionnaire_status_suggestions,
-    select_questionnaire_status_suggestions,
-    update_session_steps,
+    select_suggestions,
+    update_answer,
     update_clarification,
+    update_session_steps,
 )
-from data_questionnaire_agent.config import cfg
-from data_questionnaire_agent.service.similarity_search import (
-    init_vector_search,
+from data_questionnaire_agent.service.question_clarifications import (
+    chain_factory_question_clarifications,
 )
 from data_questionnaire_agent.service.secondary_question_processor import (
     process_secondary_questions,
 )
-from data_questionnaire_agent.ui.advice_processor import process_advice
-from data_questionnaire_agent.service.advice_service import chain_factory_advice
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.service.html_generator import generate_pdf_from
-from data_questionnaire_agent.service.mail_sender import send_email
-from data_questionnaire_agent.service.mail_sender import create_mail_body
-from data_questionnaire_agent.service.question_clarifications import (
-    chain_factory_question_clarifications,
+from data_questionnaire_agent.service.similarity_search import (
+    init_vector_search,
 )
-from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.translation import t
+from data_questionnaire_agent.ui.advice_processor import process_advice
 
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 FAILED_SESSION_STEPS = -1
@@ -137,7 +133,7 @@ async def start_session(
 
 @sio.event
 async def client_message(sid: str, session_id: str, answer: str):
-    if not session_id in agent_sessions:
+    if session_id not in agent_sessions:
         logger.warn(f"Session not found {session_id}")
         # Create new session
         await start_session(sid, session_id)

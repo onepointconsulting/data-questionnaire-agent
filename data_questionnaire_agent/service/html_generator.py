@@ -1,18 +1,17 @@
 import re
-from pathlib import Path
 from datetime import datetime
-
-from data_questionnaire_agent.model.application_schema import Questionnaire
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.service.report_enhancement_service import (
-    replace_bold_markdown,
-)
+from pathlib import Path
 
 import jinja2
 import pdfkit
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.model.application_schema import Questionnaire
+from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.service.report_enhancement_service import (
+    replace_bold_markdown,
+)
 from data_questionnaire_agent.translation import t
 
 

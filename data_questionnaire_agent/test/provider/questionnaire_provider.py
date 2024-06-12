@@ -1,6 +1,6 @@
 from data_questionnaire_agent.model.application_schema import (
-    Questionnaire,
     QuestionAnswer,
+    Questionnaire,
 )
 
 

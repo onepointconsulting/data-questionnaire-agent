@@ -1,12 +1,12 @@
-from data_questionnaire_agent.model.openai_schema import ResponseQuestions
-from data_questionnaire_agent.service.similarity_search import (
-    init_vector_search,
-    similarity_search,
-)
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 from data_questionnaire_agent.service.initial_question_service import (
     chain_factory_initial_question,
     prepare_initial_question,
+)
+from data_questionnaire_agent.service.similarity_search import (
+    init_vector_search,
+    similarity_search,
 )
 from data_questionnaire_agent.toml_support import get_prompts_object
 

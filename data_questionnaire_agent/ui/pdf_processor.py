@@ -1,8 +1,7 @@
 import chainlit as cl
+from asyncer import asyncify
 
 from data_questionnaire_agent.log_init import logger
-
-from asyncer import asyncify
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.html_generator import generate_pdf_from

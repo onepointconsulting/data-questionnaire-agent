@@ -1,5 +1,5 @@
-from data_questionnaire_agent.test.provider.advice_provider import create_simple_advice
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.test.provider.advice_provider import create_simple_advice
 
 
 def test_create_markdown():

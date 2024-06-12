@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from data_questionnaire_agent.config import cfg
 
 
@@ -11,7 +13,9 @@ def provide_data_quality() -> str:
     # Check if "data quality.txt" exists in the raw_text_folder, if not, check if "AboutRefugees.txt" exists
     # return read_file("data quality.txt" if not "refugee" in str(cfg.raw_text_folder) else "AboutRefugees.txt")
 
-    if "data quality.txt" in str(cfg.raw_text_folder):
+    raw_text_folder = Path(cfg.raw_text_folder)
+    assert raw_text_folder.exists()
+    if (raw_text_folder / "data quality.txt").exists():
         return read_file("data quality.txt")
     else:
         return read_file("AboutRefugees.txt")
@@ -19,7 +23,9 @@ def provide_data_quality() -> str:
 
 def provide_data_ops() -> str:
     # return read_file("dataops.txt" if not "refugee" in str(cfg.raw_text_folder) else "AsylumInAustria.txt")
-    if "dataops.txt" in str(cfg.raw_text_folder):
+    raw_text_folder = Path(cfg.raw_text_folder)
+    assert raw_text_folder.exists()
+    if (cfg.raw_text_folder / "dataops.txt").exists():
         return read_file("dataops.txt")
     else:
         return read_file("AsylumInAustria.txt")

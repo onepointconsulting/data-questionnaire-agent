@@ -2,17 +2,15 @@ from typing import List
 
 from langchain.chains import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
-
 from langchain.prompts import (
-    PromptTemplate,
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
+    PromptTemplate,
     SystemMessagePromptTemplate,
 )
-from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 
 from data_questionnaire_agent.config import cfg
-
+from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 from data_questionnaire_agent.toml_support import get_prompts
 
 
@@ -87,11 +85,11 @@ def prepare_initial_question(
 
 
 if __name__ == "__main__":
+    from data_questionnaire_agent.log_init import logger
     from data_questionnaire_agent.service.similarity_search import (
         init_vector_search,
         similarity_search,
     )
-    from data_questionnaire_agent.log_init import logger
 
     language = "en"
     initial_question = get_prompts(language)["questionnaire"]["initial"]["question"]

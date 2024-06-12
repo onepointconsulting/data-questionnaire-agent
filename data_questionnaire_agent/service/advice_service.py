@@ -1,13 +1,13 @@
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from langchain.chains import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
 from langchain.prompts import ChatPromptTemplate
 
+from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
-from data_questionnaire_agent.config import cfg
 
 
 def prompt_factory_conditional_advice(language: str) -> ChatPromptTemplate:

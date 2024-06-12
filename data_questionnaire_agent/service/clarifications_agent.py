@@ -1,9 +1,9 @@
-from typing import List, Any, Optional, Type
+from typing import Any, List, Optional, Type
 
-from pydantic import BaseModel, Field
-from langchain.tools import BaseTool
-from langchain.agents import initialize_agent, AgentType, AgentExecutor
 from duckduckgo_search import DDGS
+from langchain.agents import AgentExecutor, AgentType, initialize_agent
+from langchain.tools import BaseTool
+from pydantic import BaseModel, Field
 
 from data_questionnaire_agent.config import cfg
 

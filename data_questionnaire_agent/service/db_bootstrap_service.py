@@ -1,8 +1,10 @@
-from typing import Union
 from pathlib import Path
-from psycopg import AsyncCursor, AsyncConnection
-from data_questionnaire_agent.service.persistence_service_async import create_connection
+from typing import Union
+
+from psycopg import AsyncCursor
+
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.service.persistence_service_async import create_connection
 
 
 async def execute_script(path: Path) -> Union[str, bool]:

@@ -1,16 +1,12 @@
-from typing import Union
 import re
 import smtplib
-
 from email.utils import parseaddr
+from typing import Union
 
+from data_questionnaire_agent.config import cfg, mail_config
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.config import mail_config
-from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.config import mail_config
-
-from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.service.report_enhancement_service import (
     replace_bold_markdown,
 )

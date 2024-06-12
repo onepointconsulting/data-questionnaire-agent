@@ -2,8 +2,8 @@ from pathlib import Path
 from typing import List
 
 import tiktoken
-from langchain_community.vectorstores import FAISS
 from langchain.schema import Document
+from langchain_community.vectorstores import FAISS
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
@@ -18,7 +18,7 @@ def init_vector_search() -> FAISS:
     embedding_dir_path = Path(embedding_dir)
     # Check if directory exists and has something inside
     if embedding_dir_path.exists() and len(list(embedding_dir_path.glob("*"))) > 0:
-        logger.info(f"reading from existing directory")
+        logger.info("reading from existing directory")
         docsearch = FAISS.load_local(
             embedding_dir, cfg.embeddings, allow_dangerous_deserialization=True
         )

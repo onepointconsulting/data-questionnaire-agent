@@ -1,4 +1,6 @@
+from pathlib import Path
 from typing import List
+
 from data_questionnaire_agent.config import cfg
 
 
@@ -41,7 +43,8 @@ def provide_missing_documents_questionnaire() -> str:
 
 
 def provide_dummy_questionnaire() -> str:
-    if "data quality.txt" in str(cfg.raw_text_folder):
+    raw_text_folder = Path(cfg.raw_text_folder)
+    if (raw_text_folder / "data quality.txt").exists():
         return provide_data_silo_questionnaire()
     else:
         return provide_missing_documents_questionnaire()

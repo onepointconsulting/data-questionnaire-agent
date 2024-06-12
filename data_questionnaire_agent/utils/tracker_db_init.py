@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from chainlit.onepoint.tracker_db import ONEPOINT_SQL_LITE_DB, create_table
 
 if __name__ == "__main__":

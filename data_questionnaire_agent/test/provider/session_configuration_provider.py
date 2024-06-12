@@ -1,7 +1,7 @@
 from data_questionnaire_agent.model.session_configuration import (
-    SessionConfigurationEntry,
-    SESSION_STEPS_CONFIG_KEY,
     DEFAULT_SESSION_STEPS,
+    SESSION_STEPS_CONFIG_KEY,
+    SessionConfigurationEntry,
 )
 
 

@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 
-from pydantic import Field
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic import Field
 
 from data_questionnaire_agent.translation import t
 
@@ -124,4 +124,15 @@ class ConditionalAdvice(BaseModel):
         return markdown
 
     def __str__(self) -> str:
-        return "\n\n".join(self.advices) if self.advices is not None else ""
+        
+        def join_items(items):
+            return "\n\n".join(items) if items is not None else ""
+        
+        return f"""{join_items(self.advices)}
+
+
+{join_items(self.what_you_should_avoid)}
+
+
+{join_items(self.positive_outcomes)}
+"""

@@ -1,16 +1,14 @@
 import re
-from typing import TypeVar, List
 from pathlib import Path
+from typing import List, TypeVar
 
+import numpy as np
 from langchain.schema import Document
 from langchain_community.document_loaders import TextLoader
-
 from langchain_community.vectorstores import FAISS
 
-from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import cfg
-import numpy as np
-
+from data_questionnaire_agent.log_init import logger
 
 VST = TypeVar("VST", bound="VectorStore")
 
@@ -76,8 +74,8 @@ def generate_embeddings(documents: List[Document], persist_directory: str) -> VS
         docsearch = FAISS.from_documents(documents, cfg.embeddings)
         docsearch.save_local(persist_directory)
         logger.info("Vector database persisted")
-    except Exception as e:
-        logger.exception(f"Failed to process documents")
+    except Exception:
+        logger.exception("Failed to process documents")
         if "docsearch" in vars() or "docsearch" in globals():
             docsearch.persist()
         return None

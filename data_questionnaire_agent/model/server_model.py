@@ -1,6 +1,7 @@
-from typing import List, Any, Union
+from typing import Any, List, Union
 
 from pydantic import BaseModel, Field
+
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import SessionConfiguration
 from data_questionnaire_agent.service.report_enhancement_service import (

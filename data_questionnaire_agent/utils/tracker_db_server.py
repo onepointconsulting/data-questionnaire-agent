@@ -1,10 +1,11 @@
 import mimetypes
 
-from fastapi import Request, HTTPException
 from chainlit.server import app
+from fastapi import HTTPException, Request
+from fastapi.responses import FileResponse
+
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.utils.tracker_db_lister import write_log
-from fastapi.responses import FileResponse
 
 PARAM_SECURITY_KEY = "security_key"
 

@@ -31,11 +31,19 @@ python-i18n = {extras = ["yaml"], version = "^0.3.9"}
 
 [tool.poetry.scripts]
 build-ui = "data_questionnaire_agent.build:ui"
+build-check = "data_questionnaire_agent.build:check"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
 black = "^23.11.0"
+ruff = "^0.4.8"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py39"
+lint.extend-select = ["I"]

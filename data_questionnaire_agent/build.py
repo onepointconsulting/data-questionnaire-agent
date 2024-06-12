@@ -7,3 +7,8 @@ def ui():
     os.system("yarn")
     os.system("yarn run build")
     shutil.copytree("./dist", "../ui", dirs_exist_ok=True)
+
+
+def check():
+    os.system("black .")
+    os.system("ruff check --fix .")
