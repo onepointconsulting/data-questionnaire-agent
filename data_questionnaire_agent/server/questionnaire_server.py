@@ -30,9 +30,12 @@ from data_questionnaire_agent.service.advice_service import chain_factory_advice
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
+from data_questionnaire_agent.service.ontology_service import create_ontology
 from data_questionnaire_agent.service.persistence_service_async import (
+    fetch_ontology,
     insert_questionnaire_status,
     insert_questionnaire_status_suggestions,
+    save_ontology,
     save_report,
     save_session_configuration,
     select_current_session_steps_and_language,
@@ -201,6 +204,9 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
             docsearch, questionnaire, chain_factory_advice(language)
         )
         total_cost = cb.total_cost
+        # Generate ontology
+        ontology = await create_ontology(questionnaire, conditional_advice, language)
+        await save_ontology(session_id, ontology)
     report_id = await save_report(session_id, conditional_advice, total_cost)
     assert report_id is not None, t("no_report_id", locale=language)
 
@@ -386,6 +392,13 @@ async def send_email_request(request: web.Request) -> web.Response:
             content_type="application/json",
             headers=CORS_HEADERS,
         )
+
+
+@routes.get("/ontology/{session_id}")
+async def ontology(request: web.Request) -> web.Response:
+    session_id = extract_session(request)
+    relationships = await fetch_ontology(session_id)
+    return web.json_response(relationships, headers=CORS_HEADERS)
 
 
 def extract_language(request: web.Request):

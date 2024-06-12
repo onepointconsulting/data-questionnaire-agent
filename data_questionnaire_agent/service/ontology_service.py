@@ -11,7 +11,7 @@ from data_questionnaire_agent.service.initial_question_service import (
 )
 from data_questionnaire_agent.toml_support import get_prompts
 
-PARAM_QUESTIONS_ANSWERS = 'questions_answers'
+PARAM_QUESTIONS_ANSWERS = "questions_answers"
 PARAM_ADVICE = "conditional_advice"
 
 
@@ -42,3 +42,13 @@ def prepare_ontology_chain_call(
         PARAM_QUESTIONS_ANSWERS: str(questionnaire),
         PARAM_ADVICE: str(conditional_advice),
     }
+
+
+async def create_ontology(
+    questionnaire: Questionnaire, conditional_advice: ConditionalAdvice, language: str
+) -> Ontology:
+    assert conditional_advice is not None, "Missing conditional advice"
+    assert questionnaire is not None, "Missing questionnaire"
+    call_params = prepare_ontology_chain_call(questionnaire, conditional_advice)
+    chain = chain_factory_ontology("en")
+    return await chain.arun(call_params)

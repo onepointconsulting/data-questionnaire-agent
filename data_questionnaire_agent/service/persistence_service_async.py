@@ -11,6 +11,7 @@ from data_questionnaire_agent.model.application_schema import (
     Questionnaire,
 )
 from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
+from data_questionnaire_agent.model.ontology_schema import Ontology
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.model.question_suggestion import QuestionSuggestion
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
@@ -478,6 +479,51 @@ async def insert_questionnaire_status_suggestions(
     return await use_connection(insert_suggestions)
 
 
+async def save_ontology(session_id: str, ontology: Ontology) -> int:
+    relationships_json = ontology.json()
+
+    async def process_save(cur: AsyncCursor):
+        await cur.execute(
+            """
+INSERT INTO TB_ONTOLOGY(SESSION_ID, RELATIONSHIPS)
+VALUES (%(session_id)s, %(relationships)s) RETURNING ID
+            """,
+            {"session_id": session_id, "relationships": relationships_json},
+        )
+        created_row = await cur.fetchone()
+        created_id = created_row[0]
+        return created_id
+
+    return await create_cursor(process_save, True)
+
+
+async def delete_ontology(session_id: str) -> int:
+    async def process_save(cur: AsyncCursor):
+        await cur.execute(
+            """
+DELETE FROM TB_ONTOLOGY WHERE SESSION_ID = %(session_id)s
+            """,
+            {"session_id": session_id},
+        )
+        return cur.rowcount
+
+    return await create_cursor(process_save, True)
+
+
+async def fetch_ontology(session_id: str) -> dict:
+    res = await select_from(
+        """
+SELECT relationships
+FROM TB_ONTOLOGY
+WHERE SESSION_ID = %(session_id)s
+""",
+        {"session_id": session_id},
+    )
+    if len(res) == 0:
+        return ""
+    return res[0][0]
+
+
 async def select_questionnaire_status_suggestions(
     questionnaire_status_id: id,
 ) -> List[QuestionSuggestion]:
@@ -492,7 +538,7 @@ WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire_status_id)s
     ID = 0
     MAIN_TEXT = 1
     if res is None:
-        return []
+        return {}
     return [
         QuestionSuggestion(
             id=r[ID],
@@ -622,12 +668,27 @@ if __name__ == "__main__":
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 
+    async def test_save_ontology():
+        from data_questionnaire_agent.test.provider.ontology_provider import (
+            create_ontology,
+        )
+
+        ontology = create_ontology()
+        session_id = "fake_id"
+        created = await save_ontology(session_id, ontology)
+        assert created > 0
+        relationships = await fetch_ontology(session_id)
+        assert relationships is not None
+        deleted = await delete_ontology(session_id)
+        assert deleted > 0
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
-    asyncio.run(test_select_initial_en())
+    # asyncio.run(test_select_initial_en())
     # asyncio.run(test_insert_answer())
     # asyncio.run(test_select_answers())
-    asyncio.run(test_session_configuration_save())
+    # asyncio.run(test_session_configuration_save())
     # asyncio.run(test_select_current_session_steps())
     # asyncio.run(test_save_report())
     # asyncio.run(test_insert_questionnaire_status_suggestions())
+    asyncio.run(test_save_ontology())

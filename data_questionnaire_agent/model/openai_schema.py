@@ -124,10 +124,9 @@ class ConditionalAdvice(BaseModel):
         return markdown
 
     def __str__(self) -> str:
-        
         def join_items(items):
             return "\n\n".join(items) if items is not None else ""
-        
+
         return f"""{join_items(self.advices)}
 
 
