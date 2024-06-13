@@ -25,6 +25,7 @@ from data_questionnaire_agent.model.session_configuration import (
     SessionConfiguration,
     SessionConfigurationEntry,
 )
+from data_questionnaire_agent.service.graph_service import generate_analyzed_ontology
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
 from data_questionnaire_agent.service.advice_service import chain_factory_advice
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
@@ -206,6 +207,7 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
         total_cost = cb.total_cost
         # Generate ontology
         ontology = await create_ontology(questionnaire, conditional_advice, language)
+        ontology = generate_analyzed_ontology(ontology)
         await save_ontology(session_id, ontology)
     report_id = await save_report(session_id, conditional_advice, total_cost)
     assert report_id is not None, t("no_report_id", locale=language)

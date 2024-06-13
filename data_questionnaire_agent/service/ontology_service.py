@@ -50,5 +50,5 @@ async def create_ontology(
     assert conditional_advice is not None, "Missing conditional advice"
     assert questionnaire is not None, "Missing questionnaire"
     call_params = prepare_ontology_chain_call(questionnaire, conditional_advice)
-    chain = chain_factory_ontology("en")
+    chain = chain_factory_ontology(language)
     return await chain.arun(call_params)
