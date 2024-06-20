@@ -22,10 +22,11 @@ class Config:
     request_timeout = int(os.getenv("REQUEST_TIMEOUT"))
     has_langchain_cache = os.getenv("LANGCHAIN_CACHE") == "true"
     streaming = os.getenv("CHATGPT_STREAMING") == "true"
+    temperature = float(os.getenv("OPENAI_API_TEMPERATURE", 0.0))
     llm = ChatOpenAI(
         openai_api_key=os.getenv("OPENAI_API_KEY"),
         model=model,
-        temperature=0,
+        temperature=temperature,
         request_timeout=request_timeout,
         cache=has_langchain_cache,
         streaming=streaming,
@@ -33,7 +34,7 @@ class Config:
     llm_stream = ChatOpenAI(
         openai_api_key=os.getenv("OPENAI_API_KEY"),
         model=model,
-        temperature=0,
+        temperature=temperature,
         request_timeout=request_timeout,
         cache=has_langchain_cache,
         streaming=True,
