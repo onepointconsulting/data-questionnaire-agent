@@ -37,3 +37,7 @@ class AnalyzedOntology(BaseModel):
         ...,
         description="The dictionary of node to degree betweenness",
     )
+
+
+if __name__ == "__main__":
+    print(Ontology.schema_json())

@@ -364,7 +364,7 @@ WHERE SESSION_ID = %(session_id)s ORDER BY ID""",
 
 async def select_suggestions(question: str) -> List[QuestionSuggestion]:
     res = await select_from(
-        """SELECT S.id, img_src, img_alt, title, main_text FROM TB_QUESTION_SUGGESTIONS S 
+        """SELECT S.id, img_src, img_alt, title, main_text, svg_image FROM TB_QUESTION_SUGGESTIONS S 
 INNER JOIN TB_QUESTION Q ON Q.ID = S.QUESTION_ID
 wHERE Q.question = %(question)s
 ORDER BY PREFERRED_QUESTION_ORDER""",
@@ -377,6 +377,7 @@ ORDER BY PREFERRED_QUESTION_ORDER""",
     IMG_ALT = 2
     TITLE = 3
     MAIN_TEXT = 4
+    SVG_IMAGE = 5
     return [
         QuestionSuggestion(
             id=r[ID],
@@ -384,6 +385,7 @@ ORDER BY PREFERRED_QUESTION_ORDER""",
             img_alt=r[IMG_ALT],
             title=r[TITLE],
             main_text=r[MAIN_TEXT],
+            svg_image=r[SVG_IMAGE]
         )
         for r in res
     ]

@@ -9,3 +9,4 @@ class QuestionSuggestion(BaseModel):
     img_alt: str = Field(..., description="The alternative description of the image")
     title: str = Field(..., description="The suggestion title")
     main_text: str = Field(..., description="The suggestion text")
+    svg_image: str = Field(..., description="The SVG image")

@@ -18,6 +18,7 @@ PARAM_ADVICE = "conditional_advice"
 def prompt_factory_ontology(language: str) -> ChatPromptTemplate:
     # Assuming get_prompts() returns the required dictionary
     prompts = get_prompts(language)
+    assert "extract_ontology" in prompts, "Make sure that you have the ontolgy prompt in your prompts file."
     section = prompts["extract_ontology"]
     return prompt_factory_generic(
         section=section,
