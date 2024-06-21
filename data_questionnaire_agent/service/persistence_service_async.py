@@ -547,6 +547,7 @@ WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire_status_id)s
             img_src="",
             img_alt="",
             title="",
+            svg_image="",
             main_text=r[MAIN_TEXT],
         )
         for r in res
