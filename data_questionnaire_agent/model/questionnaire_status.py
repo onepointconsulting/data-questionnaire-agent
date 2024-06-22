@@ -1,15 +1,18 @@
 from datetime import datetime
 from typing import Union
 
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 
 class QuestionnaireStatus(BaseModel):
-    id: Union[int, None] = Field(default=None, description="The unique identifier")
+    id: Union[int, None] = Field(
+        default=None, description="The unique identifier")
     session_id: str = Field(..., description="The session identifier")
     question: str = Field(..., description="The question")
-    answer: Union[str, None] = Field(default="", description="The optional answer")
-    final_report: bool = Field(..., description="Whether this is the final report")
+    answer: Union[str, None] = Field(
+        default="", description="The optional answer")
+    final_report: bool = Field(...,
+                               description="Whether this is the final report")
     created_at: Union[datetime, None] = Field(
         default=None, description="The created timestamp"
     )

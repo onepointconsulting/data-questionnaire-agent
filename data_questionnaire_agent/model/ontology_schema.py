@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 
 class Edge(BaseModel):

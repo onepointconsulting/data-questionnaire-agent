@@ -1,6 +1,6 @@
 import re
 
-ACCEPTED_LANGUAGES = ["en", "de"]
+ACCEPTED_LANGUAGES = ["en", "de", "fa"]
 
 
 def adapt_language(language: str) -> str:

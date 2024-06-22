@@ -1,23 +1,30 @@
 [general_messages]
-tip_correct_format = "Tipp: Stellen Sie sicher, dass Sie im richtigen Format antworten"
-tip_language = "Tipp: Bitte stellen Sie sicher, dass Sie alle Ihre Antworten auf Hochdeutsch schreiben."
-tool_name = "Data Wellness Q&A Chatbot"
+
+tip_correct_format = "Tipp: Achten Sie darauf, Ihre Antworten klar und prägnant zu formulieren."
+tip_language = "Tipp: Bitte beantworten Sie alle Fragen in förmlichem Deutsch."
+tool_name = "HopeLink Chat Companion"
 
 [general_settings]
+
 questions_per_batch = 1
 minimum_number_of_questions = 4
 
-
 [questionnaire]
     [questionnaire.initial]
-    question = "Which area of your data ecosystem are you most concerned about?"
-    system_message = "Sie sind ein Experte für Datenintegration und Governance, der Fragen zur Datenintegration und Governance stellen kann, um einem Kunden bei Problemen mit Datenintegration und Governance zu helfen. Verwende Hochdeutsch."
-    human_message = """Basierend auf den Best Practices und der Wissensbasis sowie auf einer vom Kunden beantworteten Frage, 
-bitte {questions_per_batch} Fragen generieren, die diesem Kunden helfen, Probleme mit der Datenintegration und Governance zu lösen.
+    question = "Welche Organisationen oder Anlaufstellen bieten kostenlose rechtliche Beratung für Asylbewerber in Ihrer Region an?"
+
+
+    system_message = "Sie sind ein Ressourcenassistent, der sich mit Unterstützungsdiensten für Flüchtlinge und Einwanderer auskennt. Wir können Ihnen helfen, Informationen zu finden und Fragen zu Neuansiedlung, Rechtshilfe, Sprachintegration, Familienzusammenführung und anderen Ressourcen zu beantworten. Bitte verwenden Sie in Ihren Antworten formales Deutsch."
+
+    human_message = """Basierend auf den Best Practices und der Wissensbasis sowie auf einer vom Interviewpartner beantworteten Frage, 
+    
+Bitte generieren Sie {questions_per_batch} Fragen, um diesem Interviewpartner bei der Lösung von Asyl- und anderen Flüchtlingsproblemen zu helfen.
+
 Der Abschnitt „Best Practices“ beginnt mit ==== BEST PRACTICES START ==== und endet mit ==== BEST PRACTICES END ====.
 Der Abschnitt „Wissensbasis“ beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
 Die dem Benutzer gestellte Frage beginnt mit ==== QUESTION ==== und endet mit ==== QUESTION END ====.
-Die vom Kunden gegebene Antwort beginnt mit ==== ANSWER ==== und endet mit ==== ANSWER END ====.
+Die vom Interviewpartner gegebene Antwort beginnt mit ==== ANSWER ==== und endet mit ==== ANSWER END ====.
+
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -28,16 +35,23 @@ Die vom Kunden gegebene Antwort beginnt mit ==== ANSWER ==== und endet mit ==== 
 {answer}
 ==== ANSWER END ====
 """
-    [questionnaire.secondary]
-    system_message = "Sie sind ein Experte für Datenintegration und Governance, der Fragen zur Datenintegration und Governance stellen kann, um einem Kunden bei Problemen mit Datenintegration und Governance zu helfen.. Verwende Hochdeutsch.."
-    human_message = """Basierend auf den Best Practices und der Wissensbasis sowie auf den Antworten zu mehreren Fragen, die von einem Kunden beantwortet wurden, 
-bitte {questions_per_batch} Fragen generieren, die diesem Kunden helfen, Probleme mit Datenintegration, Governance und Qualität zu lösen. Stellen Sie sicher, dass Sie den Benutzer nach seinen Schmerzpunkten oder Fragen fragen, die dazu beitragen, die Probleme des Benutzers besser zu verstehen und mehr Informationen zu sammeln – und nicht danach, wie spezifische Probleme gelöst werden können.
+[questionnaire.secondary]
+
+system_message = "Sie sind ein Ressourcenassistent, der sich mit Unterstützungsdiensten für Flüchtlinge, Einwanderer und Asylwerber auskennt."
+
+
+human_message = """Basierend auf einer verfügbaren Wissensdatenbank und den Antworten auf mehrere Fragen eines Benutzers generieren Sie bitte {questions_per_batch} Fragen, die für diesen Benutzer hilfreich sind, um relevante Unterstützungsdienste zu finden.
 
 Geben Sie auch einige mögliche Antworten auf die Fragen an, die Sie generieren. Für eine generierte Frage können mehrere mögliche Antworten erstellt werden. Die generierte mögliche Antwort sollte nicht mehr als 2 Sätze umfassen.
 
+Fragen Sie den Benutzer nicht, wie er seine Probleme löst, sondern stellen Sie nur Fragen zu seinen Problemen oder fragen Sie, was der Benutzer bisher versucht hat.
+
 Der Abschnitt „Wissensbasis“ beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
-Der Abschnitt mit den vom Kunden beantworteten Fragen und Antworten beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
+
+Der Abschnitt mit den vom Interviewpartner beantworteten Fragen und Antworten beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
+
 Die Benutzerantworten befinden sich in dem Abschnitt, der mit ==== ANSWERS ==== beginnt und mit ==== ANSWERS END ==== endet.
+
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -47,52 +61,58 @@ Die Benutzerantworten befinden sich in dem Abschnitt, der mit ==== ANSWERS ==== 
 ==== ANSWERS ====
 {answers}
 ==== ANSWERS END ====
-"""
-    [questionnaire.clarification]
-    system_message = "Sie sind ein hilfreicher Assistent. Sie erklären die Bedeutung der Fragen Schritt für Schritt. Ich hebe die Hauptthemen in fettgedrucktem Markdown hervor. Verwende Hochdeutsch."
-    human_message = """Bitte erklären Sie die folgende Frage so, dass ein Laie sie verstehen kann:
 
-{question}
 """
+
+
+[questionnaire.clarification]
+
+system_message = "Ich bin ein hilfsbereiter und kompetenter Assistent in Flüchtlings- und Einwanderungsfragen. Ich erkläre die Bedeutung der Fragen Schritt für Schritt. Ich hebe die Hauptthemen in fetter Schrift hervor. Ich verwende formelles Deutsch."
+
+
+human_message = """Bitte erläutern Sie folgende Frage so, dass sie auch für einen Laien verständlich ist:
+{question}
+""" 
 
 [tagging]
-system_message = "Sie sind ein Experte darin, verschiedene Arten von Stimmungen aus Sätzen zu erkennen."
-human_message = """Basierend auf diesem Input, der mit === INPUT START === beginnt und mit === INPUT END === endet
-=== INPUT START ===
-{answer}
-=== INPUT END ===
-können Sie mir sagen, ob darin eine Frage zu Datenanalyse, Daten-Governance und Strategien enthalten ist oder nicht und ob die Gesamtstimmung des Textes eine Art Verwirrung anzeigt?"""
-human_message_extraction = """Basierend auf diesem Input, der mit === INPUT START === beginnt und mit === INPUT END === endet
-=== INPUT START ===
-{answer}
-=== INPUT END ===
-können Sie eine Frage zu Datenanalyse, Daten-Governance und Strategien extrahieren, falls eine vorhanden ist?"""
 
-[clarifications]
-system_message = "Sie sind ein Experte darin, Benutzerfragen wie ein professioneller Dateningenieur oder Analyst zu beantworten. Verwende Hochdeutsch"
-human_message = """Basierend auf diesem Input, der mit === INPUT START === beginnt und mit === INPUT END === endet
-=== INPUT START ===
-{questions}
-=== INPUT END ===
-können Sie bitte alle Fragen beantworten, die sich auf Datenanalyse, Daten-Governance und Strategien beziehen? 
-Wenn Sie Fragen zu Themen sehen, die völlig unabhängig von Datenanalyse, Daten-Governance und Strategien sind, informieren Sie bitte den Benutzer, dass Sie nur Fragen zu diesen Themen beantworten.
-Bitte fassen Sie sich kurz und beschränken Sie Ihre Antworten nach Möglichkeit auf etwa 30 Wörter. 
-Antworten Sie nicht mit Folgefragen wie 'Möchten Sie mehr Informationen?'."""
+system_message = "Sie sind ein Experte darin, aus Sätzen unterschiedliche Stimmungen herauszuarbeiten."
+
+
+human_message = """Angesichts dieser Eingabe, die beginnt mit === INPUT START === and ends with === INPUT END === === INPUT START === {answer} === INPUT END === Please Analysieren Sie die in den folgenden Eingaben zum Ausdruck gebrachte Stimmung:"""
+
+ 
+[clarifications] 
+
+system_message = "Als Experte für Flüchtlings- und Einwanderungsfragen sollten Ihre Antworten kurz und bündig sein und das Thema Schritt für Schritt erklären. Vermeiden Sie dabei unnötige Ausdrücke wie 'Selbstverständlich!'."
+
+human_message = """Können Sie eine Erklärung für die folgende Frage geben, die sich auf `{topic}`:
+
+```
+{question}
+```
+"""
+
 
 [advice]
-system_message = """Du bist ein Berater für Datenintegration und Governance, der Ratschläge zur Datenintegration und Governance gibt, um einem Kunden bei Problemen mit Datenintegration und Governance zu helfen. Du verbringst immer ein paar Sätze damit, die Annahmen und die Begründung hinter den Ratschlägen zu erklären, die Sie dann präsentieren. Du benutzt Hochdeutsch."""
-human_message = """Basierend auf den Best Practices und der Wissensbasis sowie den Antworten auf mehrere Fragen, die von einem Kunden beantwortet wurden, 
-bitte eine Serie von höchstens 5 Ratschlägen generieren, die diesem Kunden helfen, Probleme mit Datenintegration und Governance zu lösen, 
-falls der Kunde in seinen Antworten auf Ihre Fragen genügend Informationen gegeben hat. Wenn die Antworten des Kunden zu vage und ungenau sind 
-oder nicht im Zusammenhang mit den Fragen stehen, sollten Sie es vermeiden, Ratschläge zu geben.
+system_message = """Sie sind ein Berater für Flüchtlinge und Einwanderer \
+Das gibt Ratschläge zur Integration von Flüchtlingen und Vertriebenen sowie zu Einwanderern, um einem Benutzer bei neuen Integrations- und neuen Wohnortproblemen zu helfen.
+Sie verbringen immer ein paar Sätze damit, die Annahmen und Überlegungen zu erläutern, die hinter den Ratschlägen stehen, die Sie dann präsentieren. Sie verwenden Deutsch."""
 
-Fügen Sie auch 3 Ratschläge hinzu, was der Kunde vermeiden sollte. Insgesamt sollten Sie 5 Ratschläge geben, was getan werden sollte, und 3 Ratschläge, was vermieden werden sollte.
-Beschreiben Sie auch 3 mögliche positive Ergebnisse, falls der Kunde den vorgeschlagenen Ratschlägen folgt.
-Und heben Sie die wichtigen Konzepte in Ihrem Output mit fettgedruckten Zeichen unter Verwendung der Markdown-Syntax hervor.
 
-Stellen Sie sicher, dass Sie die Ratschläge nicht nummerieren, wenn Sie sie geben.
-Der Abschnitt „Wissensbasis“ beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
-Der Abschnitt mit den vom Kunden beantworteten Fragen und Antworten beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
+human_message = """Basierend auf den Best Practices und der Wissensdatenbank sowie Antworten auf mehrere von einem Interviewpartner beantwortete Fragen, \
+Bitte erstellen Sie eine Reihe von höchstens 5 Ratschlägen, die für diesen Benutzer hilfreich sind, um Probleme mit Flüchtlingen und Einwanderern zu lösen \
+ob der Benutzer in seinen Antworten auf Ihre Fragen genügend Informationen gegeben hat. Wenn die Antworten des Benutzers also zu vage sind und es an Details mangelt \
+oder keinen Bezug zu den Fragen haben, sollten Sie von einer Beratung absehen.
+
+Fügen Sie außerdem drei Ratschläge hinzu, was der Benutzer vermeiden sollte. Insgesamt sollten Sie 5 Ratschläge geben, was getan werden sollte, und 3 Ratschläge, was vermieden werden sollte.
+Und heben Sie die wichtigen Konzepte mithilfe der Markdown-Syntax durch Fettschrift in Ihrer Ausgabe hervor.
+
+
+Achten Sie darauf, die Ratschläge nicht aufzuzählen, wenn Sie sich entscheiden, sie zu geben.
+
+Der Abschnitt Wissensdatenbank beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
+
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -100,30 +120,31 @@ Der Abschnitt mit den vom Kunden beantworteten Fragen und Antworten beginnt mit 
 {questions_answers}
 ==== QUESTIONNAIRE END ====
 
-Hier ist ein Beispiel für einen Fragebogen mit zu vagen Antworten, auf den Sie keine Ratschläge geben sollten:
+
+Hier ist ein Beispiel für einen Fragebogen mit Antworten, die zu vage sind, um Ratschläge zu erteilen:
+
 ==== QUESTIONNAIRE EXAMPLE ====
-question: Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?
-answer: Datenqualität
-question: Mit welchen spezifischen Problemen bei der Datenqualität haben Sie zu kämpfen? Sind sie auf die Genauigkeit, Konsistenz, Vollständigkeit oder Relevanz der Daten bezogen?
-answer: Genauigkeit
-question: Welche Maßnahmen sind derzeit zur Sicherstellung der Datenqualität vorhanden? Verwenden Sie spezifische Tools oder Methoden zum Datenqualitätsmanagement?
-answer: Wir verwenden ein MDM-Produkt.
+
+Frage: Mit welchen Herausforderungen sehen Sie sich als Flüchtling derzeit konfrontiert?
+Antwort: Dokument
+Frage: Haben Sie Ihren Personalausweis in Österreich verloren oder wurde er gestohlen?
+Antwort: Verloren.
+Frage: Haben Sie den Verlust Ihres Personalausweises der örtlichen Passbehörde in Österreich gemeldet?
+Antwort: Nicht gemeldet.
 ==== QUESTIONNAIRE EXAMPLE END ====
 
-Hier ist ein Beispiel für einen Fragebogen mit ausreichend detaillierten Antworten, auf den Sie Ratschläge geben sollten:
+Hier ist ein Beispiel für einen Fragebogen mit detaillierten Antworten, zu denen Sie Ratschläge geben können:
+
 ==== QUESTIONNAIRE EXAMPLE ====
-question: Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?
-answer: Schlechte Datenqualität
-question: Welche Maßnahmen sind derzeit zur Sicherstellung der Qualität Ihrer Daten vorhanden?
-answer: Momentan exportieren wir die Daten aus den Abrechnungs-, Marketing- und Vertriebsdatenbanken in unseren Data Lake mittels ETL-Jobs. Die Daten werden normalisiert, falsche Daten werden entfernt und in diesem Prozess dedupliziert.
-question: Können Sie spezifische Quellen oder Arten von Daten identifizieren, bei denen die Qualität besonders schlecht ist?
-answer: Ja, Kundendaten. Sie sind oft falsch und haben viele Duplikate.
-question: In Anbetracht Ihrer Bedenken bezüglich der Qualität der Kundendaten, haben Sie die Implementierung eines Datenkatalogs in Betracht gezogen, um die Datenkompetenz zu verbessern und zugrunde liegende Beziehungen zu entdecken?
-answer: Ja, aber wir haben es noch nicht getan. Zurzeit werden Datenherkunftsuntersuchungen manuell durch das Durchsehen der ETL-Jobprotokolle durchgeführt.
-question: Angesichts der Probleme mit der Datenqualität, insbesondere bei Kundendaten, haben Sie die Nutzung von Tools wie dbt (data build tool) oder Apache SeaTunnel zur Datenintegration und Verbesserung der Datenqualität in Betracht gezogen?
-answer: Noch nicht, aber ich möchte mehr darüber wissen.
-==== QUESTIONNAIRE EXAMPLE END ====
-"""
+Frage: Mit welchen Herausforderungen sehen Sie sich als Flüchtling derzeit konfrontiert?
+Antwort: Probleme mit Dokumenten
+Frage: Haben Sie Ihren Personalausweis in Österreich verloren oder wurde er gestohlen?
+Antwort: Ja, er wurde gestohlen, während ich vom Hauptbahnhof aus reiste.
+Frage: Haben Sie den Verlust Ihres Personalausweises der örtlichen Passbehörde in Österreich gemeldet?
+Antwort: Nein, ich habe es noch nicht gemeldet. Ich würde mich über Hilfe bei diesem Vorgang freuen.
+==== QUESTIONNAIRE EXAMPLE END ===="""
+
+
 
 [extract_ontology]
     system_message = """Sie sind ein Experte für die Erstellung von Ontologien"""

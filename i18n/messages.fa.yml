@@ -4,3 +4,7 @@ fa:
   no_report_id: "شناسه گزارش در دسترس نیست"
   no_answer_from_chatgpt: "هیچ پاسخی از ChatGPT دریافت نشد"
   failed_insert_question: "عدم موفقیت در وارد کردن سوال در پایگاه داده"
+  "What you should avoid": "چه چیزهایی باید از آنها پرهیز کنید؟"
+  "Positive outcomes (if you follow the advices)": "نتایج مثبت (اگر شما پیشنهادات را دنبال کنید)"
+  "What you should do": "توصیه ها و راهکارهای پیشنهادی"
+  "A big thank you for completing a session with": "با تشکر از شما برای تکمیل جلسه با %{name}"

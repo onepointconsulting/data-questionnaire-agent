@@ -9,7 +9,7 @@ The source code for the hacked chainlit version is from this repo:
 
 https://github.com/onepointconsulting/chainlit-data-wellness-agent.git
 
-## Cloning the project 
+## Cloning the project
 
 You should clone the project and then initialize the UI module with these commands:
 
@@ -30,17 +30,27 @@ conda activate data_wellness_agent
 pip install poetry
 ```
 
+# Test
+
+```
+conda activate base
+conda remove -n data_wellness_agent_2 --all
+conda create -n data_wellness_agent_2 python=3.11.8
+conda activate data_wellness_agent_2
+pip install poetry
+```
+
 ## Installation
 
 Change the directory to the root folder of the project.
 
-``` 
+```
 poetry install
 ```
 
 ## UI Installation
 
-Before you run, you should compile the UI with this command from the root folder of the project. 
+Before you run, you should compile the UI with this command from the root folder of the project.
 Please note that this requires the installation of Yarn and node 18.18.0 or later.
 
 ```
@@ -84,10 +94,9 @@ sudo -u postgres psql data_wellness_companion
 
 And run the script sql/db_setup.sql
 
+### Knowledge base
 
-### Knowledge base 
-
-The knowledge base is based on a directory (see environment variable `RAW_TEXT_FOLDER`). The folder needs to have *.txt documents in it.
+The knowledge base is based on a directory (see environment variable `RAW_TEXT_FOLDER`). The folder needs to have \*.txt documents in it.
 
 The server fails if there are no documents in this folder.
 

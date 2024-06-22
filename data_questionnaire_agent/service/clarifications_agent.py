@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Type
 from duckduckgo_search import DDGS
 from langchain.agents import AgentExecutor, AgentType, initialize_agent
 from langchain.tools import BaseTool
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 from data_questionnaire_agent.config import cfg
 
@@ -48,7 +48,8 @@ def text_search(input: str, limit: int = 10) -> List[dict]:
     res_list = []
     with DDGS() as ddgs:
         for r in islice(
-            ddgs.text(input, region="wt-wt", safesearch="off", timelimit="y"), limit
+            ddgs.text(input, region="wt-wt",
+                      safesearch="off", timelimit="y"), limit
         ):
             res_list.append(r)
     return res_list

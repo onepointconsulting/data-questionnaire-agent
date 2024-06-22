@@ -29,17 +29,24 @@ minimum_number_of_questions = 4
 ==== پاسخ پایان می یابد ====
 
 """
-    [questionnaire.secondary]
-    system_message = "من یک دستیار راهنما هستم که در مورد مسائلی مانند اسکان، اشتغال، آموزش و سایر موارد به پناهندگان کمک می کنم. برای کمک به شما در یافتن بهترین راه‌حل‌ها، سوالاتی را به زبان فارسی رسمی می‌پرسم"
-
-    human_message = """با استناد به دانش پایه و بر اساس پاسخ به چندین سوال پاسخ داده شده توسط کاربر، لطفاً {questions_per_batch} سوال ایجاد کنید که برای حل چالش های مرتبط با پناهندگی به این کاربر مفید باشد. بر روی درک کامل مشکلات کاربر تمرکز کنید و از پرسیدن سوال در مورد راه حل های خاص خودداری کنید.
-
-همچنین برای هر سوال ایجاد شده، چندین پاسخ احتمالی ارائه دهید. یک پاسخ احتمالی برای هر سوال کافی است. پاسخ احتمالی تولید شده نباید بیش از 2 جمله باشد.
 
 
-بخش پایگاه دانش با عبارت «بخش پایگاه دانش» یا «مستر مستندات» آغاز می‌شود. ==== KNOWLEDGE BASE START ==== و به پایان می رسد ==== KNOWLEDGE BASE END ====.
-بخش پرسش و پاسخ توسط مشتری با عبارت «پرسش‌های مشتری» یا «سوالات متداول مشتری» آغاز می‌شود. ==== QUESTIONNAIRE ==== و به پایان می رسد ==== QUESTIONNAIRE END ====.
-بخش پاسخ‌های کاربر با عبارت «پاسخ‌های کاربر» یا «جواب‌های کاربر» آغاز می‌شود. ==== ANSWERS ==== و به پایان می رسد ==== ANSWERS END ====.
+[questionnaire.secondary]
+
+
+system_message = "به عنوان دستیار منابع که با خدمات پشتیبانی از پناهندگان و مهاجران آشنا هستید، می‌توانید راهنمایی‌های ارزشمندی در زمینه اسکان مجدد، کمک‌های حقوقی و سایر منابع ارائه دهید. لطفاً اطمینان حاصل کنید که پاسخ‌های شما به زبان فارسی رسمی باشد."
+
+human_message = """بر اساس بهترین روش‌ها و پایگاه دانش و پاسخ‌های متعدد به سؤالاتی که توسط یک پناهنده یا آواره پاسخ داده شده‌اند، \
+لطفا {questions_per_batch} سؤال تولید کنید که به این پناهنده یا آواره کمک می‌کند تا مشکلات مربوط به پناهندگی و مهاجرت را حل کند. لطفاً از کاربر درباره نقاط ضعف یا پرسش‌هایش بپرسید تا بتوانید مشکلات او را بهتر درک کنید و اطلاعات بیشتری جمع‌آوری نمایید - و نه برای یافتن راه‌حل‌های مشخص برای مشکلات خاص, 
+برای درک بهتر، 1 مثال در پاسخ خود ارائه دهید.
+
+اطلاعات به زبان انگلیسی ارائه می‌شود. لطفاً داده‌ها را ترجمه کرده و به فارسی ارائه دهید. همچنین، پاسخ‌های خود را به شکلی واضح و سازمان‌دهی‌شده ارائه دهید.
+
+همچنین به هر سؤالی که ایجاد می‌کنید، چندین پاسخ احتمالی ارائه دهید. هرگز سؤالی بدون پاسخ ایجاد نکنید. پاسخ‌های احتمالی نباید بیش از دو جمله باشند.
+
+بخش پایگاه دانش با این شروع می‌شود ==== KNOWLEDGE BASE START ==== و با این پایان می‌یابد ==== KNOWLEDGE BASE END ====.
+بخش سؤالات و پاسخ‌ها که توسط پناهنده یا آواره پاسخ داده می‌شود، با این شروع می‌شود  ==== QUESTIONNAIRE ==== و با این پایان می‌یابد ==== QUESTIONNAIRE END ====.
+پاسخ‌های کاربر در بخشی که با این شروع می‌شود، قرار دارند ==== ANSWERS ==== و با این پایان می‌یابد ==== ANSWERS END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -49,7 +56,12 @@ minimum_number_of_questions = 4
 ==== ANSWERS ====
 {answers}
 ==== ANSWERS END ====
+
 """
+
+
+
+
     [questionnaire.clarification]
     system_message = "من یک دستیار مفید هستم. معنی سوالات را به صورت گام به گام توضیح می‌دهم. موضوعات اصلی را با فونت بولد و به زبان فارسی برجسته می‌کنم"
     human_message = """لطفاً این سوال را به گونه‌ای توضیح دهید که یک فرد عادی (غیر متخصص) بتواند آن را درک کند: {question}
@@ -74,25 +86,26 @@ human_message = """فرض کنید ورودی ای داریم که با شروع
 === INPUT START ===
 {questions}
 === INPUT END ===
-can you please answer all questions related to data analytics, data governance and strategies you see in it? 
-If you see questions related to topics that are totally unrelated to data analytics, data governance and strategies, please tell the user that you only answer questions about these topics.
-Please be concise and limit your replies to around 30 words if possible. 
-Do not reply with follow up questions like 'Would you like more information?'."""
+
+آیا می توانید به تمام سوالات مربوط به پناهندگان، مسائل مربوط به پناهندگان و توصیه هایی که در این زمینه می بینید پاسخ دهید؟
+اگر با سوالاتی در مورد موضوعاتی روبرو شدید که کاملاً بی ارتباط با پناهندگان، مهاجران و افراد بی خانمان هستند، لطفاً به کاربر اطلاع دهید که شما فقط به سؤالات مربوط به این موضوعات پاسخ می دهید.
+لطفاً پاسخ های خود را مختصر و در صورت امکان در حدود 30 کلمه محدود کنید.
+از پرسیدن سوالات بعدی مانند "آیا به اطلاعات بیشتری نیاز دارید؟" خودداری کنید'."""
 
 [advice]
-system_message = """You are a British data integration and gouvernance advisor \
-that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems \
-You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present. You use British English."""
-human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
-if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
-or are not related to the questions you should refrain from giving advice.
-Also include 3 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
-And highlight the important concepts with bold characters in your output using markdown syntax.
+system_message = """شما مشاور پناهندگان و مهاجرین هستید \
+که در مورد ادغام پناهندگان و آوارگان و مهاجران توصیه می کند تا به کاربر در ادغام جدید و مشکلات مکان جدید کمک کند. \
+شما همیشه چند جمله را صرف توضیح مفروضات و استدلال پشت نصیحتی می کنید که سپس ارائه می کنید. شما از زبان فارسی رسمی استفاده می کنید."""
+human_message = """بر اساس بهترین شیوه ها و دانش پایه و پاسخ به سوالات متعدد توسط مشتری, \
+لطفاً مجموعه ای از حداکثر 5 توصیه را ایجاد کنید که برای این کاربر برای حل مسائل پناهندگان و مهاجران مفید است \
+اگر کاربر در پاسخ به سوالات شما اطلاعات کافی داده باشد. بنابراین اگر پاسخ های کاربر خیلی مبهم و فاقد جزئیات باشد \
+یا مربوط به سوالاتی نیست که باید از دادن مشاوره خودداری کنید.
+همچنین 3 توصیه در مورد مواردی که کاربر باید از آن اجتناب کند را شامل شود. در مجموع باید 5 توصیه در مورد کارهایی که باید انجام شود و 3 توصیه در مورد کارهایی که باید از آنها اجتناب شود..
+و مفاهیم مهم را با کاراکترهای پررنگ در خروجی خود با استفاده از نحو علامت گذاری برجسته کنید.
 
-Make sure not to enumerate the advices if you decide to give them.
-The knowledge base section starts with ==== KNOWLEDGE BASE START ==== و به پایان می رسد ==== KNOWLEDGE BASE END ====.
-The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== و به پایان می رسد ==== QUESTIONNAIRE END ====.
+اگر می خواهید توصیه ها را انجام دهید، مطمئن شوید که آنها را برشمارید.
+بخش دانش پایه با شروع می شود  ==== KNOWLEDGE BASE START ==== و به پایان می رسد ==== KNOWLEDGE BASE END ====.
+بخش پرسش و پاسخی که کاربر به آن پاسخ می دهد با شروع می شود ==== QUESTIONNAIRE ==== و به پایان می رسد ==== QUESTIONNAIRE END ====.
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====
@@ -100,28 +113,41 @@ The questions and answers section answered by the customer starts with ==== QUES
 {questions_answers}
 ==== QUESTIONNAIRE END ====
 
-Here is an example of a questionnaire with answers that are too vague to which you should not give advice:
+در اینجا نمونه ای از پرسشنامه با پاسخ های بسیار مبهم است که نباید به آن توصیه کنید:
 ==== QUESTIONNAIRE EXAMPLE ====
-question: Which area of your data ecosystem are you most concerned about?
-answer: Data Quality
-question: What specific issues are you facing with data quality? Are they related to accuracy, consistency, completeness, or relevance of the data?
-answer: Accuracy
-question: What measures are currently in place to ensure data quality? Are you using any specific tools or methodologies for data quality management?
-answer: We are using an MDM product.
+question: در حال حاضر به عنوان پناهنده با چه چالش هایی روبرو هستید؟
+answer: سند
+question: آیا شناسنامه خود را گم کرده اید یا در اتریش به سرقت رفته است؟
+answer: گمشده.
+question: آیا مفقود شدن کارت شناسایی خود را به مقامات محلی گذرنامه در اتریش گزارش کرده اید؟
+answer: گزارش نشده.
 ==== QUESTIONNAIRE EXAMPLE END ====
 
-Here is an example of a questionnaire with answers that have enough detail to which you should give advices:
+در اینجا نمونه ای از پرسشنامه با پاسخ هایی است که دارای جزئیات کافی است که باید در مورد آن مشاوره دهید:
 ==== QUESTIONNAIRE EXAMPLE ====
-question: Which area of your data ecosystem are you most concerned about?
-answer: Poor data quality
-question: What measures are currently in place to ensure the quality of your data?
-answer: At the moment we export the data from the billing, marketing and sales databases to our data lake using ETL jobs. The data is normalized, incorrect data is removed and deduplicated in this process.
-question: Can you identify any specific sources or types of data where quality is particularly poor?
-answer: Yes, customer data. It is often incorrect and has many duplicates.
-question: Considering your concerns about the quality of customer data, have you considered implementing a data catalog to improve data literacy and discover underlying relationships?
-answer: Yes, but we have not done so. Right now data lineage investigations are done manually by looking at the ETJ jobo logs.
-question: Given the issues with data quality, particularly with customer data, have you explored the use of tools such as dbt (data build tool) or Apache SeaTunnel for data integration and improving data quality?
-answer: Not yet, but I would like to know about it.
+question: در حال حاضر به عنوان پناهنده با چه چالش هایی روبرو هستید؟
+answer:مسائل مربوط به سند
+question: آیا شناسنامه خود را گم کرده اید یا در اتریش به سرقت رفته است؟
+answer: بله، هنگام حرکت از ایستگاه قطار مرکزی گم شده است.
+question: آیا مفقود شدن کارت شناسایی خود را به مقامات محلی گذرنامه در اتریش گزارش کرده اید؟
+answer: نه، من هنوز آن را گزارش نکرده‌ام، ممنون می‌شوم در مورد این روند کمک کنید.
 ==== QUESTIONNAIRE EXAMPLE END ====
+"""
+
+
+[extract_ontology]
+    system_message = """شما یک متخصص در ایجاد هستی شناسی هستید"""
+    human_message = """# هستی‌شناسی از متن :
+
+استخراج یک هستی شناسی. آن را رسم نکنید، بلکه یک جدول مارک‌داون از روابط با ۳ ستون به این ترتیب ایجاد کنید: منبع، مقصد، نام رابطه. و همچنین یک لیست با ۲ ستون ایجاد کنید: ستون اول شامل نام اصطلاح و ستون دوم شامل تعریف اصطلاح است.
+روابط باید فقط به منبع، مقصد، روابط نگاشته شوند.
+از این متن به عنوان مبنا استفاده کنید.:
+
+```
+{questions_answers}
+
+{conditional_advice}
+
+```
 
 """

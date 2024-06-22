@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 DEFAULT_SESSION_STEPS = 6
 
@@ -12,7 +12,8 @@ class SessionConfigurationEntry(BaseModel):
     id: Union[int, None] = Field(
         default=None, description="The identifier of this session configuration"
     )
-    session_id: str = Field(..., description="The application's source identifier")
+    session_id: str = Field(...,
+                            description="The application's source identifier")
     config_key: str = Field(..., description="The configuration key")
     config_value: str = Field(..., description="The configuration value")
 

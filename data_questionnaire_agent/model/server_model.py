@@ -1,6 +1,6 @@
 from typing import Any, List, Union
 
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import SessionConfiguration
@@ -10,7 +10,8 @@ from data_questionnaire_agent.service.report_enhancement_service import (
 
 
 class ServerMessage(BaseModel):
-    session_id: str = Field(..., description="The application's source identifier")
+    session_id: str = Field(...,
+                            description="The application's source identifier")
     question: str = Field(..., description="The question")
     answer: str = Field(
         default="", description="The answer to the question. Should come from the user"
@@ -28,7 +29,8 @@ class ServerMessage(BaseModel):
 
 
 class ServerMessages(BaseModel):
-    session_id: str = Field(..., description="The application's source identifier")
+    session_id: str = Field(...,
+                            description="The application's source identifier")
     server_messages: List[ServerMessage] = Field(
         ..., description="A list with server messages"
     )

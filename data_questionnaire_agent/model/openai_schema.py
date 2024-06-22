@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 
-from pydantic import BaseModel as PydanticBaseModel
+from pydantic.v1 import BaseModel as PydanticBaseModel
 from pydantic import Field
 
 from data_questionnaire_agent.translation import t
@@ -114,7 +114,8 @@ class ConditionalAdvice(BaseModel):
             self.advices, t("What you should do", locale=language)
         )
         markdown += convert_to_text(
-            self.what_you_should_avoid, t("What you should avoid", locale=language)
+            self.what_you_should_avoid, t(
+                "What you should avoid", locale=language)
         )
         markdown += convert_to_text(
             self.positive_outcomes,
