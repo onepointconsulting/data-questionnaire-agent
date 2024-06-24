@@ -367,7 +367,7 @@ async def select_suggestions(question: str) -> List[QuestionSuggestion]:
         """SELECT S.id, img_src, img_alt, title, main_text, svg_image FROM TB_QUESTION_SUGGESTIONS S 
 INNER JOIN TB_QUESTION Q ON Q.ID = S.QUESTION_ID
 wHERE Q.question = %(question)s
-ORDER BY PREFERRED_QUESTION_ORDER""",
+ORDER BY S.ID""",
         {
             "question": question,
         },
