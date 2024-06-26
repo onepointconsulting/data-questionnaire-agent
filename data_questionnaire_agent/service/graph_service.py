@@ -24,7 +24,8 @@ def generate_analyzed_ontology(ontology_data: Ontology) -> AnalyzedOntology:
         id_name_dict[id]: centrality for id, centrality in degree_centrality.items()
     }
     betweenness_centrality_: Dict[str, float] = {
-        id_name_dict[id]: centrality for id, centrality in betweenness_centrality.items()
+        id_name_dict[id]: centrality
+        for id, centrality in betweenness_centrality.items()
     }
     return AnalyzedOntology(
         relationships=relationships,

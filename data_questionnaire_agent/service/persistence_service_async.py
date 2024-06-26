@@ -385,7 +385,7 @@ ORDER BY S.ID""",
             img_alt=r[IMG_ALT],
             title=r[TITLE],
             main_text=r[MAIN_TEXT],
-            svg_image=r[SVG_IMAGE]
+            svg_image=r[SVG_IMAGE],
         )
         for r in res
     ]

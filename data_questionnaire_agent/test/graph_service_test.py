@@ -9,4 +9,6 @@ def test_generate_analyzed_ontology():
     assert analyzed_ontology.relationships is not None
     assert analyzed_ontology.degree_centrality is not None
     assert analyzed_ontology.betweenness_centrality is not None
-    assert len(analyzed_ontology.degree_centrality) == len(analyzed_ontology.betweenness_centrality)
+    assert len(analyzed_ontology.degree_centrality) == len(
+        analyzed_ontology.betweenness_centrality
+    )
