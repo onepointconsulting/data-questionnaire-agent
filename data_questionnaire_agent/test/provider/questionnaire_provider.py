@@ -70,8 +70,14 @@ def create_questionnaire_4_questions_german() -> Questionnaire:
         "Was sind die Hauptquellen für Daten in Ihrer Organisation und wie werden sie derzeit integriert?",
         """- Unsere Daten stammen von verschiedenen IoT-Geräten und Sensoren, und wir verwenden eine zentrale Plattform zur Integration.""",
     )
-    return Questionnaire(questions=[question_answer, question_answer_2, question_answer_3, question_answer_4])
-
+    return Questionnaire(
+        questions=[
+            question_answer,
+            question_answer_2,
+            question_answer_3,
+            question_answer_4,
+        ]
+    )
 
 
 def create_questionnaire_2_questions_refugees() -> Questionnaire:

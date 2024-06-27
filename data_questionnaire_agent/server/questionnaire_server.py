@@ -32,6 +32,9 @@ from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.ontology_service import create_ontology
+from data_questionnaire_agent.service.confidence_service import (
+    calculate_confidence_rating,
+)
 from data_questionnaire_agent.service.persistence_service_async import (
     fetch_ontology,
     insert_questionnaire_status,
@@ -401,6 +404,15 @@ async def ontology(request: web.Request) -> web.Response:
     session_id = extract_session(request)
     relationships = await fetch_ontology(session_id)
     return web.json_response(relationships, headers=CORS_HEADERS)
+
+
+@routes.get("/confidence/{session_id}")
+async def ontology(request: web.Request) -> web.Response:
+    session_id = extract_session(request)
+    questionnaire = await select_questionnaire(session_id, False)
+    language = extract_language(request)
+    confidence_rating = await calculate_confidence_rating(questionnaire, language)
+    return web.json_response(confidence_rating.dict(), headers=CORS_HEADERS)
 
 
 def extract_language(request: web.Request):

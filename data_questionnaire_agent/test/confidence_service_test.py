@@ -8,7 +8,7 @@ from data_questionnaire_agent.test.provider.questionnaire_provider import (
     create_questionnaire_2_questions,
     create_questionnaire_3_questions,
     create_questionnaire_4_questions,
-    create_questionnaire_4_questions_german
+    create_questionnaire_4_questions_german,
 )
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.application_schema import (
@@ -36,11 +36,14 @@ def test_calculate_confidence_rating_stronger():
 
 
 def test_calculate_confidence_rating_german():
-    eval_questionnaire(create_questionnaire_4_questions_german(), ["medium", "high"], "de")
+    eval_questionnaire(
+        create_questionnaire_4_questions_german(), ["medium", "high"], "de"
+    )
 
 
-
-def eval_questionnaire(questionnaire: Questionnaire, expected: List[str], language: str = "en"):
+def eval_questionnaire(
+    questionnaire: Questionnaire, expected: List[str], language: str = "en"
+):
     confidence_rating: ConfidenceRating = asyncio.run(
         calculate_confidence_rating(questionnaire, "en")
     )
