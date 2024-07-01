@@ -62,8 +62,11 @@ from data_questionnaire_agent.service.similarity_search import (
 )
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
-
-CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
+from data_questionnaire_agent.service.confidence_service import (
+    calculate_confidence_rating,
+)
+CORS_HEADERS = {"Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*"}
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
 
@@ -292,7 +295,8 @@ async def insert_configuration(
         config_key=SESSION_STEPS_LANGUAGE_KEY,
         config_value=language,
     )
-    session_keys = [session_configuration_entry, session_configuration_language]
+    session_keys = [session_configuration_entry,
+                    session_configuration_language]
     accepted_keys = []
     for session_key in session_keys:
         saved_entry = await save_session_configuration(session_key)
@@ -307,7 +311,8 @@ async def insert_configuration(
             )
         else:
             accepted_keys.append(session_key)
-    session_configuration = SessionConfiguration(configuration_entries=accepted_keys)
+    session_configuration = SessionConfiguration(
+        configuration_entries=accepted_keys)
     server_messages.session_configuration = session_configuration
 
 
@@ -401,6 +406,15 @@ async def ontology(request: web.Request) -> web.Response:
     session_id = extract_session(request)
     relationships = await fetch_ontology(session_id)
     return web.json_response(relationships, headers=CORS_HEADERS)
+
+
+@routes.get("/confidence/{session_id}")
+async def ontology(request: web.Request) -> web.Response:
+    session_id = extract_session(request)
+    questionnaire = await select_questionnaire(session_id, False)
+    language = extract_language(request)
+    confidence_rating = await calculate_confidence_rating(questionnaire, language)
+    return web.json_response(confidence_rating.dict(), headers=CORS_HEADERS)
 
 
 def extract_language(request: web.Request):

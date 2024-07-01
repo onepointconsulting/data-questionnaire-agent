@@ -15,7 +15,7 @@ minimum_number_of_questions = 4
 
 question = "What challenges are you currently facing as a refugee?"
 
-system_message = "As a resource assistant familiar with refugee and immigrant support services, you can help users find information on resettlement, legal aid, language integration, family reunification, and other resources. Please provide responses in formal English and ensure they are relevant and helpful."
+system_message = "As a resource assistant familiar with refugee and immigrant support services, you can help users find information on asylum process and integration. Please provide responses in formal English and ensure they are relevant and helpful."
 
 
 human_message = """Based on the best practices and knowledge base and on an answer to a question answered by a refugee, \
@@ -39,11 +39,15 @@ The user answer provided by the refugee starts with ==== ANSWER ==== and ends wi
 
 [questionnaire.secondary]
 
-system_message = "As a resource assistant familiar with refugee and immigrant support services, you can provide valuable guidance on resettlement, legal aid, and other resources. Please ensure your responses are in formal English."
+system_message = "As a resource assistant familiar with refugee and immigrant support services, you can provide valuable guidance on asylum process and integration, helping refugee with their resettlement and issues, they are facing, your job is to dig into user's problem, and find what what is the main problem, and what help does the refugee needs and checking about current location and asylum status. Please ensure your responses are in formal English."
 
 
-human_message = """To assist the user effectively, please generate {questions_per_batch} questions based on the user's previous interactions and our knowledge base. These questions should aim to connect them with relevant support services, such as resettlement assistance or legal aid. Consider asking about their specific needs and concerns to provide targeted assistance. Remember to provide accurate information and be sensitive to their situation.
+human_message = """To assist the user effectively, please generate {questions_per_batch} questions based on the user's previous interactions and our knowledge base. These questions should be relevant to the user's current situation, ensuring a logical flow from their previous answers. Specifically, aim to address their asylum status, legal document issues, and any challenges they might be facing with accessing services.
 
+Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
+
+Make sure that the possible answers are explicit and are able to be understood on their own. Please do not use possible answers like 'Both', 'Like the previous possible answer'.
+Ensure that the questions and answers are sensitive to their situation, and provide accurate, clear information.
 
 The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
 
@@ -150,4 +154,47 @@ Use this text as a basis:
 
 ```
 
+"""
+
+[confidence_prompt]
+    system_message = "You are skilled at providing guidance and support to refugees based on interactive question and answer sessions"
+    human_message = """Determine how confident you are in providing advice to a refugee based on a sequence of questions and answers that you can find here:
+```
+{questions_answers}
+```
+
+To be confident in your advice, you should understand the refugee's difficulties thoroughly. You should know about the following:
+* the refugee's main issue
+* detailed information about their issue. A high-level statement like "seeking asylum" is not enough to be confident.
+* you should also understand what is causing the issue and have some knowledge about the causes of the issue.
+* ideally, you know more than just a single cause of the refugee's main issue.
+* additional background information about the refugee's current situation, such as their location, legal status, and language, is necessary.
+* you should also be aware of the policies and resources available to the refugee to have a high degree of confidence.
+
+Please answer with the following classifications regarding your degree of confidence in giving advice:
+
+- "outstanding"
+- "high"
+- "medium"
+- "mediocre"
+- "low"
+
+For example, you should report an "outstanding" confidence degree when:
+You know the main issue of the refugee and the causes well. You also know about the policies and resources related to the refugee's situation.
+Additionally, you have comprehensive knowledge about the refugee's current circumstances, such as their location, if possible legal status, and language.
+
+For example, you should report a "high" confidence degree when:
+You know the main issue of the refugee and the causes well. You also know about the policies and resources related to the refugee's situation.
+The only thing missing is more background information about the refugee's current circumstances, such as their location, if possible legal status, and language.
+
+For example, you should report a "medium" confidence degree when:
+You know the main issue of the refugee and the causes well.
+You lack background information about the refugee's current circumstances and the policies and resources available to them.
+
+For example, you should report a "mediocre" confidence degree when:
+You know the main issue of the refugee but not the causes well. The information about the causes is very limited.
+You lack background information about the refugee's current circumstances and the policies and resources available to them.
+
+For example, you should report a "low" confidence degree when:
+You know the main issue of the refugee and nothing else. Or you do not even know about the main issue of the refugee.
 """

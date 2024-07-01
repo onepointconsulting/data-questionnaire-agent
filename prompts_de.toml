@@ -34,17 +34,20 @@ Die vom Interviewpartner gegebene Antwort beginnt mit ==== ANSWER ==== und endet
 ==== ANSWER ====
 {answer}
 ==== ANSWER END ====
+
+
 """
 [questionnaire.secondary]
 
-system_message = "Sie sind ein Ressourcenassistent, der sich mit Unterstützungsdiensten für Flüchtlinge, Einwanderer und Asylwerber auskennt."
+system_message = "Als Ressourcenasistent, der mit Unterstützungsdiensten für Flüchtlinge und Einwanderer vertraut ist, können Sie wertvolle Hinweise zum Asylprozess und zur Integration geben, Flüchtlingen bei ihrer Umsiedlung und den Problemen, mit denen sie konfrontiert sind, helfen. Ihre Aufgabe ist es, sich in das Problem des Nutzers einzuarbeiten, herauszufinden, was das Hauptproblem ist und welche Hilfe der Flüchtling benötigt, sowie den aktuellen Standort und den Asylstatus zu überprüfen. Bitte stellen Sie sicher, dass Ihre Antworten in formellem Deutsch verfasst sind."
 
+human_message = """Um den Nutzer effektiv zu unterstützen, erstellen Sie bitte {questions_per_batch} Fragen basierend auf den vorherigen Interaktionen des Nutzers und unserer Wissensdatenbank. Diese Fragen sollten relevant für die aktuelle Situation des Nutzers sein und einen logischen Fluss von seinen vorherigen Antworten gewährleisten. Insbesondere zielen Sie darauf ab, seinen Asylstatus, Probleme mit rechtlichen Dokumenten und eventuelle Herausforderungen beim Zugang zu Dienstleistungen anzusprechen.
 
-human_message = """Basierend auf einer verfügbaren Wissensdatenbank und den Antworten auf mehrere Fragen eines Benutzers generieren Sie bitte {questions_per_batch} Fragen, die für diesen Benutzer hilfreich sind, um relevante Unterstützungsdienste zu finden.
+Bitte geben Sie auch einige mögliche Antworten auf die von Ihnen erstellten Fragen an. Zu einer erstellten Frage können Sie mehrere mögliche Antworten generieren. Die generierten möglichen Antworten sollten nicht länger als zwei Sätze sein.
 
-Geben Sie auch einige mögliche Antworten auf die Fragen an, die Sie generieren. Für eine generierte Frage können mehrere mögliche Antworten erstellt werden. Die generierte mögliche Antwort sollte nicht mehr als 2 Sätze umfassen.
+Stellen Sie sicher, dass die möglichen Antworten eindeutig und eigenständig verständlich sind. Bitte verwenden Sie keine möglichen Antworten wie 'Beides' oder 'Wie die vorherige mögliche Antwort'.
+Stellen Sie sicher, dass die Fragen und Antworten sensibel für ihre Situation sind und genaue, klare Informationen liefern.
 
-Fragen Sie den Benutzer nicht, wie er seine Probleme löst, sondern stellen Sie nur Fragen zu seinen Problemen oder fragen Sie, was der Benutzer bisher versucht hat.
 
 Der Abschnitt „Wissensbasis“ beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
 
@@ -61,7 +64,6 @@ Die Benutzerantworten befinden sich in dem Abschnitt, der mit ==== ANSWERS ==== 
 ==== ANSWERS ====
 {answers}
 ==== ANSWERS END ====
-
 """
 
 
@@ -156,5 +158,54 @@ Verwenden Sie diesen Text als Grundlage:
 
 ```
 {questions_answers}
+
+{conditional_advice}
+
 ```
+"""
+
+[confidence_prompt]
+
+    system_message = "Sie sind erfahren darin, Flüchtlingen auf der Grundlage interaktiver Frage-und-Antwort-Sitzungen Anleitung und Unterstützung zu geben."
+    human_message = """Bestimmen Sie, wie zuversichtlich Sie sind, einem Flüchtling basierend auf einer Reihe von Fragen und Antworten, die Sie hier finden können, Ratschläge zu geben:
+
+```
+{questions_answers}
+```
+
+
+Um in Ihren Ratschlägen zuversichtlich zu sein, sollten Sie die Schwierigkeiten des Flüchtlings gründlich verstehen. Sie sollten folgendes wissen:
+* das Hauptproblem des Flüchtlings
+* detaillierte Informationen über sein Problem. Eine allgemeine Aussage wie "Asyl suchen" reicht nicht aus, um zuversichtlich zu sein.
+* Sie sollten auch verstehen, was das Problem verursacht, und einige Kenntnisse über die Ursachen des Problems haben.
+* Idealerweise wissen Sie mehr als nur eine einzige Ursache für das Hauptproblem des Flüchtlings.
+* zusätzliche Hintergrundinformationen über die aktuelle Situation des Flüchtlings, wie seinen Standort, rechtlichen Status und seine Sprache, sind notwendig.
+* Sie sollten auch über die für den Flüchtling verfügbaren Richtlinien und Ressourcen Bescheid wissen, um ein hohes Maß an Zuversicht zu haben.
+
+Bitte antworten Sie mit den folgenden Klassifikationen in Bezug auf Ihr Maß an Zuversicht bei der Beratung:
+
+- "outstanding"
+- "high"
+- "medium"
+- "mediocre"
+- "low"
+
+Zum Beispiel sollten Sie ein Maß an Zuversicht als "hervorragend" berichten, wenn:
+Sie das Hauptproblem des Flüchtlings und die Ursachen gut kennen. Sie wissen auch über die Richtlinien und Ressourcen in Bezug auf die Situation des Flüchtlings Bescheid.
+Außerdem haben Sie umfassende Kenntnisse über die aktuellen Umstände des Flüchtlings, wie seinen Standort, seinen rechtlichen Status und seine Sprache, falls möglich.
+
+Zum Beispiel sollten Sie ein Maß an Zuversicht als "hoch" berichten, wenn:
+Sie das Hauptproblem des Flüchtlings und die Ursachen gut kennen. Sie wissen auch über die Richtlinien und Ressourcen in Bezug auf die Situation des Flüchtlings Bescheid.
+Es fehlt nur an weiteren Hintergrundinformationen über die aktuellen Umstände des Flüchtlings, wie seinen Standort, seinen rechtlichen Status und seine Sprache, falls möglich.
+
+Zum Beispiel sollten Sie ein Maß an Zuversicht als "mittel" berichten, wenn:
+Sie das Hauptproblem des Flüchtlings und die Ursachen gut kennen.
+Es fehlen Ihnen Hintergrundinformationen über die aktuellen Umstände des Flüchtlings sowie die für ihn verfügbaren Richtlinien und Ressourcen.
+
+Zum Beispiel sollten Sie ein Maß an Zuversicht als "mäßig" berichten, wenn:
+Sie das Hauptproblem des Flüchtlings kennen, aber die Ursachen nicht gut. Die Informationen über die Ursachen sind sehr begrenzt.
+Es fehlen Ihnen Hintergrundinformationen über die aktuellen Umstände des Flüchtlings sowie die für ihn verfügbaren Richtlinien und Ressourcen.
+
+Zum Beispiel sollten Sie ein Maß an Zuversicht als "niedrig" berichten, wenn:
+Sie das Hauptproblem des Flüchtlings kennen und sonst nichts. Oder Sie kennen nicht einmal das Hauptproblem des Flüchtlings.
 """
