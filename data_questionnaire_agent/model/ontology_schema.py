@@ -37,6 +37,10 @@ class AnalyzedOntology(BaseModel):
         ...,
         description="The dictionary of node to degree betweenness",
     )
+    connected_component_importance_dict: Dict[str, int] = Field(
+        ...,
+        description="Dictionary containing the number of nodes in the subgraph of the node which is the key"
+    )
 
 
 if __name__ == "__main__":

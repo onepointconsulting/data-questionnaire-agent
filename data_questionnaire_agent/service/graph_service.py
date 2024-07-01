@@ -19,7 +19,11 @@ def generate_analyzed_ontology(ontology_data: Ontology) -> AnalyzedOntology:
 
     degree_centrality = nx.degree_centrality(G)
     betweenness_centrality = nx.betweenness_centrality(G)
-
+    connected_component_importance_dict = {
+        id_name_dict[c]: len(cc)
+        for cc in nx.connected_components(G)
+        for c in cc
+    }
     degree_centrality_: Dict[str, float] = {
         id_name_dict[id]: centrality for id, centrality in degree_centrality.items()
     }
@@ -31,6 +35,7 @@ def generate_analyzed_ontology(ontology_data: Ontology) -> AnalyzedOntology:
         relationships=relationships,
         degree_centrality=degree_centrality_,
         betweenness_centrality=betweenness_centrality_,
+        connected_component_importance_dict=connected_component_importance_dict
     )
 
 

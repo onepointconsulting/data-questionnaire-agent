@@ -156,12 +156,12 @@ Use this text as a basis:
 In order to be confident you should know about the difficulties of the customer. You should know about the following:
 * the customer's main problem
 * have some detailed information about his problem. Just having a high level sentence on the problem of the customer like e.g: "Data Quality" is not enough to be confident.
-* you should have also knowledge about what is causing the problem and then also some knowledge about the causes of the problem.
-* ideally you know more than only a single cause about the main problem of the customer. 
-* you also some more background information about the technologies used by the customer to be confident.
+* you should have also knowledge about what is causing the problem.
+* ideally you know more than one cause behind the main problem of the customer. 
+* you also need some more background information about the technologies used by the customer to be confident.
 * you should also know about the data governance strategies of the customer to be able to have a high degree of confidence.
 
-Please answer with the following classifications to this question about the degree of confidence with which you can give advice:
+Please use the following classifications to this question about the degree of confidence with which you can give advice:
 
 - "outstanding"
 - "high"
@@ -169,7 +169,7 @@ Please answer with the following classifications to this question about the degr
 - "mediocre"
 - "low"
 
-For example, you should report a "outstanding" confidence degree when:
+For example, you should report an "outstanding" confidence degree when:
 You know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. 
 And you also know the technological landscape of the customer very well.
 
