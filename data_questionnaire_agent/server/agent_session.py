@@ -1,4 +1,4 @@
-import uuid
+from ulid import ULID
 from typing import Dict, Optional
 
 
@@ -13,7 +13,7 @@ class AgentSession:
         self.session_id = (
             session_id
             if session_id is not None and len(session_id) > 0
-            else str(uuid.uuid4())
+            else str(ULID())
         )
         agent_sessions[self.session_id] = self
 

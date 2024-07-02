@@ -135,12 +135,18 @@ Verwenden Sie diesen Text als Grundlage:
 
 ```
 {questions_answers}
+
+{conditional_advice}
 ```
 """
 
 [confidence_prompt]
     system_message = "Du bist ein Experte darin, Ratschläge zur Datenverwaltung basierend auf einem Frage-Antwort-Dialog mit einem Kunden zu geben."
     human_message = """Bestimme, wie sicher du dir bist, Ratschläge an einen Kunden zu geben, basierend auf einer Reihe von Fragen und Antworten, die du hier finden kannst:
+
+```
+{questions_answers}
+```
 
 Um sicher zu sein, solltest du über die Schwierigkeiten des Kunden Bescheid wissen. Du solltest Folgendes wissen:
 * das Hauptproblem des Kunden
@@ -152,29 +158,29 @@ Um sicher zu sein, solltest du über die Schwierigkeiten des Kunden Bescheid wis
 
 Bitte antworte mit den folgenden Klassifizierungen auf diese Frage bezüglich des Vertrauensgrades, mit dem du Ratschläge geben kannst:
 
-- "hervorragend"
-- "hoch"
-- "mittel"
-- "mittelmäßig"
-- "niedrig"
+- "outstanding"
+- "high"
+- "medium"
+- "mediocre"
+- "low"
 
-Zum Beispiel, du solltest einen "hervorragenden" Vertrauensgrad melden, wenn:
+Zum Beispiel, du solltest einen "outstanding" Vertrauensgrad melden, wenn:
 Du kennst das Hauptproblem des Kunden und die Ursachen gut. Du weißt auch über Aspekte der Datenverwaltung in der Organisation des Kunden Bescheid. 
 Und du kennst auch die technologische Landschaft des Kunden sehr gut.
 
-Zum Beispiel, du solltest einen "hohen" Vertrauensgrad melden, wenn:
+Zum Beispiel, du solltest einen "high" Vertrauensgrad melden, wenn:
 Du kennst das Hauptproblem des Kunden und die Ursachen gut. Du weißt auch über Aspekte der Datenverwaltung in der Organisation des Kunden Bescheid. 
 Das Einzige, was fehlt, sind mehr Hintergrundinformationen über die technologische Landschaft des Kunden.
 
-Zum Beispiel, du solltest einen "mittleren" Vertrauensgrad melden, wenn:
+Zum Beispiel, du solltest einen "medium" Vertrauensgrad melden, wenn:
 Du kennst das Hauptproblem des Kunden und die Ursachen gut.
 Dir fehlen die Hintergrundinformationen über die technologische Landschaft des Kunden und auch über die Datenverwaltung im Unternehmen des Kunden.
 
-Zum Beispiel, du solltest einen "mittelmäßigen" Vertrauensgrad melden, wenn:
+Zum Beispiel, du solltest einen "mediocre" Vertrauensgrad melden, wenn:
 Du kennst das Hauptproblem des Kunden und die Ursache nicht gut. Die Informationen über die Ursachen sind sehr begrenzt.
 Dir fehlen die Hintergrundinformationen über die technologische Landschaft des Kunden und auch über die Datenverwaltung im Unternehmen des Kunden.
 
-Zum Beispiel, du solltest einen "niedrigen" Vertrauensgrad melden, wenn:
+Zum Beispiel, du solltest einen "low" Vertrauensgrad melden, wenn:
 Du kennst das Hauptproblem des Kunden und sonst nichts. Oder du kennst nicht einmal das Hauptproblem des Benutzers.
 """
 

@@ -39,7 +39,7 @@ class AnalyzedOntology(BaseModel):
     )
     connected_component_importance_dict: Dict[str, int] = Field(
         ...,
-        description="Dictionary containing the number of nodes in the subgraph of the node which is the key"
+        description="Dictionary containing the number of nodes in the subgraph of the node which is the key",
     )
 
 
