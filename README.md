@@ -3,12 +3,6 @@
 This is a reverse chatbot that asks the users questions about data integration practices and then gives advice based on a body of knowledge.
 This version operates a bit like an agent which tries to gather enough information to be able to give advice. So it may ask an unspecified number of questions.
 
-We have used a specially changed version of the [Chainlit][https://chainlit.io] library that you can install from the wheels folder.
-
-The source code for the hacked chainlit version is from this repo:
-
-https://github.com/onepointconsulting/chainlit-data-wellness-agent.git
-
 ## Cloning the project 
 
 You should clone the project and then initialize the UI module with these commands:
