@@ -1,27 +1,10 @@
 from enum import Enum
-from data_questionnaire_agent.service.advice_service import (
-    chain_factory_advice,
-    prepare_conditional_advice,
-)
-from data_questionnaire_agent.service.question_generation_service import (
-    chain_factory_secondary_question,
-    prepare_secondary_question,
-)
 
 from prompt_toolkit import prompt
 from prompt_toolkit.formatted_text import HTML
 
-from data_questionnaire_agent.service.initial_question_service import (
-    chain_factory_initial_question,
-    prepare_initial_question,
-    prompts,
-)
-from data_questionnaire_agent.service.similarity_search import (
-    init_vector_search,
-    similarity_search,
-)
-from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
@@ -31,8 +14,25 @@ from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
     ResponseTags,
 )
+from data_questionnaire_agent.service.advice_service import (
+    chain_factory_advice,
+    prepare_conditional_advice,
+)
 from data_questionnaire_agent.service.clarifications_agent import (
     create_clarification_agent,
+)
+from data_questionnaire_agent.service.initial_question_service import (
+    chain_factory_initial_question,
+    prepare_initial_question,
+    prompts,
+)
+from data_questionnaire_agent.service.question_generation_service import (
+    chain_factory_secondary_question,
+    prepare_secondary_question,
+)
+from data_questionnaire_agent.service.similarity_search import (
+    init_vector_search,
+    similarity_search,
 )
 from data_questionnaire_agent.service.tagging_service import (
     prepare_sentiment_input,

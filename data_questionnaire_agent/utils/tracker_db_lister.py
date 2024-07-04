@@ -1,11 +1,11 @@
-from typing import Optional
-from pathlib import Path
 import csv
 import sys
+from pathlib import Path
+from typing import Optional
 
-from data_questionnaire_agent.log_init import logger
 from chainlit.onepoint.tracker_db import ONEPOINT_SQL_LITE_DB, list_activity_log
 
+from data_questionnaire_agent.log_init import logger
 
 TRACKING_FIELD_PROPERTIES = [
     {"name": "id"},

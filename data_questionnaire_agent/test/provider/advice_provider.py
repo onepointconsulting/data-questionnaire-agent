@@ -1,3 +1,9 @@
+from typing import Tuple
+
+from data_questionnaire_agent.model.application_schema import (
+    QuestionAnswer,
+    Questionnaire,
+)
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 
 
@@ -42,3 +48,56 @@ as it flows through various stages of processing, storage, and transformation. T
 """,
         ],
     )
+
+
+def create_advice_with_questionnaire() -> Tuple[ConditionalAdvice, Questionnaire]:
+    conditional_advice = ConditionalAdvice(
+        has_advice=True,
+        advices=[
+            "**Implement Automated Deduplication Tools**: Given that manual checks for duplicates are time-consuming and error-prone, consider implementing automated deduplication tools. These tools can identify and merge duplicate records across your CRM systems, e-commerce platforms, and customer service databases, significantly improving data quality and operational efficiency.",
+            "**Standardise Data Formats and Naming Conventions**: To address the issue of varying data formats and standards across different systems, establish and enforce standardised data formats and naming conventions. This will help ensure consistency and reduce the likelihood of duplicates and other data quality issues.",
+            "**Introduce Data Governance Policies**: Establishing data governance policies can help manage data quality more effectively. These policies should outline roles, responsibilities, standards, and processes related to data management, ensuring that all stakeholders are accountable for maintaining high data quality.",
+            "**Utilise Data Profiling and Cleansing Tools**: Before data is integrated into your systems, use data profiling and cleansing tools to verify its quality. These tools can help identify and correct inconsistencies, inaccuracies, and duplicates, ensuring that only high-quality data enters your systems.",
+            "**Monitor Data Quality Metrics**: Regularly monitor data quality metrics such as completeness, accuracy, consistency, timeliness, and uniqueness. This will enable you to detect and address data quality issues early, preventing them from affecting business operations.",
+        ],
+        what_you_should_avoid=[
+            "**Avoid Relying Solely on Manual Processes**: Manual checks for duplicates and data quality issues are prone to errors and inefficiencies. Relying solely on these processes can lead to significant data quality problems.",
+            "**Avoid Ignoring Data Governance**: Without clear data governance policies, it is challenging to maintain high data quality. Ignoring data governance can result in inconsistent data management practices and poor data quality.",
+            "**Avoid Overlooking Data Standardisation**: Failing to standardise data formats and naming conventions across systems can lead to inconsistencies and duplicates. Overlooking this aspect can exacerbate data quality issues.",
+        ],
+        positive_outcomes=[
+            "**Improved Operational Efficiency**: By automating deduplication and standardising data formats, you can significantly reduce the time and effort required to manage data quality, leading to improved operational efficiency.",
+            "**Enhanced Decision-Making**: High-quality, consistent data enables more accurate analyses and better-informed decision-making, ultimately driving business growth and profitability.",
+            "**Increased Customer Satisfaction**: By maintaining accurate and up-to-date customer records, you can provide better service to your customers, leading to increased satisfaction and loyalty.",
+        ],
+    )
+    questionnaire = Questionnaire(
+        questions=[
+            QuestionAnswer(
+                question="Which area of your data ecosystem are you most concerned about?",
+                answer="Poor data quality - Low-quality data can lead to incorrect insights and poor decision-making.",
+                clarification=None,
+            ),
+            QuestionAnswer(
+                question="What specific challenges or pain points are you experiencing with data quality in your organisation?",
+                answer="We have too many customer duplicates.\n",
+                clarification=None,
+            ),
+            QuestionAnswer(
+                question="How do you currently identify and manage duplicate customer records in your data systems?",
+                answer=" - We use manual checks to identify duplicates, which is time-consuming and prone to errors.",
+                clarification=None,
+            ),
+            QuestionAnswer(
+                question="What are the main sources of data in your organisation, and how do they contribute to the issue of duplicate customer records?",
+                answer=" - Our main sources of data include CRM systems, e-commerce platforms, and customer service databases. Each system often has its own way of recording customer information, leading to inconsistencies and duplicates.",
+                clarification=None,
+            ),
+            QuestionAnswer(
+                question="What are the key challenges you face in maintaining data consistency across different systems in your organisation?",
+                answer=" - Different systems have varying data formats and standards, making it difficult to ensure consistency.",
+                clarification=None,
+            ),
+        ]
+    )
+    return conditional_advice, questionnaire

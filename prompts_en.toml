@@ -31,7 +31,11 @@ The user answer provided by the customer starts with ==== ANSWER ==== and ends w
     [questionnaire.secondary]
     system_message = "You are a British data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
     human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, gouvernance and quality issues.
+please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, gouvernance and quality issues. Make sure that you ask the user about his painpoints or questions which help to understand the user's problems better and to gather more information - and not how to solve his own problems. Your purpose is to gather information to help a customer solve data integration, gouvernance and quality issues.
+
+Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
+Make sure that the possible answers are explicit and are able to be understood on their own. Please do not use possible answers like 'Both', 'Like the previous possible answer'.
+
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
@@ -45,7 +49,12 @@ The user answers are in the section that starts with ==== ANSWERS ==== and ends 
 {answers}
 ==== ANSWERS END ====
 """
+    [questionnaire.clarification]
+    system_message = "I am a helpful assistant. I explain the meaning of questions step by step. I highlight the main topics in bold markdown. I use British English."
+    human_message = """Please explain the following question in a way that a layman can understand it:
 
+{question}
+"""
 
 [tagging]
 system_message = "You are an expert in terms of getting different types of sentiments from sentences."
@@ -79,6 +88,10 @@ human_message = """Based on the best practices and knowledge base and answers to
 please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
 if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
 or are not related to the questions you should refrain from giving advice.
+
+Also include 3 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
+Please also describe 3 potential positive outcomes in case the customer follows the suggested advices.
+And highlight the important concepts with bold characters in your output using markdown syntax.
 
 Make sure not to enumerate the advices if you decide to give them.
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
@@ -114,4 +127,64 @@ question: Given the issues with data quality, particularly with customer data, h
 answer: Not yet, but I would like to know about it.
 ==== QUESTIONNAIRE EXAMPLE END ====
 
+"""
+
+[extract_ontology]
+    system_message = """You are an expert at creating ontologies"""
+    human_message = """# Ontology from text:
+
+Extract an ontology. Do not draw it, but create a markdown table of relations with 3 columns in this order: source, target, relation name. And also create a list with 2 columns: the first contains the term name and the second column contains the term definition.
+the relations should only be mapped to source, target, relations
+Use this text as a basis:
+
+```
+{questions_answers}
+
+{conditional_advice}
+
+```
+"""
+
+[confidence_prompt]
+    system_message = "You are an expert at giving data governance advice based on a question answer dialogue with a customer"
+    human_message = """Determine how confident you are in terms giving advice to a customer based on a sequence of questions and answers that you can find here:
+
+```
+{questions_answers}
+```
+
+In order to be confident you should know about the difficulties of the customer. You should know about the following:
+* the customer's main problem
+* have some detailed information about his problem. Just having a high level sentence on the problem of the customer like e.g: "Data Quality" is not enough to be confident.
+* you should have also knowledge about what is causing the problem.
+* ideally you know more than one cause behind the main problem of the customer. 
+* you also need some more background information about the technologies used by the customer to be confident.
+* you should also know about the data governance strategies of the customer to be able to have a high degree of confidence.
+
+Please use the following classifications to this question about the degree of confidence with which you can give advice:
+
+- "outstanding"
+- "high"
+- "medium"
+- "mediocre"
+- "low"
+
+For example, you should report an "outstanding" confidence degree when:
+You know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. 
+And you also know the technological landscape of the customer very well.
+
+For example, you should report a "high" confidence degree when:
+You know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. 
+The only thing missing is more background information about the technological landscape of the customer.
+
+For example, you should report a "medium" confidence degree when:
+You know the main problem of the customer and the causes well.
+You miss the background information about the technological landscape of the customer and also about data governance in the customer's company.
+
+For example, you should report a "mediocre" confidence degree when:
+You know the main problem of the customer and the cause not well. The information about the causes is very limited
+You miss the background information about the technological landscape of the customer and also about data governance in the customer's company.
+
+For example, you should report a "low" confidence degree when:
+You know the main problem of the customer and nothing else. Or you do not even know about the main problem of the user.
 """

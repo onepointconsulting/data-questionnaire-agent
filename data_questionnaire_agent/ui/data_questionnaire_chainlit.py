@@ -1,61 +1,64 @@
-from typing import List
-import chainlit as cl
-from enum import Enum
-from asyncer import asyncify
+########################################
+############## Deprecated ##############
+########################################
 
+from enum import Enum
+from typing import List
+
+import chainlit as cl
+from asyncer import asyncify
+from langchain.callbacks.openai_info import OpenAICallbackHandler
+from langchain_community.callbacks import get_openai_callback
 from tenacity import AsyncRetrying
 
-from data_questionnaire_agent.service.clarifications_agent import (
-    create_clarification_agent,
-)
-from data_questionnaire_agent.service.tagging_service import sentiment_chain_factory
-from data_questionnaire_agent.ui.model.session_number_container import (
-    SessionNumberContainer,
-)
-
-from langchain.callbacks import get_openai_callback
-from langchain.callbacks.openai_info import OpenAICallbackHandler
-
+from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
     convert_to_question_answers,
 )
+from data_questionnaire_agent.model.initial_question_data import special_question_data
 from data_questionnaire_agent.model.openai_schema import (
     ConditionalAdvice,
     ResponseQuestions,
 )
 from data_questionnaire_agent.service.advice_service import chain_factory_advice
+from data_questionnaire_agent.service.clarifications_agent import (
+    create_clarification_agent,
+)
 from data_questionnaire_agent.service.initial_question_service import (
     chain_factory_initial_question,
     prepare_initial_question,
 )
 from data_questionnaire_agent.service.question_generation_service import (
     chain_factory_secondary_question,
-    prepare_secondary_question,
 )
+from data_questionnaire_agent.service.secondary_question_processor import (
+    process_secondary_questions,
+)
+from data_questionnaire_agent.service.similarity_search import (
+    init_vector_search,
+    similarity_search,
+)
+from data_questionnaire_agent.service.tagging_service import sentiment_chain_factory
+from data_questionnaire_agent.toml_support import prompts
 from data_questionnaire_agent.ui.advice_processor import display_advice, process_advice
-
+from data_questionnaire_agent.ui.avatar_factory import AVATAR, setup_avatar
 from data_questionnaire_agent.ui.chat_settings_factory import (
     INITIAL_QUESTION,
     MINIMUM_NUMBER_OF_QUESTIONS,
     QUESTION_PER_BATCH,
     create_chat_settings,
 )
-from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.config import cfg
-from data_questionnaire_agent.ui.avatar_factory import AVATAR, setup_avatar
-
-from data_questionnaire_agent.service.similarity_search import (
-    init_vector_search,
-    similarity_search,
-)
 from data_questionnaire_agent.ui.clarifications_chainlit import (
     process_clarifications_chainlit,
 )
 from data_questionnaire_agent.ui.mail_processor import process_send_email
+from data_questionnaire_agent.ui.model.session_number_container import (
+    SessionNumberContainer,
+)
 from data_questionnaire_agent.ui.pdf_processor import generate_display_pdf
-from data_questionnaire_agent.toml_support import prompts
 
 
 class APP_STATE(Enum):
@@ -145,7 +148,7 @@ async def run_agent(settings: cl.ChatSettings):
         advice_sent = await process_questionnaire(settings, cb)
         if advice_sent == APP_STATE.EMPTY_ADVICE:
             await cl.Message(
-                content=f"Session ended. Please restart the chat by pressing the 'New Chat' button."
+                content="Session ended. Please restart the chat by pressing the 'New Chat' button."
             ).send()
 
 
@@ -210,57 +213,6 @@ async def process_questionnaire(
 
 def process_special_question(question: str) -> str:
     original_question = prompts["questionnaire"]["initial"]["question"]
-
-    special_question_data = [
-        {
-            "img_src": "poor_data_quality.png",
-            "img_alt": "Poor data quality",
-            "title": "Poor data quality",
-            "text": "Low-quality data can lead to incorrect insights and poor decision-making.",
-        },
-        {
-            "img_src": "compliance_risks.png",
-            "img_alt": "Compliance and security risks",
-            "title": "Compliance and security risks",
-            "text": "Mishandling data can lead to legal troubles and reputational damage.",
-        },
-        {
-            "img_src": "data_silos.png",
-            "img_alt": "Data silos",
-            "title": "Data silos",
-            "text": "Data trapped in departmental silos can be inaccessible to other parts.",
-        },
-        {
-            "img_src": "lack_of_skilled_personnel.png",
-            "img_alt": "Lack of skilled personnel",
-            "title": "Lack of skilled personnel",
-            "text": "Missing skills in data science, analytics, AI and ML can impede the effective use of data.",
-        },
-        {
-            "img_src": "data_overload.png",
-            "img_alt": "Data overload",
-            "title": "Data overload",
-            "text": '"Data glut" can slow down processes and make it difficult to identify what data is actually useful.',
-        },
-        {
-            "img_src": "cost_and_complexity.png",
-            "img_alt": "Cost and complexity",
-            "title": "Cost and complexity",
-            "text": "A robust data analytics infrastructure requires significant investment of resources.",
-        },
-        {
-            "img_src": "inconsistent_data_strategies.png",
-            "img_alt": "Inconsistent data strategies",
-            "title": "Inconsistent data strategies",
-            "text": "Difficult to align with modern concepts like Data Fabric, Mesh and Generative AI.",
-        },
-        {
-            "img_src": "resistence_to_change.png",
-            "img_alt": "Resistance to change",
-            "title": "Resistance to change",
-            "text": "Employees need to adapt to new ways of operating to make data-driven transformation work.",
-        },
-    ]
 
     def display_options():
         it = iter(special_question_data)
@@ -336,24 +288,6 @@ async def process_initial_question(
         with attempt:
             response_questions: ResponseQuestions = await initial_question_chain.arun(
                 input
-            )
-            return convert_to_question_answers(response_questions)
-
-
-async def process_secondary_questions(
-    questionnaire: Questionnaire, question_per_batch: int
-) -> List[QuestionAnswer]:
-    knowledge_base = similarity_search(
-        docsearch, questionnaire.answers_str(), how_many=cfg.search_results_how_many
-    )
-    secondary_question_input = prepare_secondary_question(
-        questionnaire, knowledge_base, question_per_batch
-    )
-
-    async for attempt in AsyncRetrying(**cfg.retry_args):
-        with attempt:
-            response_questions: ResponseQuestions = await secondary_question_chain.arun(
-                secondary_question_input
             )
             return convert_to_question_answers(response_questions)
 

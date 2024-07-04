@@ -1,19 +1,16 @@
 import chainlit as cl
-
 from asyncer import asyncify
 
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.config import cfg, mail_config
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
-from data_questionnaire_agent.ui.avatar_factory import AVATAR
-from data_questionnaire_agent.service.mail_sender import create_mail_body
-
+from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.mail_sender import (
+    create_mail_body,
     send_email,
     validate_address,
 )
-
-from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.config import cfg, mail_config
+from data_questionnaire_agent.ui.avatar_factory import AVATAR
 
 
 async def process_send_email(questionnaire: Questionnaire, advices: ConditionalAdvice):
@@ -36,7 +33,7 @@ async def process_send_email(questionnaire: Questionnaire, advices: ConditionalA
                 create_mail_body(questionnaire, advices, feedback_email),
             )
             await cl.Message(
-                content=f"Thank you for submitting the query. We really appreciate that you have taken time to do this.",
+                content="Thank you for submitting the query. We really appreciate that you have taken time to do this.",
                 author=AVATAR["CHATBOT"],
             ).send()
         else:

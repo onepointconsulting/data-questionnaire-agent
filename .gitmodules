@@ -1,0 +1,6 @@
+[submodule "data_questionnaire_agent/data-wellness-companion-ui"]
+	path = data_questionnaire_agent/data-wellness-companion-ui
+	url = https://github.com/onepointconsulting/data-wellness-companion-ui.git
+[submodule "data-wellness-companion-ui"]
+	path = data-wellness-companion-ui
+	url = https://github.com/onepointconsulting/data-wellness-companion-ui.git

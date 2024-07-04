@@ -1,0 +1,4 @@
+ENGLISH = "en"
+FARSI = "fa"
+
+DEFAULT_LANGUAGE = ENGLISH

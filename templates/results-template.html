@@ -48,6 +48,7 @@
 
         .banner {
             width: 100%;
+            height: auto;
         }
 
         .image-banner h1,
@@ -81,28 +82,34 @@
 </head>
 
 <body>
-    <img src="https://healthcheck.onepointltd.ai/public/images/Hero_Image_with_Logo_and_Titles.jpg" class="banner"/>
+    <img src="{{banner}}" class="banner"/>
     <div class="container">
         
-        <p class="date-produced">Produced on: {{timestamp}}</p>
-        <p>A big thank you for completing a session with the&nbsp;<strong><a title="Onepoint Consulting Ltd"
-                    href="https://www.onepointltd.com/" target="_blank">Onepoint</a> Data Wellness Companion™!</strong></p>
-        <p>Here you have the questions we asked and the answers you gave, followed by the recommendations and suggested courses of action. </p>
-        <h2 class="questionnaire">Transcript</h2>
+        <p class="date-produced">{{produced_on}}: {{timestamp}}</p>
+        <p>{{big_thank_you}}</p>
+        <p>{{intro_advice}} </p>
+        <h2 class="questionnaire">{{title_transcript}}</h2>
         <table>
             <tbody>
                 {{questionnaire}}
             </tbody>
         </table>
-        <h2 class="recommendations">Recommendations and suggested courses of action</h2>
+        <h2 class="recommendations">{{title_what_to_do}}</h2>
         <ul>
             {{advices}}
         </ul>
-        <h2 class="personalOffer">A personal offer for you</h2>
-        <p>We are offering a free results interpretation call to talk through the Companion's recommendations and suggested courses of action with a real human expert. 
-            If you are open to that, please email us at <a href="mailto:datawellness@onepointltd.com">datawellness@onepointltd.com</a> from your business email address with your request to schedule a call.</p>
-        <p>We would love your feedback: <a href="mailto:feedback@onepointltd.ai">feedback@onepointltd.ai</a>.</p>
-        <p>For more information, please visit us at <a href="https://www.onepointltd.com/data-wellness/">Onepoint Data Wellness</a>.</p>
+        <h2 class="recommendations">{{title_what_to_avoid}}</h2>
+        <ul>
+            {{avoids}}
+        </ul>
+        <h2 class="recommendations">{{title_potential_outcomes}}</h2>
+        <ul>
+            {{positive_outcomes}}
+        </ul>
+        <h2 class="personalOffer">{{personal_offer}}</h2>
+        <p>{{offering_long}}</p>
+        <p>{{love_feedback}}: <a href="mailto:feedback@onepointltd.ai">feedback@onepointltd.ai</a>.</p>
+        <p>{{for_more_info}}</p>
     </div>
 </body>
 

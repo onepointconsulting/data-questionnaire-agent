@@ -1,0 +1,12 @@
+Dockerfile
+.chainlit
+.pytest_cache
+.env
+./wheels
+.gitignore
+.gitmodules
+chainlit.md
+./*.ps1
+./report.csv
+src/phoenix/server/static/
+.env.local

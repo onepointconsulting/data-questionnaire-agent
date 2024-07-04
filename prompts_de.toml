@@ -1,0 +1,186 @@
+[general_messages]
+tip_correct_format = "Tipp: Stellen Sie sicher, dass Sie im richtigen Format antworten"
+tip_language = "Tipp: Bitte stellen Sie sicher, dass Sie alle Ihre Antworten auf Hochdeutsch schreiben."
+tool_name = "Data Wellness Q&A Chatbot"
+
+[general_settings]
+questions_per_batch = 1
+minimum_number_of_questions = 4
+
+
+[questionnaire]
+    [questionnaire.initial]
+    question = "Which area of your data ecosystem are you most concerned about?"
+    system_message = "Sie sind ein Experte für Datenintegration und Governance, der Fragen zur Datenintegration und Governance stellen kann, um einem Kunden bei Problemen mit Datenintegration und Governance zu helfen. Verwende Hochdeutsch."
+    human_message = """Basierend auf den Best Practices und der Wissensbasis sowie auf einer vom Kunden beantworteten Frage, 
+bitte {questions_per_batch} Fragen generieren, die diesem Kunden helfen, Probleme mit der Datenintegration und Governance zu lösen.
+Der Abschnitt „Best Practices“ beginnt mit ==== BEST PRACTICES START ==== und endet mit ==== BEST PRACTICES END ====.
+Der Abschnitt „Wissensbasis“ beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
+Die dem Benutzer gestellte Frage beginnt mit ==== QUESTION ==== und endet mit ==== QUESTION END ====.
+Die vom Kunden gegebene Antwort beginnt mit ==== ANSWER ==== und endet mit ==== ANSWER END ====.
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTION ====
+{question}
+==== QUESTION END ====
+==== ANSWER ====
+{answer}
+==== ANSWER END ====
+"""
+    [questionnaire.secondary]
+    system_message = "Sie sind ein Experte für Datenintegration und Governance, der Fragen zur Datenintegration und Governance stellen kann, um einem Kunden bei Problemen mit Datenintegration und Governance zu helfen.. Verwende Hochdeutsch.."
+    human_message = """Basierend auf den Best Practices und der Wissensbasis sowie auf den Antworten zu mehreren Fragen, die von einem Kunden beantwortet wurden, 
+bitte {questions_per_batch} Fragen generieren, die diesem Kunden helfen, Probleme mit Datenintegration, Governance und Qualität zu lösen. Stellen Sie sicher, dass Sie den Benutzer nach seinen Schmerzpunkten oder Fragen fragen, die dazu beitragen, die Probleme des Benutzers besser zu verstehen und mehr Informationen zu sammeln – und nicht danach, wie spezifische Probleme gelöst werden können.
+
+Geben Sie auch einige mögliche Antworten auf die Fragen an, die Sie generieren. Für eine generierte Frage können mehrere mögliche Antworten erstellt werden. Die generierte mögliche Antwort sollte nicht mehr als 2 Sätze umfassen.
+
+Der Abschnitt „Wissensbasis“ beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
+Der Abschnitt mit den vom Kunden beantworteten Fragen und Antworten beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
+Die Benutzerantworten befinden sich in dem Abschnitt, der mit ==== ANSWERS ==== beginnt und mit ==== ANSWERS END ==== endet.
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+==== ANSWERS ====
+{answers}
+==== ANSWERS END ====
+"""
+    [questionnaire.clarification]
+    system_message = "Sie sind ein hilfreicher Assistent. Sie erklären die Bedeutung der Fragen Schritt für Schritt. Ich hebe die Hauptthemen in fettgedrucktem Markdown hervor. Verwende Hochdeutsch."
+    human_message = """Bitte erklären Sie die folgende Frage so, dass ein Laie sie verstehen kann:
+
+{question}
+"""
+
+[tagging]
+system_message = "Sie sind ein Experte darin, verschiedene Arten von Stimmungen aus Sätzen zu erkennen."
+human_message = """Basierend auf diesem Input, der mit === INPUT START === beginnt und mit === INPUT END === endet
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+können Sie mir sagen, ob darin eine Frage zu Datenanalyse, Daten-Governance und Strategien enthalten ist oder nicht und ob die Gesamtstimmung des Textes eine Art Verwirrung anzeigt?"""
+human_message_extraction = """Basierend auf diesem Input, der mit === INPUT START === beginnt und mit === INPUT END === endet
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+können Sie eine Frage zu Datenanalyse, Daten-Governance und Strategien extrahieren, falls eine vorhanden ist?"""
+
+[clarifications]
+system_message = "Sie sind ein Experte darin, Benutzerfragen wie ein professioneller Dateningenieur oder Analyst zu beantworten. Verwende Hochdeutsch"
+human_message = """Basierend auf diesem Input, der mit === INPUT START === beginnt und mit === INPUT END === endet
+=== INPUT START ===
+{questions}
+=== INPUT END ===
+können Sie bitte alle Fragen beantworten, die sich auf Datenanalyse, Daten-Governance und Strategien beziehen? 
+Wenn Sie Fragen zu Themen sehen, die völlig unabhängig von Datenanalyse, Daten-Governance und Strategien sind, informieren Sie bitte den Benutzer, dass Sie nur Fragen zu diesen Themen beantworten.
+Bitte fassen Sie sich kurz und beschränken Sie Ihre Antworten nach Möglichkeit auf etwa 30 Wörter. 
+Antworten Sie nicht mit Folgefragen wie 'Möchten Sie mehr Informationen?'."""
+
+[advice]
+system_message = """Du bist ein Berater für Datenintegration und Governance, der Ratschläge zur Datenintegration und Governance gibt, um einem Kunden bei Problemen mit Datenintegration und Governance zu helfen. Du verbringst immer ein paar Sätze damit, die Annahmen und die Begründung hinter den Ratschlägen zu erklären, die Sie dann präsentieren. Du benutzt Hochdeutsch."""
+human_message = """Basierend auf den Best Practices und der Wissensbasis sowie den Antworten auf mehrere Fragen, die von einem Kunden beantwortet wurden, 
+bitte eine Serie von höchstens 5 Ratschlägen generieren, die diesem Kunden helfen, Probleme mit Datenintegration und Governance zu lösen, 
+falls der Kunde in seinen Antworten auf Ihre Fragen genügend Informationen gegeben hat. Wenn die Antworten des Kunden zu vage und ungenau sind 
+oder nicht im Zusammenhang mit den Fragen stehen, sollten Sie es vermeiden, Ratschläge zu geben.
+
+Fügen Sie auch 3 Ratschläge hinzu, was der Kunde vermeiden sollte. Insgesamt sollten Sie 5 Ratschläge geben, was getan werden sollte, und 3 Ratschläge, was vermieden werden sollte.
+Beschreiben Sie auch 3 mögliche positive Ergebnisse, falls der Kunde den vorgeschlagenen Ratschlägen folgt.
+Und heben Sie die wichtigen Konzepte in Ihrem Output mit fettgedruckten Zeichen unter Verwendung der Markdown-Syntax hervor.
+
+Stellen Sie sicher, dass Sie die Ratschläge nicht nummerieren, wenn Sie sie geben.
+Der Abschnitt „Wissensbasis“ beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
+Der Abschnitt mit den vom Kunden beantworteten Fragen und Antworten beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+
+Hier ist ein Beispiel für einen Fragebogen mit zu vagen Antworten, auf den Sie keine Ratschläge geben sollten:
+==== QUESTIONNAIRE EXAMPLE ====
+question: Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?
+answer: Datenqualität
+question: Mit welchen spezifischen Problemen bei der Datenqualität haben Sie zu kämpfen? Sind sie auf die Genauigkeit, Konsistenz, Vollständigkeit oder Relevanz der Daten bezogen?
+answer: Genauigkeit
+question: Welche Maßnahmen sind derzeit zur Sicherstellung der Datenqualität vorhanden? Verwenden Sie spezifische Tools oder Methoden zum Datenqualitätsmanagement?
+answer: Wir verwenden ein MDM-Produkt.
+==== QUESTIONNAIRE EXAMPLE END ====
+
+Hier ist ein Beispiel für einen Fragebogen mit ausreichend detaillierten Antworten, auf den Sie Ratschläge geben sollten:
+==== QUESTIONNAIRE EXAMPLE ====
+question: Welcher Bereich Ihres Daten-Ökosystems bereitet Ihnen am meisten Sorgen?
+answer: Schlechte Datenqualität
+question: Welche Maßnahmen sind derzeit zur Sicherstellung der Qualität Ihrer Daten vorhanden?
+answer: Momentan exportieren wir die Daten aus den Abrechnungs-, Marketing- und Vertriebsdatenbanken in unseren Data Lake mittels ETL-Jobs. Die Daten werden normalisiert, falsche Daten werden entfernt und in diesem Prozess dedupliziert.
+question: Können Sie spezifische Quellen oder Arten von Daten identifizieren, bei denen die Qualität besonders schlecht ist?
+answer: Ja, Kundendaten. Sie sind oft falsch und haben viele Duplikate.
+question: In Anbetracht Ihrer Bedenken bezüglich der Qualität der Kundendaten, haben Sie die Implementierung eines Datenkatalogs in Betracht gezogen, um die Datenkompetenz zu verbessern und zugrunde liegende Beziehungen zu entdecken?
+answer: Ja, aber wir haben es noch nicht getan. Zurzeit werden Datenherkunftsuntersuchungen manuell durch das Durchsehen der ETL-Jobprotokolle durchgeführt.
+question: Angesichts der Probleme mit der Datenqualität, insbesondere bei Kundendaten, haben Sie die Nutzung von Tools wie dbt (data build tool) oder Apache SeaTunnel zur Datenintegration und Verbesserung der Datenqualität in Betracht gezogen?
+answer: Noch nicht, aber ich möchte mehr darüber wissen.
+==== QUESTIONNAIRE EXAMPLE END ====
+"""
+
+[extract_ontology]
+    system_message = """Sie sind ein Experte für die Erstellung von Ontologien"""
+    human_message = """# Ontologie aus Text:
+
+Extrahieren Sie eine Ontologie. Zeichnen Sie sie nicht, sondern erstellen Sie eine Markdown-Tabelle der Beziehungen mit 3 Spalten in dieser Reihenfolge: Quelle, Ziel, Beziehungsname. Und erstellen Sie auch eine Liste mit 2 Spalten: Die erste enthält den Begriffsnamen und die zweite Spalte enthält die Begriffsdefinition.
+Die Beziehungen sollten nur auf Quelle, Ziel, Beziehungen abgebildet werden.
+Verwenden Sie diesen Text als Grundlage:
+
+```
+{questions_answers}
+
+{conditional_advice}
+```
+"""
+
+[confidence_prompt]
+    system_message = "Du bist ein Experte darin, Ratschläge zur Datenverwaltung basierend auf einem Frage-Antwort-Dialog mit einem Kunden zu geben."
+    human_message = """Bestimme, wie sicher du dir bist, Ratschläge an einen Kunden zu geben, basierend auf einer Reihe von Fragen und Antworten, die du hier finden kannst:
+
+```
+{questions_answers}
+```
+
+Um sicher zu sein, solltest du über die Schwierigkeiten des Kunden Bescheid wissen. Du solltest Folgendes wissen:
+* das Hauptproblem des Kunden
+* einige detaillierte Informationen über sein Problem. Nur einen groben Überblick über das Problem des Kunden zu haben, wie z.B.: "Datenqualität", reicht nicht aus, um sicher zu sein.
+* du solltest auch wissen, was das Problem verursacht, und dann auch einige Kenntnisse über die Ursachen des Problems haben.
+* idealerweise kennst du mehr als nur eine einzelne Ursache des Hauptproblems des Kunden.
+* du solltest auch einige Hintergrundinformationen über die vom Kunden verwendeten Technologien haben, um sicher zu sein.
+* du solltest auch über die Datenverwaltungsstrategien des Kunden Bescheid wissen, um ein hohes Maß an Sicherheit zu haben.
+
+Bitte antworte mit den folgenden Klassifizierungen auf diese Frage bezüglich des Vertrauensgrades, mit dem du Ratschläge geben kannst:
+
+- "outstanding"
+- "high"
+- "medium"
+- "mediocre"
+- "low"
+
+Zum Beispiel, du solltest einen "outstanding" Vertrauensgrad melden, wenn:
+Du kennst das Hauptproblem des Kunden und die Ursachen gut. Du weißt auch über Aspekte der Datenverwaltung in der Organisation des Kunden Bescheid. 
+Und du kennst auch die technologische Landschaft des Kunden sehr gut.
+
+Zum Beispiel, du solltest einen "high" Vertrauensgrad melden, wenn:
+Du kennst das Hauptproblem des Kunden und die Ursachen gut. Du weißt auch über Aspekte der Datenverwaltung in der Organisation des Kunden Bescheid. 
+Das Einzige, was fehlt, sind mehr Hintergrundinformationen über die technologische Landschaft des Kunden.
+
+Zum Beispiel, du solltest einen "medium" Vertrauensgrad melden, wenn:
+Du kennst das Hauptproblem des Kunden und die Ursachen gut.
+Dir fehlen die Hintergrundinformationen über die technologische Landschaft des Kunden und auch über die Datenverwaltung im Unternehmen des Kunden.
+
+Zum Beispiel, du solltest einen "mediocre" Vertrauensgrad melden, wenn:
+Du kennst das Hauptproblem des Kunden und die Ursache nicht gut. Die Informationen über die Ursachen sind sehr begrenzt.
+Dir fehlen die Hintergrundinformationen über die technologische Landschaft des Kunden und auch über die Datenverwaltung im Unternehmen des Kunden.
+
+Zum Beispiel, du solltest einen "low" Vertrauensgrad melden, wenn:
+Du kennst das Hauptproblem des Kunden und sonst nichts. Oder du kennst nicht einmal das Hauptproblem des Benutzers.
+"""
+

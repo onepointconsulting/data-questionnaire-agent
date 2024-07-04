@@ -1,5 +1,6 @@
-from chainlit.input_widget import Slider, TextInput
 import chainlit as cl
+from chainlit.input_widget import Slider, TextInput
+
 from data_questionnaire_agent.toml_support import prompts
 
 MINIMUM_NUMBER_OF_QUESTIONS = "Minimum number of questions"

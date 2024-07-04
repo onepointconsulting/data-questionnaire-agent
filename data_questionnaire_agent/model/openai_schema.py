@@ -1,8 +1,9 @@
 from typing import List, Optional, Union
 
+from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field
 
-from pydantic import BaseModel as PydanticBaseModel
+from data_questionnaire_agent.translation import t
 
 
 class BaseModel(PydanticBaseModel):
@@ -18,8 +19,20 @@ class ResponseQuestions(BaseModel):
         description="The list of questions given used to gather information to be able to give a customer advice.",
     )
 
+    possible_answers: List[str] = Field(
+        ...,
+        description="The list of possible answers to the generated questions.",
+    )
+
     def __str__(self) -> str:
-        return "\n".join(self.questions)
+        questions_str = "\n".join(self.questions)
+        possible_answers_str = "\n".join(self.possible_answers)
+
+        return f"""
+Questions: {questions_str}
+
+Possible Answwers: {possible_answers_str}
+"""
 
 
 class ResponseTags(BaseModel):
@@ -54,13 +67,71 @@ class ConditionalAdvice(BaseModel):
         ...,
         description="In case there is enough information to give advice, this list will contain advice to give to the user",
     )
+    what_you_should_avoid: Optional[List[str]] = Field(
+        default=[],
+        description="A list of advice about what you should not do and avoid.",
+    )
+    positive_outcomes: Optional[List[str]] = Field(
+        default=[],
+        description="A list of potential positive outcomes in case the user follows the advice.",
+    )
 
-    def to_html(self) -> str:
+    def to_html(self, language: str = "en") -> str:
+        return f"""{self.to_advice_html()}
+
+<h2>{t("What to avoid", locale=language)}</h2>
+{self.to_avoid_html()}
+
+<h2>{t("Potential positive outcomes", locale=language)}</h2>
+{self.positive_outcomes_html()}
+"""
+
+    def to_advice_html(self) -> str:
+        return self.html_convert(self.advices)
+
+    def to_avoid_html(self) -> str:
+        return self.html_convert(self.what_you_should_avoid)
+
+    def positive_outcomes_html(self) -> str:
+        return self.html_convert(self.positive_outcomes)
+
+    def html_convert(self, list: List[str]) -> str:
         html = "<ul>"
-        for advice in self.advices:
+        for advice in list:
             html += f'<li class="onepoint-blue onepoint-advice">{advice}</li>'
         html += "</ul>"
         return html
 
+    def to_markdown(self, language: str = "en") -> str:
+        def convert_to_text(text_list: List[str], title: str):
+            md = f"# {title} ...\n\n"
+            if text_list is not None:
+                for text in text_list:
+                    md += f"- {text}\n\n"
+            return md
+
+        markdown = convert_to_text(
+            self.advices, t("What you should do", locale=language)
+        )
+        markdown += convert_to_text(
+            self.what_you_should_avoid, t("What you should avoid", locale=language)
+        )
+        markdown += convert_to_text(
+            self.positive_outcomes,
+            t("Positive outcomes (if you follow the advices)", locale=language),
+        )
+
+        return markdown
+
     def __str__(self) -> str:
-        return "\n\n".join(self.advices) if self.advices is not None else ""
+        def join_items(items):
+            return "\n\n".join(items) if items is not None else ""
+
+        return f"""{join_items(self.advices)}
+
+
+{join_items(self.what_you_should_avoid)}
+
+
+{join_items(self.positive_outcomes)}
+"""
