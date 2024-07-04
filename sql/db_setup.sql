@@ -1,12 +1,13 @@
 -- DROP DATABASE data_wellness_companion;
 
--- CREATE DATABASE data_wellness_companion
---     WITH
---     OWNER = postgres
---     ENCODING = 'UTF8'
---     LOCALE_PROVIDER = 'libc'
---     CONNECTION LIMIT = -1
---     IS_TEMPLATE = False;
+CREATE DATABASE data_wellness_companion
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LOCALE_PROVIDER = 'libc'
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+
 
 DROP TABLE IF EXISTS PUBLIC.TB_SESSION_CONFIGURATION;
 DROP TABLE IF EXISTS PUBLIC.TB_QUESTION_SUGGESTIONS;
