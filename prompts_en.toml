@@ -29,9 +29,9 @@ The user answer provided by the customer starts with ==== ANSWER ==== and ends w
 ==== ANSWER END ====
 """
     [questionnaire.secondary]
-    system_message = "You are a British data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
+    system_message = "You are a British data integration and governance expert that can ask questions about data integration and governance to help a customer with data integration and governance problems. You use British English."
     human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, gouvernance and quality issues. Make sure that you ask the user about his painpoints or questions which help to understand the user's problems better and to gather more information - and not how to solve his own problems. Your purpose is to gather information to help a customer solve data integration, gouvernance and quality issues.
+please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, governance and quality issues. Make sure that you ask the user about his painpoints or questions which help to understand the user's problems better and to gather more information - and not how to solve his own problems. Your purpose is to gather information to help a customer solve data integration, gouvernance and quality issues.
 
 Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
 Make sure that the possible answers are explicit and are able to be understood on their own. Please do not use possible answers like 'Both', 'Like the previous possible answer'.
