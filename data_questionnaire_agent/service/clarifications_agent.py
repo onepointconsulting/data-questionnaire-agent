@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Type
 from duckduckgo_search import DDGS
 from langchain.agents import AgentExecutor, AgentType, initialize_agent
 from langchain.tools import BaseTool
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 from data_questionnaire_agent.config import cfg
 

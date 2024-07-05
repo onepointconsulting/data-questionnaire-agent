@@ -37,7 +37,7 @@ def test_question_generation_en():
     logger.info("response questions: %s", res)
 
 
-def test_qiestion_generation_new_en():
+def test_question_generation_new_en():
     runnable = create_structured_question_call("en")
     questionnaire = create_questionnaire_2_questions()
     knowledge_base = provide_knowledge_base()

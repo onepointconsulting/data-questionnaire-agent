@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 
-from pydantic import BaseModel as PydanticBaseModel
-from pydantic import Field
+from pydantic.v1 import BaseModel as PydanticBaseModel
+from pydantic.v1 import Field
 
 from data_questionnaire_agent.translation import t
 
