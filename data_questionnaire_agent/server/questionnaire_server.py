@@ -27,7 +27,7 @@ from data_questionnaire_agent.model.session_configuration import (
 )
 from data_questionnaire_agent.service.graph_service import generate_analyzed_ontology
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
-from data_questionnaire_agent.service.advice_service import chain_factory_advice
+from data_questionnaire_agent.service.advice_service import create_structured_question_call
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
@@ -206,7 +206,7 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
     total_cost = 0
     with get_openai_callback() as cb:
         conditional_advice: ConditionalAdvice = await process_advice(
-            docsearch, questionnaire, chain_factory_advice(language)
+            docsearch, questionnaire, create_structured_question_call(language)
         )
         total_cost = cb.total_cost
         # Generate ontology

@@ -1,6 +1,7 @@
 from asyncer import asyncify
 from langchain.chains import LLMChain
 from langchain_community.vectorstores import FAISS
+from langchain_core.runnables.base import RunnableSequence
 from tenacity import AsyncRetrying
 
 from data_questionnaire_agent.config import cfg
@@ -15,7 +16,7 @@ from data_questionnaire_agent.service.similarity_search import similarity_search
 
 
 async def process_advice(
-    docsearch: FAISS, questionnaire: Questionnaire, advice_chain: LLMChain
+    docsearch: FAISS, questionnaire: Questionnaire, advice_chain: RunnableSequence
 ) -> ConditionalAdvice:
     questionnaire_str = str(questionnaire)
 
@@ -27,7 +28,7 @@ async def process_advice(
     )
     async for attempt in AsyncRetrying(**cfg.retry_args):
         with attempt:
-            conditional_advice: ConditionalAdvice = await advice_chain.arun(
+            conditional_advice: ConditionalAdvice = await advice_chain.ainvoke(
                 advice_input
             )
             if conditional_advice.has_advice:

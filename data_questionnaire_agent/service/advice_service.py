@@ -1,6 +1,7 @@
 from langchain.chains.llm import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
 from langchain.prompts import ChatPromptTemplate
+from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
@@ -28,6 +29,12 @@ def chain_factory_advice(language: str) -> LLMChain:
         prompt_factory_conditional_advice(language),
         verbose=cfg.verbose_llm,
     )
+
+
+def create_structured_question_call(language: str) -> RunnableSequence:
+    model = cfg.llm.with_structured_output(ConditionalAdvice)
+    prompt = prompt_factory_conditional_advice(language)
+    return prompt | model
 
 
 def prepare_conditional_advice(knowledge_base: str, questions_answers: str) -> dict:
