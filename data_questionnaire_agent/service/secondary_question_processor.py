@@ -12,7 +12,7 @@ from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
 )
 from data_questionnaire_agent.service.question_generation_service import (
-    chain_factory_secondary_question,
+    create_structured_question_call,
     prepare_secondary_question,
 )
 from data_questionnaire_agent.service.similarity_search import (
@@ -36,7 +36,7 @@ async def process_secondary_questions(
     async for attempt in AsyncRetrying(**cfg.retry_args):
         with attempt:
             response_questions: ResponseQuestions = (
-                await chain_factory_secondary_question(language).arun(
+                await create_structured_question_call(language).ainvoke(
                     secondary_question_input
                 )
             )

@@ -17,7 +17,7 @@ async def get_index(request: web.Request) -> web.Response:
     return web.FileResponse(PATH_INDEX)
 
 
-if __name__ == "__main__":
+def run_server():
     for i in range(MAX_SESSION_STEPS):
         app.router.add_get(f"/{i}", get_index)
     app.router.add_get("/", get_index)
@@ -31,3 +31,7 @@ if __name__ == "__main__":
         port=websocket_cfg.websocket_port,
         loop=loop,
     )
+
+
+if __name__ == "__main__":
+    run_server()

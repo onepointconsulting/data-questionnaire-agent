@@ -1,6 +1,7 @@
 from langchain.prompts import ChatPromptTemplate
-from langchain.chains import LLMChain
+from langchain.chains.llm import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
+from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.application_schema import Questionnaire
@@ -26,13 +27,10 @@ def prompt_factory_confidence(language: str) -> ChatPromptTemplate:
     )
 
 
-def chain_factory_confidence(language: str) -> LLMChain:
-    return create_structured_output_chain(
-        ConfidenceRating,
-        cfg.llm,
-        prompt_factory_confidence(language),
-        verbose=cfg.verbose_llm,
-    )
+def create_structured_question_call(language: str) -> RunnableSequence:
+    model = cfg.llm.with_structured_output(ConfidenceRating)
+    prompt = prompt_factory_confidence(language)
+    return prompt | model
 
 
 def prepare_confidence_chain_call(questionnaire: Questionnaire) -> dict:
@@ -44,5 +42,5 @@ async def calculate_confidence_rating(
 ) -> ConfidenceRating:
     assert questionnaire is not None, "Missing questionnaire"
     call_params = prepare_confidence_chain_call(questionnaire)
-    chain = chain_factory_confidence(language)
-    return await chain.arun(call_params)
+    chain = create_structured_question_call(language)
+    return await chain.ainvoke(call_params)

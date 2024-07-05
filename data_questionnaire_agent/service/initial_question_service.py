@@ -1,6 +1,7 @@
+from deprecated import deprecated
 from typing import List
 
-from langchain.chains import LLMChain
+from langchain.chains.llm import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
 from langchain.prompts import (
     ChatPromptTemplate,
@@ -61,6 +62,7 @@ def prompt_factory_initial_questions(language: str) -> ChatPromptTemplate:
     )
 
 
+@deprecated("To be replaced with create_structured_question_call")
 def chain_factory_initial_question(language: str) -> LLMChain:
     return create_structured_output_chain(
         ResponseQuestions,

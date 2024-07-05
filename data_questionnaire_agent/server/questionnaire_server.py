@@ -155,6 +155,7 @@ async def client_message(sid: str, session_id: str, answer: str):
             return
         questionnaire = await select_questionnaire(session_id)
         if current_session_steps - 1 > len(questionnaire):
+            # We are generating questions
             await handle_secondary_question(sid, session_id, questionnaire, language)
         else:
             # Check if report is available

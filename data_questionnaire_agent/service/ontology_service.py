@@ -1,6 +1,7 @@
-from langchain.chains import LLMChain
+from langchain.chains.llm import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
 from langchain.prompts import ChatPromptTemplate
+from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
@@ -38,6 +39,12 @@ def chain_factory_ontology(language: str) -> LLMChain:
     )
 
 
+def create_structured_question_call(language: str) -> RunnableSequence:
+    model = cfg.llm.with_structured_output(Ontology)
+    prompt = prompt_factory_ontology(language)
+    return prompt | model
+
+
 def prepare_ontology_chain_call(
     questionnaire: Questionnaire, conditional_advice: ConditionalAdvice
 ) -> dict:
@@ -53,5 +60,5 @@ async def create_ontology(
     assert conditional_advice is not None, "Missing conditional advice"
     assert questionnaire is not None, "Missing questionnaire"
     call_params = prepare_ontology_chain_call(questionnaire, conditional_advice)
-    chain = chain_factory_ontology(language)
-    return await chain.arun(call_params)
+    chain = create_structured_question_call(language)
+    return await chain.ainvoke(call_params)
