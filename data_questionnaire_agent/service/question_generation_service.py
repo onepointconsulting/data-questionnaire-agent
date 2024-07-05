@@ -1,5 +1,3 @@
-from deprecated import deprecated
-
 from langchain.chains.llm import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
 from langchain.prompts import ChatPromptTemplate
@@ -35,7 +33,6 @@ def create_structured_question_call(language: str) -> RunnableSequence:
     return prompt | model
 
 
-@deprecated("To be replaced with create_structured_question_call")
 def chain_factory_secondary_question(language: str) -> LLMChain:
     return create_structured_output_chain(
         ResponseQuestions,
