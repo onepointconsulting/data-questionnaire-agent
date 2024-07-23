@@ -10,6 +10,7 @@ from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
 )
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
 from data_questionnaire_agent.model.ontology_schema import Ontology
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
@@ -554,12 +555,67 @@ WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire_status_id)s
     ]
 
 
+async def save_confidence(
+    session_id: str,
+    step: int,
+    confidence: ConfidenceRating,
+) -> Union[ConfidenceRating, None]:
+    async def process_save(cur: AsyncCursor):
+        await cur.execute(
+            """
+UPDATE TB_QUESTIONNAIRE_STATUS
+SET CONFIDENCE_RATING = %(confidence_rating)s, CONFIDENCE_REASONING = %(confidence_reasoning)s
+WHERE ID = (SELECT ID FROM PUBLIC.TB_QUESTIONNAIRE_STATUS WHERE SESSION_ID = %(session_id)s ORDER BY ID OFFSET %(step)s LIMIT 1) RETURNING ID
+            """,
+            {
+                "session_id": session_id,
+                "confidence_rating": confidence.rating,
+                "confidence_reasoning": confidence.reasoning,
+                "step": step,
+            },
+        )
+        created_row = await cur.fetchone()
+        created_id = created_row[0]
+        return ConfidenceRating(
+            id=created_id, rating=confidence.rating, reasoning=confidence.reasoning
+        )
+
+    return await create_cursor(process_save, True)
+
+
+async def select_confidence(
+    session_id: str,
+    step: int,
+) -> Union[ConfidenceRating, None]:
+    res = await select_from(
+        """
+SELECT ID, CONFIDENCE_RATING, CONFIDENCE_REASONING FROM PUBLIC.TB_QUESTIONNAIRE_STATUS
+WHERE SESSION_ID = %(session_id)s ORDER BY ID OFFSET %(step)s LIMIT 1
+""",
+        {"session_id": session_id, "step": step},
+    )
+    ID = 0
+    CONFIDENCE_RATING = 1
+    CONFIDENCE_REASONING = 2
+    if res is None or len(res) == 0:
+        return None
+    r = res[0]
+    if r[CONFIDENCE_RATING] is None:
+        return None
+    return ConfidenceRating(
+        id=r[ID], reasoning=r[CONFIDENCE_REASONING], rating=r[CONFIDENCE_RATING]
+    )
+
+
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.questionnaire_status_provider import (
         create_simple,
     )
     from data_questionnaire_agent.test.provider.session_configuration_provider import (
         create_session_configuration,
+    )
+    from data_questionnaire_agent.test.provider.question_answer_provider import (
+        create_question_answer_with_possible_answers,
     )
 
     async def test_insert_questionnaire_status():
@@ -651,10 +707,6 @@ if __name__ == "__main__":
         assert deleted == 1
 
     async def test_insert_questionnaire_status_suggestions():
-        from data_questionnaire_agent.test.provider.question_answer_provider import (
-            create_question_answer_with_possible_answers,
-        )
-
         qs = create_simple()
         new_qs = await insert_questionnaire_status(qs)
         assert new_qs is not None
@@ -685,6 +737,25 @@ if __name__ == "__main__":
         deleted = await delete_ontology(session_id)
         assert deleted > 0
 
+    async def test_insert_confidence_rating():
+        from data_questionnaire_agent.test.provider.confidence_provider import (
+            create_confidence_rating,
+        )
+
+        qs = create_simple()
+        new_qs = await insert_questionnaire_status(qs)
+        session_id = new_qs.session_id
+        confidence = create_confidence_rating()
+        step = 0
+        saved_confidence = await save_confidence(session_id, step, confidence)
+        assert saved_confidence is not None
+        assert saved_confidence.id is not None
+        selected_confidence = await select_confidence(session_id, step)
+        assert selected_confidence is not None
+        deleted = await delete_questionnaire_status(new_qs.id)
+        assert deleted == 1
+        
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -694,4 +765,5 @@ if __name__ == "__main__":
     # asyncio.run(test_select_current_session_steps())
     # asyncio.run(test_save_report())
     # asyncio.run(test_insert_questionnaire_status_suggestions())
-    asyncio.run(test_save_ontology())
+    # asyncio.run(test_save_ontology())
+    asyncio.run(test_insert_confidence_rating())

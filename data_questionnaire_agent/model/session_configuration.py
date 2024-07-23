@@ -6,6 +6,7 @@ DEFAULT_SESSION_STEPS = 6
 
 SESSION_STEPS_CONFIG_KEY = "session-steps"
 SESSION_STEPS_LANGUAGE_KEY = "session-language"
+CLIENT_ID_KEY = "session-client-id"
 
 
 class SessionConfigurationEntry(BaseModel):

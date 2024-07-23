@@ -1,4 +1,5 @@
 import json
+
 from enum import StrEnum
 from typing import Any, List, Tuple, Union
 
@@ -22,12 +23,15 @@ from data_questionnaire_agent.model.session_configuration import (
     DEFAULT_SESSION_STEPS,
     SESSION_STEPS_CONFIG_KEY,
     SESSION_STEPS_LANGUAGE_KEY,
+    CLIENT_ID_KEY,
     SessionConfiguration,
     SessionConfigurationEntry,
 )
 from data_questionnaire_agent.service.graph_service import generate_analyzed_ontology
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
-from data_questionnaire_agent.service.advice_service import create_structured_question_call
+from data_questionnaire_agent.service.advice_service import (
+    create_structured_question_call,
+)
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
@@ -53,6 +57,8 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_answer,
     update_clarification,
     update_session_steps,
+    save_confidence,
+    select_confidence
 )
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
@@ -102,7 +108,11 @@ def disconnect(sid):
 
 @sio.event
 async def start_session(
-    sid: str, client_session: str, session_steps: int = 6, language: str = "en"
+    sid: str,
+    client_session: str,
+    session_steps: int = 6,
+    language: str = "en",
+    client_id: str = "",
 ):
     """
     Start the session by setting the main topic.
@@ -122,7 +132,7 @@ async def start_session(
             await send_error(sid, session_id, t("db_insert_failed", locale=language))
             return
         server_messages = server_messages_factory([qs])
-        await insert_configuration(server_messages, session_steps, language)
+        await insert_configuration(server_messages, session_steps, language, client_id)
     else:
         # Get all messages on this session
         server_messages = server_messages_factory(questionnaire_messages)
@@ -283,7 +293,10 @@ async def append_first_suggestion(server_messages: ServerMessages, question: str
 
 
 async def insert_configuration(
-    server_messages: ServerMessages, session_steps: int, language: str
+    server_messages: ServerMessages,
+    session_steps: int,
+    language: str,
+    client_id: str = "",
 ):
     session_id = server_messages.session_id
     session_configuration_entry = SessionConfigurationEntry(
@@ -297,15 +310,19 @@ async def insert_configuration(
         config_value=language,
     )
     session_keys = [session_configuration_entry, session_configuration_language]
+    if client_id is not None and len(client_id.strip()) > 0:
+        session_keys.append(
+            SessionConfigurationEntry(
+                session_id=session_id,
+                config_key=CLIENT_ID_KEY,
+                config_value=client_id,
+            )
+        )
     accepted_keys = []
     for session_key in session_keys:
         saved_entry = await save_session_configuration(session_key)
         if saved_entry is None:
             # Something went wrong. We will use the dafault value.
-            # logger.error(
-            #     f"Could not save configuration with {
-            #         session_key.config_key}: {session_key.config_value}"
-            # )
             logger.error(
                 f"Could not save configuration with {session_key.config_key}: {session_key.config_value}"
             )
@@ -408,11 +425,19 @@ async def ontology(request: web.Request) -> web.Response:
 
 
 @routes.get("/confidence/{session_id}")
-async def ontology(request: web.Request) -> web.Response:
+async def confidence(request: web.Request) -> web.Response:
     session_id = extract_session(request)
+    step = extract_step(request)
     questionnaire = await select_questionnaire(session_id, False)
     language = extract_language(request)
-    confidence_rating = await calculate_confidence_rating(questionnaire, language)
+    confidence_rating = await select_confidence(session_id, step)
+    if confidence_rating is None:
+        confidence_rating = await calculate_confidence_rating(questionnaire, language)
+        if step is not None and step > 0:
+            saved_confidence = await save_confidence(session_id, step, confidence_rating)
+            logger.info(f"Saved confidence {saved_confidence}")
+    else:
+        logger.info(f"confidence available {confidence_rating}")
     return web.json_response(confidence_rating.dict(), headers=CORS_HEADERS)
 
 
@@ -420,7 +445,16 @@ def extract_language(request: web.Request):
     return request.rel_url.query.get("language", "en")
 
 
-def extract_session(request):
+def extract_step(request: web.Request) -> int:
+    unknown_step = "-1"
+    step_str = request.rel_url.query.get("step", unknown_step)
+    try:
+        return int(step_str)
+    except ValueError as _:
+        return int(unknown_step)
+
+
+def extract_session(request: web.Request):
     session_id = request.match_info.get("session_id", None)
     logger.info("PDF session_id: %s", session_id)
     if session_id is None:

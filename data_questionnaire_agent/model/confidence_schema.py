@@ -1,3 +1,5 @@
+from typing import Union
+
 from enum import Enum
 from pydantic.v1 import BaseModel, Field
 
@@ -12,6 +14,10 @@ class ConfidenceDegree(str, Enum):
 
 class ConfidenceRating(BaseModel):
     """Represents a rating of how confident the model is to give advice to a customer based on a questionnaire"""
+
+    id: Union[int, None] = Field(
+        default=None, description="The identifier of this session configuration"
+    )
 
     reasoning: str = Field(
         ..., description="The models's reasoning behind the confidence rating."
