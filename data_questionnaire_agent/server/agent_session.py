@@ -1,5 +1,6 @@
-from ulid import ULID
 from typing import Dict, Optional
+
+from ulid import ULID
 
 
 class AgentSession:

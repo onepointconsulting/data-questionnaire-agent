@@ -6,7 +6,7 @@ PATTERN_MARKDOWN_BOLD = re.compile(r"\*\*(?P<content>.+?)\*\*")
 
 def replace_bold_markdown(
     html: str,
-    format_str="<b><a href='https://www.google.com/search?q={quoted_content}'>{content}</a></b>",
+    format_str="<b>{content}</b>",
 ) -> str:
     # Output string initialization
     output = []

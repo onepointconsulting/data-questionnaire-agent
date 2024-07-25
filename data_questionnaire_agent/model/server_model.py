@@ -4,9 +4,6 @@ from pydantic.v1 import BaseModel, Field
 
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import SessionConfiguration
-from data_questionnaire_agent.service.report_enhancement_service import (
-    replace_markdown_bold_with_links,
-)
 
 
 class ServerMessage(BaseModel):
@@ -63,7 +60,7 @@ def server_messages_factory(questionnaire: List[QuestionnaireStatus]) -> ServerM
     if len(questionnaire) > 1:
         for qs in questionnaire:
             if qs.final_report:
-                qs.question = replace_markdown_bold_with_links(qs.question)
+                qs.question = qs.question
 
     return ServerMessages(
         session_id=session_id,

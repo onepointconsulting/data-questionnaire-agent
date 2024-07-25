@@ -1,16 +1,17 @@
+from typing import Union
+
 from langchain.prompts import ChatPromptTemplate
-from langchain.chains.llm import LLMChain
-from langchain.chains.openai_functions import create_structured_output_chain
 from langchain_core.runnables.base import RunnableSequence
 
-from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
+from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
-from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.service.ontology_service import PARAM_QUESTIONS_ANSWERS
-from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.toml_support import get_prompts
 
 
 def prompt_factory_confidence(language: str) -> ChatPromptTemplate:
@@ -39,8 +40,12 @@ def prepare_confidence_chain_call(questionnaire: Questionnaire) -> dict:
 
 async def calculate_confidence_rating(
     questionnaire: Questionnaire, language: str
-) -> ConfidenceRating:
+) -> Union[ConfidenceRating, None]:
     assert questionnaire is not None, "Missing questionnaire"
-    call_params = prepare_confidence_chain_call(questionnaire)
-    chain = create_structured_question_call(language)
-    return await chain.ainvoke(call_params)
+    try:
+        call_params = prepare_confidence_chain_call(questionnaire)
+        chain = create_structured_question_call(language)
+        return await chain.ainvoke(call_params)
+    except Exception:
+        logger.exception("Failed to calculate confidence rating.")
+        return None

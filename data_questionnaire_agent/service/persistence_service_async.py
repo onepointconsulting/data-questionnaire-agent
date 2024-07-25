@@ -575,7 +575,7 @@ WHERE ID = (SELECT ID FROM PUBLIC.TB_QUESTIONNAIRE_STATUS WHERE SESSION_ID = %(s
             },
         )
         created_row = await cur.fetchone()
-        created_id = created_row[0]
+        created_id = created_row[0] if created_row is not None else -1
         return ConfidenceRating(
             id=created_id, rating=confidence.rating, reasoning=confidence.reasoning
         )
@@ -608,14 +608,14 @@ WHERE SESSION_ID = %(session_id)s ORDER BY ID OFFSET %(step)s LIMIT 1
 
 
 if __name__ == "__main__":
+    from data_questionnaire_agent.test.provider.question_answer_provider import (
+        create_question_answer_with_possible_answers,
+    )
     from data_questionnaire_agent.test.provider.questionnaire_status_provider import (
         create_simple,
     )
     from data_questionnaire_agent.test.provider.session_configuration_provider import (
         create_session_configuration,
-    )
-    from data_questionnaire_agent.test.provider.question_answer_provider import (
-        create_question_answer_with_possible_answers,
     )
 
     async def test_insert_questionnaire_status():
@@ -754,7 +754,6 @@ if __name__ == "__main__":
         assert selected_confidence is not None
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
-        
 
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())

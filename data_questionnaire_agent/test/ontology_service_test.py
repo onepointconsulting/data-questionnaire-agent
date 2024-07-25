@@ -1,4 +1,5 @@
 import asyncio
+
 from data_questionnaire_agent.model.ontology_schema import Ontology
 from data_questionnaire_agent.service.ontology_service import (
     create_structured_question_call,

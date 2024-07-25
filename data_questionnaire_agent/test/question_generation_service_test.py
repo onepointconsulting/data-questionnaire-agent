@@ -1,24 +1,24 @@
 import asyncio
-import pytest
 
+import pytest
 from langchain_community.callbacks import get_openai_callback
 
+from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.model.openai_schema import ResponseQuestions
+from data_questionnaire_agent.service.question_generation_service import (
+    chain_factory_secondary_question,
+    create_structured_question_call,
+    prepare_secondary_question,
+)
 from data_questionnaire_agent.test.provider.knowledge_base_provider import (
     provide_knowledge_base,
 )
 from data_questionnaire_agent.test.provider.questionnaire_provider import (
     create_questionnaire_2_questions,
-    create_questionnaire_2_questions_refugees,
     create_questionnaire_2_questions__refugees_fa,
+    create_questionnaire_2_questions_refugees,
 )
-from data_questionnaire_agent.model.openai_schema import ResponseQuestions
-from data_questionnaire_agent.service.question_generation_service import (
-    prepare_secondary_question,
-    chain_factory_secondary_question,
-    create_structured_question_call,
-)
-from data_questionnaire_agent.config import cfg
 
 
 def test_question_generation_en():

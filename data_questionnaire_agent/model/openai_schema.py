@@ -3,6 +3,7 @@ from typing import List, Optional, Union
 from pydantic.v1 import BaseModel as PydanticBaseModel
 from pydantic.v1 import Field
 
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.translation import t
 
 
@@ -75,6 +76,9 @@ class ConditionalAdvice(BaseModel):
         default=[],
         description="A list of potential positive outcomes in case the user follows the advice.",
     )
+    confidence: Optional[ConfidenceRating] = Field(
+        default=None, description="The confidence rating at the time of the report."
+    )
 
     def to_html(self, language: str = "en") -> str:
         return f"""{self.to_advice_html()}
@@ -102,6 +106,9 @@ class ConditionalAdvice(BaseModel):
         html += "</ul>"
         return html
 
+    def confidence_html(self, language: str = "en") -> str:
+        return self.confidence.to_html(language)
+
     def to_markdown(self, language: str = "en") -> str:
         def convert_to_text(text_list: List[str], title: str):
             md = f"# {title} ...\n\n"
@@ -120,6 +127,9 @@ class ConditionalAdvice(BaseModel):
             self.positive_outcomes,
             t("Positive outcomes (if you follow the advices)", locale=language),
         )
+
+        if self.confidence is not None:
+            markdown += self.confidence.to_markdown()
 
         return markdown
 

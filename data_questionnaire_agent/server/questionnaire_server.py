@@ -1,5 +1,5 @@
+import asyncio
 import json
-
 from enum import StrEnum
 from typing import Any, List, Tuple, Union
 
@@ -20,32 +20,34 @@ from data_questionnaire_agent.model.server_model import (
     server_messages_factory,
 )
 from data_questionnaire_agent.model.session_configuration import (
+    CLIENT_ID_KEY,
     DEFAULT_SESSION_STEPS,
     SESSION_STEPS_CONFIG_KEY,
     SESSION_STEPS_LANGUAGE_KEY,
-    CLIENT_ID_KEY,
     SessionConfiguration,
     SessionConfigurationEntry,
 )
-from data_questionnaire_agent.service.graph_service import generate_analyzed_ontology
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
 from data_questionnaire_agent.service.advice_service import (
     create_structured_question_call,
 )
+from data_questionnaire_agent.service.confidence_service import (
+    calculate_confidence_rating,
+)
+from data_questionnaire_agent.service.graph_service import generate_analyzed_ontology
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.ontology_service import create_ontology
-from data_questionnaire_agent.service.confidence_service import (
-    calculate_confidence_rating,
-)
 from data_questionnaire_agent.service.persistence_service_async import (
     fetch_ontology,
     insert_questionnaire_status,
     insert_questionnaire_status_suggestions,
+    save_confidence,
     save_ontology,
     save_report,
     save_session_configuration,
+    select_confidence,
     select_current_session_steps_and_language,
     select_initial_question,
     select_questionnaire,
@@ -57,8 +59,6 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_answer,
     update_clarification,
     update_session_steps,
-    save_confidence,
-    select_confidence
 )
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
@@ -215,9 +215,17 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
     language = adapt_language(language)
     total_cost = 0
     with get_openai_callback() as cb:
-        conditional_advice: ConditionalAdvice = await process_advice(
-            docsearch, questionnaire, create_structured_question_call(language)
+        confidence_rating, conditional_advice = await asyncio.gather(
+            calculate_confidence_rating(questionnaire, language),
+            process_advice(
+                docsearch, questionnaire, create_structured_question_call(language)
+            ),
         )
+        if confidence_rating is not None:
+            # Save the confidence
+            conditional_advice.confidence = confidence_rating
+            step = len(questionnaire.questions)
+            await save_confidence(session_id, step, confidence_rating)
         total_cost = cb.total_cost
         # Generate ontology
         ontology = await create_ontology(questionnaire, conditional_advice, language)
@@ -433,8 +441,14 @@ async def confidence(request: web.Request) -> web.Response:
     confidence_rating = await select_confidence(session_id, step)
     if confidence_rating is None:
         confidence_rating = await calculate_confidence_rating(questionnaire, language)
+        if confidence_rating is None:
+            raise web.HTTPInternalServerError(
+                text="No confidence rating could be found."
+            )
         if step is not None and step > 0:
-            saved_confidence = await save_confidence(session_id, step, confidence_rating)
+            saved_confidence = await save_confidence(
+                session_id, step, confidence_rating
+            )
             logger.info(f"Saved confidence {saved_confidence}")
     else:
         logger.info(f"confidence available {confidence_rating}")

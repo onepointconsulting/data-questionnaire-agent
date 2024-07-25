@@ -1,18 +1,19 @@
-from typing import List
 import asyncio
+from typing import List
+
+from data_questionnaire_agent.model.application_schema import (
+    Questionnaire,
+)
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.service.confidence_service import (
-    prompt_factory_confidence,
     calculate_confidence_rating,
+    prompt_factory_confidence,
 )
 from data_questionnaire_agent.test.provider.questionnaire_provider import (
     create_questionnaire_2_questions,
     create_questionnaire_3_questions,
     create_questionnaire_4_questions,
     create_questionnaire_4_questions_german,
-)
-from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
-from data_questionnaire_agent.model.application_schema import (
-    Questionnaire,
 )
 
 

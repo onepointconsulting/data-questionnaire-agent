@@ -1,6 +1,6 @@
 from data_questionnaire_agent.model.confidence_schema import (
-    ConfidenceRating,
     ConfidenceDegree,
+    ConfidenceRating,
 )
 
 

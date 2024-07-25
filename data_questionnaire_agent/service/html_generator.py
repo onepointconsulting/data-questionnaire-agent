@@ -24,6 +24,8 @@ def generate_html(
         "questionnaire": questionnaire.to_html(),
         "advices": replace_bold_markdown(advices.to_advice_html()),
         "avoids": replace_bold_markdown(advices.to_avoid_html()),
+        "title_confidence": t("Confidence Degree", locale=language),
+        "confidence": replace_bold_markdown(advices.confidence_html(language)),
         "positive_outcomes": replace_bold_markdown(advices.positive_outcomes_html()),
         "timestamp": timestamp,
         "big_thank_you": t(

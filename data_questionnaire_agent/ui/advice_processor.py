@@ -1,5 +1,4 @@
 from asyncer import asyncify
-from langchain.chains import LLMChain
 from langchain_community.vectorstores import FAISS
 from langchain_core.runnables.base import RunnableSequence
 from tenacity import AsyncRetrying
