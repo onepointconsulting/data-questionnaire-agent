@@ -129,7 +129,7 @@ class ConditionalAdvice(BaseModel):
         )
 
         if self.confidence is not None:
-            markdown += self.confidence.to_markdown()
+            markdown += self.confidence.to_markdown(locale=language)
 
         return markdown
 

@@ -30,13 +30,13 @@ class ConfidenceRating(BaseModel):
         description="The confidence rating of the model to give advice to a customer based on a questionnaire",
     )
 
-    def to_markdown(self, language: str = "en") -> str:
+    def to_markdown(self, locale: str = "en") -> str:
         return f"""
-# {t("Confidence Degree", locale=language)}
+# {t("Confidence Degree", locale=locale)}
 
-**{t("confidence_degree_" + self.rating, locale=language)}**
+**{t("confidence_degree_" + self.rating, locale=locale)}**
 
-## {t("Reasoning", locale=language)}
+## {t("Reasoning", locale=locale)}
 
 {self.reasoning}
 """
