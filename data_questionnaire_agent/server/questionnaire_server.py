@@ -216,13 +216,15 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
     language = adapt_language(language)
     total_cost = 0
     with get_openai_callback() as cb:
-        confidence_rating, conditional_advice = await asyncio.gather(
-            calculate_confidence_rating(questionnaire, language),
-            process_advice(
-                docsearch, questionnaire, create_structured_question_call(language)
-            ),
+        confidence_rating = await find_confidence_rating(
+            session_id, len(questionnaire) - 1, questionnaire, language
         )
-        await save_confidence_rating(confidence_rating, conditional_advice, session_id, questionnaire)
+        conditional_advice = await process_advice(
+            docsearch, questionnaire, create_structured_question_call(language)
+        )
+        await save_confidence_rating(
+            confidence_rating, conditional_advice, session_id, questionnaire
+        )
         total_cost = cb.total_cost
         # Generate ontology
         ontology = await create_ontology(questionnaire, conditional_advice, language)
@@ -230,20 +232,6 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
         await save_ontology(session_id, ontology)
     report_id = await save_report(session_id, conditional_advice, total_cost)
     assert report_id is not None, t("no_report_id", locale=language)
-
-
-async def save_confidence_rating(
-    confidence_rating: Union[ConfidenceRating, None],
-    conditional_advice: Union[ConditionalAdvice, None],
-    session_id: str,
-    questionnaire: Questionnaire,
-):
-    if confidence_rating is not None:
-        # Save the confidence
-        if conditional_advice:
-            conditional_advice.confidence = confidence_rating
-        step = len(questionnaire.questions)
-        await save_confidence(session_id, step, confidence_rating)
 
 
 async def handle_secondary_question(
@@ -276,6 +264,20 @@ async def handle_secondary_question(
     server_messages = server_messages_factory(questionnaire_messages)
 
     await append_suggestions_and_send(sid, server_messages, questionnaire_messages)
+
+
+async def save_confidence_rating(
+    confidence_rating: Union[ConfidenceRating, None],
+    conditional_advice: Union[ConditionalAdvice, None],
+    session_id: str,
+    questionnaire: Questionnaire,
+):
+    if confidence_rating is not None:
+        # Save the confidence
+        if conditional_advice:
+            conditional_advice.confidence = confidence_rating
+        step = len(questionnaire.questions)
+        await save_confidence(session_id, step, confidence_rating)
 
 
 async def append_suggestions_and_send(
@@ -453,21 +455,27 @@ async def confidence(request: web.Request) -> web.Response:
     step = extract_step(request)
     questionnaire = await select_questionnaire(session_id, False)
     language = extract_language(request)
-    confidence_rating = await select_confidence(session_id, step)
+    confidence_rating = await find_confidence_rating(
+        session_id, step, questionnaire, language
+    )
     if confidence_rating is None:
-        confidence_rating = await calculate_confidence_rating(questionnaire, language)
-        if confidence_rating is None:
-            raise web.HTTPInternalServerError(
-                text="No confidence rating could be found."
-            )
-        if step is not None and step > 0:
-            saved_confidence = await save_confidence(
-                session_id, step, confidence_rating
-            )
-            logger.info(f"Saved confidence {saved_confidence}")
+        raise web.HTTPInternalServerError(text="No confidence rating could be found.")
     else:
         logger.info(f"confidence available {confidence_rating}")
     return web.json_response(confidence_rating.dict(), headers=CORS_HEADERS)
+
+
+async def find_confidence_rating(
+    session_id: str, step: int, questionnaire: Questionnaire, language: str
+) -> Union[ConfidenceRating, None]:
+    confidence_rating = await select_confidence(session_id, step)
+    if confidence_rating is not None:
+        return confidence_rating
+    confidence_rating = await calculate_confidence_rating(questionnaire, language)
+    if step is not None and step > 0:
+        saved_confidence = await save_confidence(session_id, step, confidence_rating)
+        logger.info(f"Saved confidence {saved_confidence}")
+    return confidence_rating
 
 
 def extract_language(request: web.Request):
