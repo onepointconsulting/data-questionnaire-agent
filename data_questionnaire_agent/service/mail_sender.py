@@ -81,8 +81,7 @@ def create_mail_body(
     <h2>{t("Advice", locale=language)}</h2>
     {replace_bold_markdown(advices.to_html(language)) if advices is not None else ""}
     <h2>{t("Confidence Degree", locale=language)}</h2>
-    <p style="text-align: center"><b>{advices.confidence_html(language)}</b></p>
-    <p>{confidence.reasoning}</p>
+    {advices.confidence_html(language)}
 
     <h2 class="personalOffer">{t("A personal offer for you", locale=language)}</h2>
     <p>{t("offering_long", locale=language)}</p>
