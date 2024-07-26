@@ -70,7 +70,6 @@ def create_mail_body(
 ) -> str:
     mail_template = cfg.template_location / "mail-template.html"
     mail_template_text = mail_template.read_text(encoding="utf-8")
-    confidence = advices.confidence
     content = f"""
 
     <img src="https://healthcheck.onepointltd.ai/banner/Hero_Image_with_Logo_and_Titles.jpg" style="width: 100%;" />
