@@ -11,6 +11,7 @@ from langchain_community.callbacks import get_openai_callback
 from data_questionnaire_agent.config import cfg, mail_config, websocket_cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.mail_data import MailData
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
@@ -221,11 +222,7 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
                 docsearch, questionnaire, create_structured_question_call(language)
             ),
         )
-        if confidence_rating is not None:
-            # Save the confidence
-            conditional_advice.confidence = confidence_rating
-            step = len(questionnaire.questions)
-            await save_confidence(session_id, step, confidence_rating)
+        await save_confidence_rating(confidence_rating, conditional_advice, session_id, questionnaire)
         total_cost = cb.total_cost
         # Generate ontology
         ontology = await create_ontology(questionnaire, conditional_advice, language)
@@ -235,13 +232,30 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
     assert report_id is not None, t("no_report_id", locale=language)
 
 
+async def save_confidence_rating(
+    confidence_rating: Union[ConfidenceRating, None],
+    conditional_advice: Union[ConditionalAdvice, None],
+    session_id: str,
+    questionnaire: Questionnaire,
+):
+    if confidence_rating is not None:
+        # Save the confidence
+        if conditional_advice:
+            conditional_advice.confidence = confidence_rating
+        step = len(questionnaire.questions)
+        await save_confidence(session_id, step, confidence_rating)
+
+
 async def handle_secondary_question(
     sid: str, session_id: str, questionnaire: Questionnaire, language: str
 ):
     total_cost = 0
     with get_openai_callback() as cb:
-        question_answers = await process_secondary_questions(
-            questionnaire, cfg.questions_per_batch, language
+        confidence_rating, question_answers = await asyncio.gather(
+            calculate_confidence_rating(questionnaire, language),
+            process_secondary_questions(
+                questionnaire, cfg.questions_per_batch, language
+            ),
         )
         total_cost = cb.total_cost
     if len(question_answers) == 0:
@@ -252,6 +266,7 @@ async def handle_secondary_question(
     _, qs_res = await persist_question(
         session_id, last_question_answer.question, total_cost
     )
+    await save_confidence_rating(confidence_rating, None, session_id, questionnaire)
     # Persist the suggestions for this answer
     if qs_res.id is None:
         await send_error(sid, session_id, t("failed_insert_question", locale=language))
