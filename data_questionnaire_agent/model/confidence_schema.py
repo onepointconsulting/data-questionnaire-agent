@@ -34,7 +34,7 @@ class ConfidenceRating(BaseModel):
         return f"""
 # {t("Confidence Degree", locale=locale)}
 
-**{t("confidence_degree_" + self.rating, locale=locale)}**
+`{t("confidence_degree_" + self.rating, locale=locale)}`
 
 ## {t("Reasoning", locale=locale)}
 

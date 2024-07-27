@@ -392,6 +392,19 @@ ORDER BY S.ID""",
     ]
 
 
+async def has_final_report(session_id: str) -> bool:
+    res = await select_from(
+        """SELECT final_report FROM PUBLIC.TB_QUESTIONNAIRE_STATUS
+WHERE SESSION_ID = %(session_id)s and final_report = true""",
+        {
+            "session_id": session_id,
+        },
+    )
+    if res is None or len(res) == 0:
+        return False
+    return res[0][0] == True
+
+
 async def update_session_steps(session_id: str, session_steps: int) -> Union[int, None]:
     async def process_update(cur: AsyncCursor):
         await cur.execute(
@@ -412,6 +425,27 @@ WHERE SESSION_ID = %(session_id)s AND CONFIG_KEY = %(config_key)s RETURNING ID
         return updated_id
 
     return await create_cursor(process_update, True)
+
+
+async def delete_last_question(session_id: str) -> Union[int, None]:
+    async def process_delete(cur: AsyncCursor):
+        await cur.execute(
+            """
+DELETE FROM PUBLIC.TB_QUESTIONNAIRE_STATUS 
+WHERE ID = (SELECT ID FROM PUBLIC.TB_QUESTIONNAIRE_STATUS WHERE SESSION_ID = %(session_id)s ORDER BY ID DESC LIMIT 1)
+RETURNING ID
+""",
+            {
+                "session_id": session_id,
+            },
+        )
+        created_row = await cur.fetchone()
+        if created_row is None or len(created_row) == 0:
+            return None
+        updated_id = created_row[0]
+        return updated_id
+
+    return await create_cursor(process_delete, True)
 
 
 async def select_current_session_steps_and_language(session_id: str) -> Tuple[int, str]:
@@ -755,6 +789,16 @@ if __name__ == "__main__":
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 
+    async def test_delete_last_question():
+        qs = create_simple()
+        new_qs = await insert_questionnaire_status(qs)
+        assert new_qs is not None
+        assert new_qs.id is not None
+        has_report = await has_final_report(qs.session_id)
+        assert has_report == False
+        deleted_id = await delete_last_question(qs.session_id)
+        assert deleted_id is not None, "Delete last question failed."
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -765,4 +809,5 @@ if __name__ == "__main__":
     # asyncio.run(test_save_report())
     # asyncio.run(test_insert_questionnaire_status_suggestions())
     # asyncio.run(test_save_ontology())
-    asyncio.run(test_insert_confidence_rating())
+    # asyncio.run(test_insert_confidence_rating())
+    asyncio.run(test_delete_last_question())

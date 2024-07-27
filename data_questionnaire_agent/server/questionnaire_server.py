@@ -41,7 +41,9 @@ from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.ontology_service import create_ontology
 from data_questionnaire_agent.service.persistence_service_async import (
+    delete_last_question,
     fetch_ontology,
+    has_final_report,
     insert_questionnaire_status,
     insert_questionnaire_status_suggestions,
     save_confidence,
@@ -176,11 +178,32 @@ async def client_message(sid: str, session_id: str, answer: str):
                 # Generate the report.
                 await generate_report(session_id, questionnaire, language)
 
-            questionnaire_messages = await select_questionnaire_statuses(session_id)
-            server_messages = server_messages_factory(questionnaire_messages)
-            await append_suggestions_and_send(
-                sid, server_messages, questionnaire_messages
-            )
+            await send_report_message(sid, session_id)
+
+
+async def send_report_message(sid: str, session_id: str):
+    questionnaire_messages = await select_questionnaire_statuses(session_id)
+    server_messages = server_messages_factory(questionnaire_messages)
+    await append_suggestions_and_send(sid, server_messages, questionnaire_messages)
+
+
+@sio.event
+async def generate_report_now(sid: str, session_id: str):
+    questionnaire = await select_questionnaire(session_id)
+    new_session_steps = len(questionnaire.questions)
+    config_id = await update_session_steps(session_id, new_session_steps)
+    (
+        current_session_steps,
+        language,
+    ) = await select_current_session_steps_and_language(session_id)
+    if config_id is None or current_session_steps != new_session_steps:
+        await send_error(sid, session_id, "Failed to generate report now")
+    else:
+        delete_id = await delete_last_question(session_id)
+        if delete_id is None:
+            logger.warn("Could not delete last question in generate report now.")
+        await generate_report(session_id, questionnaire, language)
+        await send_report_message(sid, session_id)
 
 
 @sio.event
@@ -202,6 +225,18 @@ async def clarify_question(
 
 @sio.event
 async def extend_session(sid: str, session_id: str, session_steps: int):
+    final_report = await has_final_report(session_id)
+    if final_report:
+        (
+            current_session_steps,
+            _,
+        ) = await select_current_session_steps_and_language(session_id)
+        await sio.emit(
+            Commands.EXTEND_SESSION,
+            current_session_steps,
+            room=sid,
+        )
+        return
     session_steps = min(MAX_SESSION_STEPS, session_steps)
     config_id = await update_session_steps(session_id, session_steps)
     session_steps = session_steps if config_id is not None else FAILED_SESSION_STEPS
