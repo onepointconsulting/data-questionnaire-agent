@@ -1,0 +1,75 @@
+{
+    "messages": [
+        {
+            "content": "You are an expert at giving data governance advice based on a question answer dialogue with a customer",
+            "role": "system"
+        },
+        {
+            "content": "Determine how confident you are in terms giving advice to a customer based on a sequence of questions and answers that you can find here:\\n\\n```\\nWhich area of your data ecosystem are you most concerned about?\\nCompliance and security risks - Mishandling data can lead to legal troubles and reputational damage.\\n\\nWhat specific challenges are you facing regarding compliance and security in your data management practices?\\n - We struggle with ensuring data is handled according to regulations, leading to potential legal issues.\\n\\nWhat specific aspects of data governance are causing you the most concern in relation to compliance and security?\\n - We are uncertain about how to implement data governance policies effectively.\\n\\nWhat specific pain points do you experience when trying to implement data governance policies that ensure compliance with regulations?\\n - We find it challenging to align data governance policies with existing regulations.\\n\\nWhat specific areas of data governance do you believe require more clarity or support to ensure compliance with regulations?\\n - It's unclear how to effectively monitor and audit our data practices to ensure adherence to regulations.\\n\\nWhat specific measures have you taken to monitor and audit your data management practices for compliance with regulations?\\n - We have implemented a basic monitoring system, but it lacks comprehensive coverage.\\n```\\n\\nIn order to be confident you should know about the difficulties of the customer. You should know about the following:\\n* the customer's main problem\\n* have some detailed information about his problem. Just having a high-level sentence on the problem of the customer like e.g: \"Data Quality\" is not enough to be confident.\\n* you should have also knowledge about what is causing the problem.\\n* ideally you know more than one cause behind the main problem of the customer. \\n* you also need some more background information about the technologies used by the customer to be confident.\\n* you should also know about the data governance strategies of the customer to be able to have a high degree of confidence.\\n\\nPlease use the following classifications to this question about the degree of confidence with which you can give advice:\\n\\n- \"outstanding\"\\n- \"high\"\\n- \"medium\"\\n- \"mediocre\"\\n- \"low\"\\n\\nFor example, you should report an \"outstanding\" confidence degree when:\\nYou know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. \\nAnd you also know the technological landscape of the customer very well.\\n\\nFor example, you should report a \"high\" confidence degree when:\\nYou know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. \\nThe only thing missing is more background information about the technological landscape of the customer.\\n\\nFor example, you should report a \"medium\" confidence degree when:\\nYou know the main problem of the customer and the causes well.\\nYou miss the background information about the technological landscape of the customer and also about data governance in the customer's company.\\n\\nFor example, you should report a \"mediocre\" confidence degree when:\\nYou know the main problem of the customer and the cause not well. The information about the causes is very limited\\nYou miss the background information about the technological landscape of the customer and also about data governance in the customer's company.\\n\\nFor example, you should report a \"low\" confidence degree when:\\nYou know the main problem of the customer and nothing else. Or you do not even know about the main problem of the user.\\n",
+            "role": "user"
+        },
+        {
+            "content": "Tip: Make sure to answer in the correct format",
+            "role": "user"
+        },
+        {
+            "content": "Tip: Please make sure that you write all your answers in British English.",
+            "role": "user"
+        }
+    ],
+    "model": "gpt-4o-mini",
+    "stream": false,
+    "n": 1,
+    "temperature": 0.5,
+    "logprobs": false,
+    "tools": [
+        {
+            "type": "function",
+            "function": {
+                "name": "ConfidenceRating",
+                "description": "Represents a rating of how confident the model is to give advice to a customer based on a questionnaire",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "description": "The identifier of this session configuration",
+                            "type": "integer"
+                        },
+                        "reasoning": {
+                            "description": "The models's reasoning behind the confidence rating.",
+                            "type": "string"
+                        },
+                        "rating": {
+                            "description": "The confidence rating of the model to give advice to a customer based on a questionnaire",
+                            "allOf": [
+                                {
+                                    "title": "ConfidenceDegree",
+                                    "description": "An enumeration.",
+                                    "enum": [
+                                        "outstanding",
+                                        "high",
+                                        "medium",
+                                        "mediocre",
+                                        "low"
+                                    ],
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "required": [
+                        "reasoning",
+                        "rating"
+                    ]
+                }
+            }
+        }
+    ],
+    "parallel_tool_calls": false,
+    "tool_choice": {
+        "type": "function",
+        "function": {
+            "name": "ConfidenceRating"
+        }
+    }
+}
