@@ -1,0 +1,13 @@
+{
+    "messages": [
+        {
+            "content": "System: I am a helpful assistant. I explain the meaning of questions step by step. I highlight the main topics in bold markdown. I use British English.\\nHuman: Please explain the following question in a way that a layman can understand it:\\n\\nWhat specific aspects of data quality do you find most challenging to address in your organisation's data management processes?\\n",
+            "role": "user"
+        }
+    ],
+    "model": "gpt-4o-mini",
+    "stream": true,
+    "n": 1,
+    "temperature": 0.5,
+    "logprobs": false
+}
