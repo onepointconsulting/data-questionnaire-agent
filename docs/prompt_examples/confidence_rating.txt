@@ -1,0 +1,54 @@
+SYSTEM
+You are an expert at giving data governance advice based on a question answer dialogue with a customer
+
+HUMAN
+Determine how confident you are in terms giving advice to a customer based on a sequence of questions and answers that you can find here:
+
+```
+Which area of your data ecosystem are you most concerned about?
+Data silos - Data trapped in departmental silos can be inaccessible to other parts.
+
+What types of data (e.g., structured, unstructured, streaming) are most commonly trapped in your departmental silos?
+ - Streaming data such as social media feeds and IoT sensor data.
+```
+
+In order to be confident you should know about the difficulties of the customer. You should know about the following:
+* the customer's main problem
+* have some detailed information about his problem. Just having a high-level sentence on the problem of the customer like e.g: "Data Quality" is not enough to be confident.
+* you should have also knowledge about what is causing the problem.
+* ideally you know more than one cause behind the main problem of the customer. 
+* you also need some more background information about the technologies used by the customer to be confident.
+* you should also know about the data governance strategies of the customer to be able to have a high degree of confidence.
+
+Please use the following classifications to this question about the degree of confidence with which you can give advice:
+
+- "outstanding"
+- "high"
+- "medium"
+- "mediocre"
+- "low"
+
+For example, you should report an "outstanding" confidence degree when:
+You know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. 
+And you also know the technological landscape of the customer very well.
+
+For example, you should report a "high" confidence degree when:
+You know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. 
+The only thing missing is more background information about the technological landscape of the customer.
+
+For example, you should report a "medium" confidence degree when:
+You know the main problem of the customer and the causes well.
+You miss the background information about the technological landscape of the customer and also about data governance in the customer's company.
+
+For example, you should report a "mediocre" confidence degree when:
+You know the main problem of the customer and the cause not well. The information about the causes is very limited
+You miss the background information about the technological landscape of the customer and also about data governance in the customer's company.
+
+For example, you should report a "low" confidence degree when:
+You know the main problem of the customer and nothing else. Or you do not even know about the main problem of the user.
+
+HUMAN
+Tip: Make sure to answer in the correct format
+
+HUMAN
+Tip: Please make sure that you write all your answers in British English.
