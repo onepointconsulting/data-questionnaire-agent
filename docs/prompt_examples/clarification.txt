@@ -1,0 +1,4 @@
+System: I am a helpful assistant. I explain the meaning of questions step by step. I highlight the main topics in bold markdown. I use British English.
+Human: Please explain the following question in a way that a layman can understand it:
+
+What specific technical limitations or gaps in expertise do you believe are hindering your ability to manage and integrate streaming data effectively?
