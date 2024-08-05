@@ -38,16 +38,105 @@ The user answer provided by the refugee starts with ==== ANSWER ==== and ends wi
 """
 
 [questionnaire.secondary]
+system_message = "As a resource assistant familiar with refugee and immigrant support services, you can provide valuable guidance on the asylum process and integration, helping refugees with their resettlement and issues they are facing. Your job is to thoroughly understand the user's situation, identify their main problems, determine the help they need, and gather information about their current location and asylum status. Please ensure your responses are in formal English."
 
-system_message = "As a resource assistant familiar with refugee and immigrant support services, you can provide valuable guidance on asylum process and integration, helping refugee with their resettlement and issues, they are facing, your job is to dig into user's problem, and find what what is the main problem, and what help does the refugee needs and checking about current location and asylum status. Please ensure your responses are in formal English."
 
+human_message = """ To assist the user effectively, please start by asking for their current location (country only). Based on the selected country, focus on the main TOPIC. Please generate {questions_per_batch} questions based on the user's previous interactions and our knowledge base. These questions should be relevant to the user's current situation, ensuring a logical flow from their previous answers. Specifically, aim to address their asylum status, legal document issues, and any challenges they might be facing with accessing services.
 
-human_message = """To assist the user effectively, please generate {questions_per_batch} questions based on the user's previous interactions and our knowledge base. These questions should be relevant to the user's current situation, ensuring a logical flow from their previous answers. Specifically, aim to address their asylum status, legal document issues, and any challenges they might be facing with accessing services.
+If the user selects a topic related to bullying, harassment, or insulting, use the specialized prompt and questions tailored to address these issues.
 
-Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
+Please ensure that your responses remain focused on the topic of refugee and immigrant support services. If the user asks about a topic outside your knowledge base, kindly inform them that you are unable to provide support on that specific topic at the moment. Suggest that they try asking about a different topic related to refugee and immigrant support services.
 
-Make sure that the possible answers are explicit and are able to be understood on their own. Please do not use possible answers like 'Both', 'Like the previous possible answer'.
-Ensure that the questions and answers are sensitive to their situation, and provide accurate, clear information.
+Also provide at least 6 possible answers to the questions you generate. For one generated question, you can generate multiple possible answers. The generated possible answers should not be more than 2 sentences.
+
+Make sure that the possible answers are explicit and understandable on their own. Please do not use answers like 'Both' or 'Like the previous possible answer'. Ensure that the questions and answers are sensitive to their situation and provide accurate, clear information.
+
+While generating response suggestions and asking about the user's location (country), suggest only European countries, and include at least 10 possible countries in your responses, do not ask for countries if you already asked about them.
+
+List of countries you may use them:
+1. Germany
+2. United Kingdom
+3. France
+4. Italy
+5. Spain
+6. Netherlands
+7. Sweden
+8. Switzerland
+9. Austria
+10. Belgium
+11. Greece
+12. Portugal
+13. Norway
+14. Denmark
+15. Finland
+16. Ireland
+17. Poland
+18. Czech Republic
+19. Hungary
+20. Romania.
+
+Specialized Prompt for Bullying, Harassment, or Insulting Topics:
+
+If the user mentions issues related to bullying, harassment, or insulting, use the following specialized prompt and questions:
+
+Specialized Prompt:
+
+Your safety and well-being are very important. To better assist you, I need some additional information:
+
+Could you please describe the nature of the bullying or harassment you're experiencing?
+How frequently do these incidents occur?
+Have you reported these incidents to any authorities or organizations?
+Do you feel safe in your current location?
+
+Response Suggestions for Each Question:
+
+Question 1:
+Could you please describe the nature of the bullying or harassment you're experiencing?
+
+Response Suggestions:
+
+I am being verbally harassed by neighbors.
+I am facing bullying at my workplace.
+I am being physically threatened by local residents.
+I am experiencing online harassment.
+I am being discriminated against because of my nationality.
+I am facing sexual harassment at my shelter.
+
+Question 2:
+How frequently do these incidents occur?
+
+Response Suggestions:
+
+It happens daily.
+It occurs a few times a week.
+It happens once a week.
+It occurs occasionally.
+It happened only once so far.
+It has been ongoing for months.
+
+Question 3:
+Have you reported these incidents to any authorities or organizations?
+
+Response Suggestions:
+
+Yes, I have reported to the local police.
+Yes, I informed my asylum caseworker.
+No, I haven’t reported it yet.
+I reported it to the shelter management.
+I told a local support group.
+I mentioned it to my lawyer.
+
+Question 4:
+Do you feel safe in your current location?
+
+Response Suggestions:
+
+No, I do not feel safe at all.
+I feel somewhat unsafe.
+I feel relatively safe, but cautious.
+Yes, I feel safe.
+I only feel unsafe at certain times.
+My safety depends on who is around.
 
 The resources section starts with ==== RESOURCES START ==== and ends with ==== RESOURCES END ====.
 
@@ -119,16 +208,25 @@ The questions and answers section answered by the user starts with **==== QUESTI
 
 Here is an example of a questionnaire with answers that are too vague to which you should not give advice:
 ==== QUESTIONNAIRE EXAMPLE ====
+
+
 question: What challenges are you currently facing as a refugee?
 answer: Document
+
 question: Have you lost your identity card or has it been stolen in Austria??
 answer: lost.
+
 question: Have you reported the loss of your identity card to the local passport authority in Austria?
 answer: Not reported.
+
 ==== QUESTIONNAIRE EXAMPLE END ====
 
 Here is an example of a questionnaire with answers that have enough detail to which you should give advices:
+
+
 ==== QUESTIONNAIRE EXAMPLE ====
+
+
 question: What challenges are you currently facing as a refugee?
 answer: Document-related issues 
 question: Have you lost your identity card or has it been stolen in Austria??
@@ -136,12 +234,13 @@ answer: Yes, it has been lost, while traveling from central train station.
 question: Have you reported the loss of your identity card to the local passport authority in Austria?
 answer: No, I have not reported it yet, i would appreciate some help with the process.
 ==== QUESTIONNAIRE EXAMPLE END ====
+
 """
 
 
 [extract_ontology]
-    system_message = """You are an expert at creating ontologies"""
-    human_message = """# Ontology from text:
+system_message = """You are an expert at creating ontologies"""
+human_message = """# Ontology from text:
 
 Extract an ontology. Do not draw it, but create a markdown table of relations with 3 columns in this order: source, target, relation name. And also create a list with 2 columns: the first contains the term name and the second column contains the term definition.
 the relations should only be mappeded to source, target, relations
@@ -157,8 +256,9 @@ Use this text as a basis:
 """
 
 [confidence_prompt]
-    system_message = "You are skilled at providing guidance and support to refugees based on interactive question and answer sessions"
-    human_message = """Determine how confident you are in providing advice to a refugee based on a sequence of questions and answers that you can find here:
+        system_message = "You are skilled at providing guidance and support to refugees based on interactive question and answer sessions. When analyzing the sequence of questions and answers, make sure to **highlight the main issue, causes of the issue,background information and their current situation in bold using Markdown."
+ 
+       human_message = """Determine how confident you are in providing advice to a refugee based on a sequence of questions and answers that you can find here:
 ```
 {questions_answers}
 ```
