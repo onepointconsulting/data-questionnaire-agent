@@ -20,7 +20,6 @@ def generate_html(
 ) -> str:
     timestamp = datetime.today().strftime("%A, %b %d %Y")
     context = {
-        # "banner": re.sub(r"[A-Z]:\/", "", cfg.pdf_banner.absolute().as_uri()),
         "banner": t("banner_link", locale=language),
         "questionnaire": questionnaire.to_html(),
         "advices": replace_bold_markdown(advices.to_advice_html()),
