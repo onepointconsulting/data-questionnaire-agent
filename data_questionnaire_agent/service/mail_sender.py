@@ -72,7 +72,7 @@ def create_mail_body(
     mail_template_text = mail_template.read_text(encoding="utf-8")
     content = f"""
 
-    <img src="{t("banner_link", locale=language)}" style="width: 100%;" />
+    <img src="{t("banner_link_email", locale=language)}" style="width: 100%;" />
 
     <p>{t("A big thank you for completing a session with", name=cfg.product_title, locale=language)}</p>
     <h2>{t("Transcript", locale=language)}</h2>
