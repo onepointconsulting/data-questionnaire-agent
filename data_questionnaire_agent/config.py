@@ -124,6 +124,8 @@ class WebServerConfig:
     ui_folder = Path(os.getenv("UI_FOLDER", "./web/ui"))
     if not ui_folder.exists():
         ui_folder.mkdir(parents=True, exist_ok=True)
+    images_folder = Path(os.getenv("IMAGES_FOLDER", "./public/images"))
+    assert images_folder.exists(), f"{images_folder} does not exist. Please create it."
 
 
 web_server_cfg = WebServerConfig()
