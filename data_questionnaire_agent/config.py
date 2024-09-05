@@ -150,10 +150,25 @@ class DBConfig:
 
 db_cfg = DBConfig()
 
+
+class JWTTokenConfig:
+    secret = os.getenv("JWT_SECRET")
+    assert secret is not None, "Cannot find JWT secret"
+    algorithm = os.getenv("JWT_ALGORITHM")
+    assert algorithm is not None, "Cannot find JWT algorithm"
+    timedelta_minutes = os.getenv("JWT_TIME_DELTA_MINUTES")
+    assert timedelta_minutes is not None, "No time delta in minutes available"
+
+
+jwt_token_cfg = JWTTokenConfig()
+
+
 if __name__ == "__main__":
     logger.info("Model: %s", cfg.model)
     logger.info("Verbose: %s", cfg.verbose_llm)
     logger.info("mail_config user: %s", mail_config.mail_user)
     logger.info("wkhtmltopdf: %s", cfg.wkhtmltopdf_binary.as_posix())
     logger.info("template_location: %s", cfg.template_location.as_posix())
-    logger.info("use_tasklist: %s", cfg.use_tasklist)
+
+    logger.info("JWT_SECRET: %s", jwt_token_cfg.secret)
+    logger.info("JWT_ALGORITHM: %s", jwt_token_cfg.algorithm)

@@ -10,6 +10,7 @@ from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
 )
+from data_questionnaire_agent.model.jwt_token import JWTToken
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
 from data_questionnaire_agent.model.ontology_schema import Ontology
@@ -641,6 +642,38 @@ WHERE SESSION_ID = %(session_id)s ORDER BY ID OFFSET %(step)s LIMIT 1
     )
 
 
+async def insert_jwt_token(jwt_token: JWTToken) -> int:
+    async def process_save(cur: AsyncCursor):
+        await cur.execute(
+            """
+INSERT INTO TB_JWT_TOKEN(EMAIL, JWT_TOKEN)
+VALUES(%(email)s, %(jwt_token)s) RETURNING ID
+            """,
+            {
+                "email": jwt_token.email,
+                "jwt_token": jwt_token.token
+            },
+        )
+        created_row = await cur.fetchone()
+        created_id = created_row[0] if created_row is not None else -1
+        return created_id
+
+    return await create_cursor(process_save, True)
+
+
+async def delete_jwt_token(id: int) -> int:
+    async def process_save(cur: AsyncCursor):
+        await cur.execute(
+            """
+DELETE FROM TB_JWT_TOKEN WHERE ID = %(id)s
+            """,
+            {"id": id},
+        )
+        return cur.rowcount
+
+    return await create_cursor(process_save, True)
+
+
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.question_answer_provider import (
         create_question_answer_with_possible_answers,
@@ -799,6 +832,14 @@ if __name__ == "__main__":
         deleted_id = await delete_last_question(qs.session_id)
         assert deleted_id is not None, "Delete last question failed."
 
+    async def test_create_jwt():
+        jwt_token = JWTToken(email="john.doe@test.com", token="test")
+        id = await insert_jwt_token(jwt_token)
+        assert id is not None, "JWT token id is not available"
+        count = await delete_jwt_token(id)
+        assert count == 1, "Number of deleted tokens not 1"
+
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -810,4 +851,5 @@ if __name__ == "__main__":
     # asyncio.run(test_insert_questionnaire_status_suggestions())
     # asyncio.run(test_save_ontology())
     # asyncio.run(test_insert_confidence_rating())
-    asyncio.run(test_delete_last_question())
+    # asyncio.run(test_delete_last_question())
+    asyncio.run(test_create_jwt())
