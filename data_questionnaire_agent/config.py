@@ -158,6 +158,7 @@ class JWTTokenConfig:
     assert algorithm is not None, "Cannot find JWT algorithm"
     timedelta_minutes = os.getenv("JWT_TIME_DELTA_MINUTES")
     assert timedelta_minutes is not None, "No time delta in minutes available"
+    timedelta_minutes = int(timedelta_minutes)
 
 
 jwt_token_cfg = JWTTokenConfig()

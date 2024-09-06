@@ -63,6 +63,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_clarification,
     update_session_steps,
 )
+from data_questionnaire_agent.service.jwt_token_service import generate_token
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
 )
@@ -498,6 +499,21 @@ async def confidence(request: web.Request) -> web.Response:
     else:
         logger.info(f"confidence available {confidence_rating}")
     return web.json_response(confidence_rating.dict(), headers=CORS_HEADERS)
+
+
+@routes.post("/gen_jwt_token")
+async def generate_jwt_token(request: web.Request) -> web.Response:
+    try:
+        json_content = await request.json()
+        match json_content:
+            case {'name': name, 'email': email}:
+                time_delta_minutes = int(json_content['time_delta_minutes']) if 'time_delta_minutes' in json_content is not None else None
+                token = await generate_token(name, email, time_delta_minutes)
+                return web.json_response(token.dict())
+            case _:
+                raise web.HTTPBadRequest(text="Please provide name and email parameters in the JSON body")
+    except json.JSONDecodeError as e:
+        raise web.HTTPBadRequest(text="Please make sure the JSON body is available and well formatted.")
 
 
 async def find_confidence_rating(
