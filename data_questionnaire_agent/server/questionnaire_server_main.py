@@ -18,6 +18,7 @@ async def get_index(request: web.Request) -> web.Response:
 
 
 def run_server():
+
     for i in range(MAX_SESSION_STEPS):
         app.router.add_get(f"/{i}", get_index)
     app.router.add_get("/", get_index)
@@ -27,13 +28,14 @@ def run_server():
     )
     app.router.add_static("/", path=web_server_cfg.ui_folder.as_posix(), name="ui")
     loop = asyncio.new_event_loop()
-
+    
     web.run_app(
         app,
         host=websocket_cfg.websocket_server,
         port=websocket_cfg.websocket_port,
         loop=loop,
     )
+
 
 
 if __name__ == "__main__":

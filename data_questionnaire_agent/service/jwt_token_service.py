@@ -16,10 +16,14 @@ def generate_secret() -> str:
     return secrets.token_hex(20)
 
 
-async def generate_token(name: str, email: str, time_delta_minutes: Optional[int]) -> Optional[JWTToken]:
+async def generate_token(
+    name: str, email: str, time_delta_minutes: Optional[int]
+) -> Optional[JWTToken]:
     payload = {"sub": str(ULID()), "name": name, "iat": int(time.time())}
     if time_delta_minutes is not None:
-        payload['exp'] = datetime.now(timezone.utc) + timedelta(seconds=time_delta_minutes)
+        payload["exp"] = datetime.now(timezone.utc) + timedelta(
+            seconds=time_delta_minutes
+        )
     token = jwt.encode(payload, jwt_token_cfg.secret, jwt_token_cfg.algorithm)
     jwt_token = JWTToken(email=email, token=token)
     id = await insert_jwt_token(jwt_token)
@@ -28,8 +32,8 @@ async def generate_token(name: str, email: str, time_delta_minutes: Optional[int
     return jwt_token
 
 
-async def decode_token(token: JWTToken) -> dict:
-    return jwt.decode(token.token, jwt_token_cfg.secret, jwt_token_cfg.algorithm)
+async def decode_token(token: str) -> dict:
+    return jwt.decode(token, jwt_token_cfg.secret, jwt_token_cfg.algorithm)
 
 
 if __name__ == "__main__":
@@ -38,5 +42,6 @@ if __name__ == "__main__":
     print(generate_secret())
 
     jwt_token = asyncio.run(generate_token("Gil", "gil.fernandes@gmail.com", 60))
+    print(jwt_token)
     assert jwt_token is not None
-    print(asyncio.run(decode_token(jwt_token)))
+    print(asyncio.run(decode_token(jwt_token.token)))

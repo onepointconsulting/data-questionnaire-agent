@@ -20,6 +20,7 @@ from data_questionnaire_agent.model.server_model import (
     ServerMessages,
     server_messages_factory,
 )
+from data_questionnaire_agent.model.jwt_token import JWTToken
 from data_questionnaire_agent.model.session_configuration import (
     CLIENT_ID_KEY,
     DEFAULT_SESSION_STEPS,
@@ -63,7 +64,10 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_clarification,
     update_session_steps,
 )
-from data_questionnaire_agent.service.jwt_token_service import generate_token
+from data_questionnaire_agent.service.jwt_token_service import (
+    generate_token,
+    decode_token,
+)
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
 )
@@ -506,14 +510,45 @@ async def generate_jwt_token(request: web.Request) -> web.Response:
     try:
         json_content = await request.json()
         match json_content:
-            case {'name': name, 'email': email}:
-                time_delta_minutes = int(json_content['time_delta_minutes']) if 'time_delta_minutes' in json_content is not None else None
+            case {"name": name, "email": email}:
+                time_delta_minutes = (
+                    int(json_content["time_delta_minutes"])
+                    if "time_delta_minutes" in json_content is not None
+                    else None
+                )
                 token = await generate_token(name, email, time_delta_minutes)
                 return web.json_response(token.dict())
             case _:
-                raise web.HTTPBadRequest(text="Please provide name and email parameters in the JSON body")
+                raise web.HTTPBadRequest(
+                    text="Please provide name and email parameters in the JSON body"
+                )
     except json.JSONDecodeError as e:
-        raise web.HTTPBadRequest(text="Please make sure the JSON body is available and well formatted.")
+        raise web.HTTPBadRequest(
+            text="Please make sure the JSON body is available and well formatted."
+        )
+
+
+@routes.post("/validate_jwt_token")
+async def validate_jwt_token(request: web.Request) -> web.Response:
+    try:
+        json_content = await request.json()
+        match json_content:
+            case {"token": token}:
+                try:
+                    decoded = await decode_token(token)
+                except:
+                    raise web.HTTPBadRequest(
+                        text="The token does not seem to be valid. Please send another valid token."
+                    )
+                return web.json_response(decoded, headers=CORS_HEADERS)
+            case _:
+                raise web.HTTPBadRequest(
+                    text="Please provide the token in the JSON body"
+                )
+    except json.JSONDecodeError as e:
+        raise web.HTTPBadRequest(
+            text=f"Please make sure the JSON body is available and well formatted: {e}"
+        )
 
 
 async def find_confidence_rating(

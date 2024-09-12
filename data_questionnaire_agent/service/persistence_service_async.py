@@ -649,10 +649,7 @@ async def insert_jwt_token(jwt_token: JWTToken) -> int:
 INSERT INTO TB_JWT_TOKEN(EMAIL, JWT_TOKEN)
 VALUES(%(email)s, %(jwt_token)s) RETURNING ID
             """,
-            {
-                "email": jwt_token.email,
-                "jwt_token": jwt_token.token
-            },
+            {"email": jwt_token.email, "jwt_token": jwt_token.token},
         )
         created_row = await cur.fetchone()
         created_id = created_row[0] if created_row is not None else -1
@@ -838,7 +835,6 @@ if __name__ == "__main__":
         assert id is not None, "JWT token id is not available"
         count = await delete_jwt_token(id)
         assert count == 1, "Number of deleted tokens not 1"
-
 
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())

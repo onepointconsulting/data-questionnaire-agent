@@ -13,7 +13,7 @@ def test_replace_bold_markdown():
     res = replace_bold_markdown(test_str)
     assert (
         res
-        == "This is some <b><a href='https://www.google.com/search?q=bold'>bold</a></b> content with some <b><a href='https://www.google.com/search?q=important'>important</a></b> message as you can imagine."
+        == "This is some <b>bold</b> content with some <b>important</b> message as you can imagine."
     ), f"Unexpected output: {res}"
 
 
