@@ -22,6 +22,7 @@ def run_server():
     for i in range(MAX_SESSION_STEPS):
         app.router.add_get(f"/{i}", get_index)
     app.router.add_get("/", get_index)
+    app.router.add_get("/jwt-token", get_index)
     app.add_routes(routes)
     app.router.add_static(
         "/images", path=web_server_cfg.images_folder.as_posix(), name="images"
