@@ -505,6 +505,11 @@ async def confidence(request: web.Request) -> web.Response:
     return web.json_response(confidence_rating.dict(), headers=CORS_HEADERS)
 
 
+@routes.options("/gen_jwt_token")
+async def generate_jwt_token_options(_: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+
+
 @routes.post("/gen_jwt_token")
 async def generate_jwt_token(request: web.Request) -> web.Response:
     try:
@@ -517,7 +522,7 @@ async def generate_jwt_token(request: web.Request) -> web.Response:
                     else None
                 )
                 token = await generate_token(name, email, time_delta_minutes)
-                return web.json_response(token.dict())
+                return web.json_response(token.dict(), headers=CORS_HEADERS)
             case _:
                 raise web.HTTPBadRequest(
                     text="Please provide name and email parameters in the JSON body"
