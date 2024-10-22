@@ -105,6 +105,8 @@ CREATE TABLE PUBLIC.TB_JWT_TOKEN(
 	JWT_TOKEN CHARACTER VARYING(7168) NOT NULL
 );
 
+alter table tb_jwt_token alter column email TYPE character varying(256);
+
 INSERT INTO public.tb_language(language_code) VALUES ('en');
 INSERT INTO public.tb_language(language_code) VALUES ('de');
 

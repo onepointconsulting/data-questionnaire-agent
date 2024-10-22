@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     print(generate_secret())
 
-    jwt_token = asyncio.run(generate_token("Gil", "gil.fernandes@gmail.com", 60))
+    jwt_token = asyncio.run(generate_token("Gil", "test.test@test.com", 60))
     print(jwt_token)
     assert jwt_token is not None
     print(asyncio.run(decode_token(jwt_token.token)))
