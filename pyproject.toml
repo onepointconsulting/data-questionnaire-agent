@@ -6,7 +6,7 @@ authors = ["Gil Fernandes <gil.fernandes@onepointltd.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 openai = "^1.37.0"
 langchain = "^0.2.6"
 langchain-community = "0.2.6"
@@ -19,7 +19,7 @@ pydantic = "2.7.4"
 duckduckgo-search = "^3.8.5"
 pdfkit = "^1.0.0"
 opencv-python = "^4.8.1.78"
-scikit-image = "^0.21.0"
+scikit-image = "^0.22.0"
 tenacity = "^8.2.3"
 psycopg = {extras = ["binary"], version = "^3.1.18"}
 aiohttp = "^3.9.3"

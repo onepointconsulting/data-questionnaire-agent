@@ -93,6 +93,12 @@ class Config:
         translation_path is not None
     ), "Please specifiy the translation path TRANSLATION_PATH."
 
+    use_graphrag = os.getenv("USE_GRAPHRAG") == "true"
+    graphrag_base_url = os.getenv("GRAPHRAG_BASE_URL")
+    if use_graphrag:
+        assert graphrag_base_url is not None, "If you want to use Graphrag you should specify the base URL."
+    
+
 
 cfg = Config()
 
