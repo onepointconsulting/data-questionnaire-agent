@@ -33,7 +33,7 @@ def test_calculate_confidence_rating_mediocre_2():
 
 
 def test_calculate_confidence_rating_stronger():
-    eval_questionnaire(create_questionnaire_4_questions(), ["high"])
+    eval_questionnaire(create_questionnaire_4_questions(), ["medium", "high"])
 
 
 def test_calculate_confidence_rating_german():

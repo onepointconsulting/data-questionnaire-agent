@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from enum import StrEnum
 
 import tenacity
 from dotenv import load_dotenv
@@ -9,6 +10,12 @@ from tenacity import stop_after_attempt
 from data_questionnaire_agent.log_init import logger
 
 load_dotenv()
+
+
+class GraphRagMode(StrEnum):
+    LOCAL = "local"
+    GLOBAL = "global"
+    ALL = "all"
 
 
 def create_if_not_exists(folder):
@@ -96,8 +103,17 @@ class Config:
     use_graphrag = os.getenv("USE_GRAPHRAG") == "true"
     graphrag_base_url = os.getenv("GRAPHRAG_BASE_URL")
     if use_graphrag:
-        assert graphrag_base_url is not None, "If you want to use Graphrag you should specify the base URL."
-    
+        assert (
+            graphrag_base_url is not None
+        ), "If you want to use Graphrag you should specify the base URL."
+    graphrag_mode = os.getenv("GRAPHRAG_MODE")
+    assert graphrag_mode in [
+        GraphRagMode.LOCAL,
+        GraphRagMode.GLOBAL,
+        GraphRagMode.ALL,
+    ], "GraphRAG mode not recognized"
+    graphrag_context_size_str = os.getenv("GRAPHRAG_CONTEXT_SIZE", "10000")
+    graphrag_context_size = int(graphrag_context_size_str)
 
 
 cfg = Config()
