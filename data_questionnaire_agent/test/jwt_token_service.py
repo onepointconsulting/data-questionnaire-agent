@@ -1,5 +1,3 @@
-import asyncio
-
 from data_questionnaire_agent.service.jwt_token_service import decode_token
 
 

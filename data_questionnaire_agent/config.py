@@ -1,6 +1,6 @@
 import os
-from pathlib import Path
 from enum import StrEnum
+from pathlib import Path
 
 import tenacity
 from dotenv import load_dotenv

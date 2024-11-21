@@ -10,8 +10,8 @@ from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
 )
-from data_questionnaire_agent.model.jwt_token import JWTToken
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
+from data_questionnaire_agent.model.jwt_token import JWTToken
 from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
 from data_questionnaire_agent.model.ontology_schema import Ontology
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
@@ -403,7 +403,7 @@ WHERE SESSION_ID = %(session_id)s and final_report = true""",
     )
     if res is None or len(res) == 0:
         return False
-    return res[0][0] == True
+    return True if res[0][0] else False
 
 
 async def update_session_steps(session_id: str, session_steps: int) -> Union[int, None]:
@@ -825,7 +825,7 @@ if __name__ == "__main__":
         assert new_qs is not None
         assert new_qs.id is not None
         has_report = await has_final_report(qs.session_id)
-        assert has_report == False
+        assert not has_report
         deleted_id = await delete_last_question(qs.session_id)
         assert deleted_id is not None, "Delete last question failed."
 

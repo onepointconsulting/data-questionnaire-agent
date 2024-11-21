@@ -198,7 +198,7 @@ async def process_questionnaire(
             return APP_STATE.RESTARTED
         if len(questionnaire) > minimum_number_of_questions:
             conditional_advice: ConditionalAdvice = await process_advice(
-                docsearch, questionnaire, advice_chain
+                questionnaire, advice_chain
             )
             logger.info(f"process_advice cost: {cb.total_cost}")
             has_advice = conditional_advice.has_advice

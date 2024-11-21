@@ -1,3 +1,4 @@
+import asyncio
 from enum import Enum
 
 from prompt_toolkit import prompt
@@ -26,13 +27,10 @@ from data_questionnaire_agent.service.initial_question_service import (
     prepare_initial_question,
     prompts,
 )
+from data_questionnaire_agent.service.knowledge_base_service import fetch_context
 from data_questionnaire_agent.service.question_generation_service import (
     chain_factory_secondary_question,
     prepare_secondary_question,
-)
-from data_questionnaire_agent.service.similarity_search import (
-    init_vector_search,
-    similarity_search,
 )
 from data_questionnaire_agent.service.tagging_service import (
     prepare_sentiment_input,
@@ -94,7 +92,6 @@ if __name__ == "__main__":
         "Press [Meta+Enter] or [Esc] followed by [Enter] to accept input. Enter 'q' to quit"
     )
     initial_question = prompts["questionnaire"]["initial"]["question"]
-    docsearch = init_vector_search()
     initial_question_chain = chain_factory_initial_question()
     has_questions_chain = sentiment_chain_factory()
     clarification_agent = create_clarification_agent()
@@ -114,7 +111,7 @@ if __name__ == "__main__":
                 if answer.lower().strip() == "q":
                     break
                 questionnaire.questions[-1].answer = {"content": answer}
-                knowledge_base = similarity_search(docsearch, answer, how_many=2)
+                knowledge_base = asyncio.run(fetch_context(answer))
                 logger.info("You said: %s", answer)
                 logger.info("Search result: %s", knowledge_base[:100])
                 input = prepare_initial_question(
@@ -161,9 +158,7 @@ if __name__ == "__main__":
 
             case WorkflowState.ADVICE:
                 questionnaire_str = str(questionnaire)
-                knowledge_base = similarity_search(
-                    docsearch, questionnaire_str, how_many=2
-                )
+                knowledge_base = asyncio.run(fetch_context(questionnaire_str))
                 logger.info("Search result: %s", knowledge_base[:100])
                 advice_input = prepare_conditional_advice(
                     knowledge_base=knowledge_base, questions_answers=questionnaire_str

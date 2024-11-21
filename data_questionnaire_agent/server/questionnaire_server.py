@@ -20,7 +20,6 @@ from data_questionnaire_agent.model.server_model import (
     ServerMessages,
     server_messages_factory,
 )
-from data_questionnaire_agent.model.jwt_token import JWTToken
 from data_questionnaire_agent.model.session_configuration import (
     CLIENT_ID_KEY,
     DEFAULT_SESSION_STEPS,
@@ -38,6 +37,10 @@ from data_questionnaire_agent.service.confidence_service import (
 )
 from data_questionnaire_agent.service.graph_service import generate_analyzed_ontology
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
+from data_questionnaire_agent.service.jwt_token_service import (
+    decode_token,
+    generate_token,
+)
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.ontology_service import create_ontology
@@ -64,18 +67,11 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_clarification,
     update_session_steps,
 )
-from data_questionnaire_agent.service.jwt_token_service import (
-    generate_token,
-    decode_token,
-)
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
 )
 from data_questionnaire_agent.service.secondary_question_processor import (
     process_secondary_questions,
-)
-from data_questionnaire_agent.service.similarity_search import (
-    init_vector_search,
 )
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
@@ -83,8 +79,6 @@ from data_questionnaire_agent.ui.advice_processor import process_advice
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
-
-docsearch = init_vector_search()
 
 
 sio = socketio.AsyncServer(
@@ -260,7 +254,7 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
             session_id, len(questionnaire) - 1, questionnaire, language
         )
         conditional_advice = await process_advice(
-            docsearch, questionnaire, create_structured_question_call(language)
+            questionnaire, create_structured_question_call(language)
         )
         await save_confidence_rating(
             confidence_rating, conditional_advice, session_id, questionnaire
@@ -527,7 +521,7 @@ async def generate_jwt_token(request: web.Request) -> web.Response:
                 raise web.HTTPBadRequest(
                     text="Please provide name and email parameters in the JSON body"
                 )
-    except json.JSONDecodeError as e:
+    except json.JSONDecodeError:
         raise web.HTTPBadRequest(
             text="Please make sure the JSON body is available and well formatted."
         )

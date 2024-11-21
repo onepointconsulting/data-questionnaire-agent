@@ -1,10 +1,9 @@
+import secrets
+import time
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-import secrets
 import jwt
-import time
-from datetime import timedelta, datetime, timezone
-
 from ulid import ULID
 
 from data_questionnaire_agent.config import jwt_token_cfg
