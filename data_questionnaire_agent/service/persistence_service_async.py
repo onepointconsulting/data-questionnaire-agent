@@ -864,8 +864,6 @@ if __name__ == "__main__":
         assert deleted == 1
         deleted2 = await delete_questionnaire_status(new_qs2.id)
         assert deleted2 == 1
-        
-
 
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())

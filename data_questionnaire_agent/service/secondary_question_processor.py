@@ -16,21 +16,35 @@ from data_questionnaire_agent.service.question_generation_service import (
     create_structured_question_call,
     prepare_secondary_question,
 )
+from data_questionnaire_agent.service.persistence_service_async import (
+    check_question_exists,
+)
 
 
 async def process_secondary_questions(
-    questionnaire: Questionnaire, question_per_batch: int, language: str
+    questionnaire: Questionnaire,
+    question_per_batch: int,
+    language: str,
+    session_id: str,
 ) -> List[QuestionAnswer]:
     knowledge_base = await fetch_context(questionnaire)
     secondary_question_input = prepare_secondary_question(
         questionnaire, knowledge_base, question_per_batch
     )
 
-    async for attempt in AsyncRetrying(**cfg.retry_args):
-        with attempt:
-            response_questions: ResponseQuestions = (
-                await create_structured_question_call(language).ainvoke(
-                    secondary_question_input
+    retries = 3
+    while retries > 0:
+        retries -= 1
+        async for attempt in AsyncRetrying(**cfg.retry_args):
+            with attempt:
+                response_questions: ResponseQuestions = (
+                    await create_structured_question_call(language).ainvoke(
+                        secondary_question_input
+                    )
                 )
-            )
-            return convert_to_question_answers(response_questions)
+                has_repeated = any(
+                    check_question_exists(response_question, session_id)
+                    for response_question in response_questions.questions
+                )
+                if not has_repeated:
+                    return convert_to_question_answers(response_questions)
