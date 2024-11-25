@@ -671,6 +671,20 @@ DELETE FROM TB_JWT_TOKEN WHERE ID = %(id)s
     return await create_cursor(process_save, True)
 
 
+async def check_question_exists(question: str, session_id: str) -> bool:
+    res = await select_from(
+        """
+SELECT count(*)
+FROM tb_questionnaire_status
+WHERE session_id = %(session_id)s
+	AND trim(lower(question)) = trim(lower(%(question)s))
+""",
+        {"session_id": session_id, "question": question},
+    )
+    r = res[0]
+    return r[0] > 0
+
+
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.question_answer_provider import (
         create_question_answer_with_possible_answers,
@@ -836,6 +850,23 @@ if __name__ == "__main__":
         count = await delete_jwt_token(id)
         assert count == 1, "Number of deleted tokens not 1"
 
+    async def test_check_question_exists():
+        # setup
+        qs = create_simple()
+        new_qs = await insert_questionnaire_status(qs)
+        new_qs2 = await insert_questionnaire_status(qs)
+
+        exists = await check_question_exists(qs.question, qs.session_id)
+        assert exists, f"The question {qs.question} should exist."
+
+        # delete
+        deleted = await delete_questionnaire_status(new_qs.id)
+        assert deleted == 1
+        deleted2 = await delete_questionnaire_status(new_qs2.id)
+        assert deleted2 == 1
+        
+
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -848,4 +879,5 @@ if __name__ == "__main__":
     # asyncio.run(test_save_ontology())
     # asyncio.run(test_insert_confidence_rating())
     # asyncio.run(test_delete_last_question())
-    asyncio.run(test_create_jwt())
+    # asyncio.run(test_create_jwt())
+    asyncio.run(test_check_question_exists())
