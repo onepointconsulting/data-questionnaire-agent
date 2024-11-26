@@ -15,7 +15,7 @@ async def fetch_context(questionnaire: Union[str, Questionnaire]) -> str:
     global docsearch
 
     questionnaire_str = (
-        questionnaire.answers_str()
+        str(questionnaire)
         if isinstance(questionnaire, Questionnaire)
         else questionnaire
     )

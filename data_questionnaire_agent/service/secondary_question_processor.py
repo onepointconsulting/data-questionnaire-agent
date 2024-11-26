@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 from tenacity import AsyncRetrying
@@ -42,9 +43,11 @@ async def process_secondary_questions(
                         secondary_question_input
                     )
                 )
-                has_repeated = any(
+                tasks = [
                     check_question_exists(response_question, session_id)
                     for response_question in response_questions.questions
-                )
-                if not has_repeated:
+                ]
+                results = await asyncio.gather(*tasks)
+                has_repeated = any(results)
+                if not has_repeated or retries == 0:
                     return convert_to_question_answers(response_questions)

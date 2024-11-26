@@ -276,7 +276,7 @@ async def handle_secondary_question(
         confidence_rating, question_answers = await asyncio.gather(
             calculate_confidence_rating(questionnaire, language),
             process_secondary_questions(
-                questionnaire, cfg.questions_per_batch, language
+                questionnaire, cfg.questions_per_batch, language, session_id
             ),
         )
         total_cost = cb.total_cost
