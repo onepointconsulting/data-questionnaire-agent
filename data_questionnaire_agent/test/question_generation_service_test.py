@@ -24,6 +24,7 @@ from data_questionnaire_agent.test.provider.session_properties_provider import (
 )
 from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.service.question_generation_service import divergent_prompt_transformer
+from data_questionnaire_agent.model.session_configuration import SessionProperties, ChatType
 
 
 def test_question_generation_en():
@@ -35,7 +36,7 @@ def test_question_generation_en():
     knowledge_base = provide_knowledge_base()
     input = prepare_secondary_question(questionnaire, knowledge_base)
     with get_openai_callback() as cb:
-        chain = chain_factory_secondary_question("en")
+        chain = chain_factory_secondary_question(SessionProperties(session_steps=6, session_language="en", chat_type=ChatType.DIVERGING))
         res: ResponseQuestions = asyncio.run(chain.arun(input))
         logger.info("total cost: %s", cb)
     assert isinstance(res, ResponseQuestions)

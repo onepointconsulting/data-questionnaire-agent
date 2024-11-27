@@ -6,7 +6,7 @@ from langchain_core.runnables.base import RunnableSequence
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
-from data_questionnaire_agent.model.session_configuration import SessionProperties
+from data_questionnaire_agent.model.session_configuration import SessionProperties, ChatType
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,
 )
@@ -42,6 +42,10 @@ def prompt_factory_secondary_questions(
     session_properties: SessionProperties,
 ) -> ChatPromptTemplate:
     language = session_properties.session_language
+    prompt_transformer = None
+    if session_properties.chat_type == ChatType.DIVERGING:
+        prompt_transformer = lambda p : divergent_prompt_transformer(p, language=language)
+        
     prompts = get_prompts(language)
     section = prompts["questionnaire"]["secondary"]
     return prompt_factory_generic(
@@ -53,6 +57,7 @@ def prompt_factory_secondary_questions(
             "questions_per_batch",
         ],
         prompts,
+        prompt_transformer
     )
 
 
