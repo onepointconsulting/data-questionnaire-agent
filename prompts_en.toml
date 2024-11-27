@@ -36,9 +36,13 @@ please generate {questions_per_batch} questions that are helpful to this custome
 Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
 Make sure that the possible answers are explicit and are able to be understood on their own. Please do not use possible answers like 'Both', 'Like the previous possible answer'.
 
+Main questionnaire topic: {questionnaire_topic}
+The questions should explore topics related to the main topic "{questionnaire_topic}".
+
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 The user answers are in the section that starts with ==== ANSWERS ==== and ends with ==== ANSWERS END ====.
+
 ==== KNOWLEDGE BASE START ====
 {knowledge_base}
 ==== KNOWLEDGE BASE END ====

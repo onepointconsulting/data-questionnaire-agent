@@ -12,34 +12,34 @@ from data_questionnaire_agent.model.application_schema import (
 from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
 )
+from data_questionnaire_agent.model.session_configuration import SessionProperties
 from data_questionnaire_agent.service.knowledge_base_service import fetch_context
+from data_questionnaire_agent.service.persistence_service_async import (
+    check_question_exists,
+)
 from data_questionnaire_agent.service.question_generation_service import (
     create_structured_question_call,
     prepare_secondary_question,
-)
-from data_questionnaire_agent.service.persistence_service_async import (
-    check_question_exists,
 )
 
 
 async def process_secondary_questions(
     questionnaire: Questionnaire,
     question_per_batch: int,
-    language: str,
+    session_properties: SessionProperties,
     session_id: str,
 ) -> List[QuestionAnswer]:
     knowledge_base = await fetch_context(questionnaire)
     secondary_question_input = prepare_secondary_question(
         questionnaire, knowledge_base, question_per_batch
     )
-
     retries = 3
     while retries > 0:
         retries -= 1
         async for attempt in AsyncRetrying(**cfg.retry_args):
             with attempt:
                 response_questions: ResponseQuestions = (
-                    await create_structured_question_call(language).ainvoke(
+                    await create_structured_question_call(session_properties).ainvoke(
                         secondary_question_input
                     )
                 )

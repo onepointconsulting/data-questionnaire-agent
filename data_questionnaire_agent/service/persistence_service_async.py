@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from typing import Any, Callable, Coroutine, List, Tuple, Union
+from typing import Any, Callable, Coroutine, List, Union
 
 from psycopg import AsyncConnection, AsyncCursor
 
@@ -18,11 +18,14 @@ from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.model.question_suggestion import QuestionSuggestion
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import (
+    DEFAULT_CHAT_TYPE,
     DEFAULT_SESSION_STEPS,
+    SESSION_CHAT_TYPE,
     SESSION_STEPS_CONFIG_KEY,
     SESSION_STEPS_LANGUAGE_KEY,
     SessionConfiguration,
     SessionConfigurationEntry,
+    SessionProperties,
 )
 from data_questionnaire_agent.toml_support import get_prompts
 
@@ -449,7 +452,9 @@ RETURNING ID
     return await create_cursor(process_delete, True)
 
 
-async def select_current_session_steps_and_language(session_id: str) -> Tuple[int, str]:
+async def select_current_session_steps_and_language(
+    session_id: str,
+) -> SessionProperties:
     res = await select_from(
         f"""
 SELECT CONFIG_KEY, CONFIG_VALUE
@@ -459,21 +464,26 @@ WHERE SESSION_ID = %(session_id)s
 """,
         {"session_id": session_id},
     )
-    default_values = (DEFAULT_SESSION_STEPS, DEFAULT_LANGUAGE)
+    default_values = (DEFAULT_SESSION_STEPS, DEFAULT_LANGUAGE, DEFAULT_CHAT_TYPE)
     if len(res) == 0 or len(res[0]) == 0 or res[0][0] is None:
         return default_values
+    steps = default_values[0]
+    language = default_values[1]
+    chat_type = default_values[2]
     try:
-        steps = default_values[0]
-        language = default_values[1]
         for r in res:
-            if r[0] == SESSION_STEPS_CONFIG_KEY:
+            key = r[0]
+            if key == SESSION_STEPS_CONFIG_KEY:
                 steps = int(r[1]) if r[1] != "None" else steps
-            elif r[0] == SESSION_STEPS_LANGUAGE_KEY:
+            elif key == SESSION_STEPS_LANGUAGE_KEY:
                 language = str(r[1])
-        return (steps, language)
+            elif key == SESSION_CHAT_TYPE:
+                chat_type = str(r[1])
     except:
         logger.exception("Cannot select current session steps")
-        return default_values
+    return SessionProperties(
+        session_steps=steps, session_language=language, chat_type=chat_type
+    )
 
 
 async def save_report(
@@ -764,11 +774,10 @@ if __name__ == "__main__":
         session_configuration = create_session_configuration()
         saved = await save_session_configuration(session_configuration)
         assert isinstance(saved, SessionConfigurationEntry)
-        (
-            current_session_steps,
-            language,
-        ) = await select_current_session_steps_and_language(saved.session_id)
-        assert current_session_steps == DEFAULT_SESSION_STEPS
+        session_properties: SessionProperties = (
+            await select_current_session_steps_and_language(saved.session_id)
+        )
+        assert session_properties.session_steps == DEFAULT_SESSION_STEPS
         deleted = await delete_session_configuration(saved.id)
         assert deleted == 1
 

@@ -35,6 +35,9 @@ bitte {questions_per_batch} Fragen generieren, die diesem Kunden helfen, Problem
 
 Geben Sie auch einige mögliche Antworten auf die Fragen an, die Sie generieren. Für eine generierte Frage können mehrere mögliche Antworten erstellt werden. Die generierte mögliche Antwort sollte nicht mehr als 2 Sätze umfassen.
 
+Hauptfragebogen-Thema: {questionnaire_topic}
+Die Fragen sollten Themen im Zusammenhang mit dem Hauptthema "{questionnaire_topic}" erkunden.
+
 Der Abschnitt „Wissensbasis“ beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
 Der Abschnitt mit den vom Kunden beantworteten Fragen und Antworten beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
 Die Benutzerantworten befinden sich in dem Abschnitt, der mit ==== ANSWERS ==== beginnt und mit ==== ANSWERS END ==== endet.

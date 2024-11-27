@@ -21,12 +21,14 @@ from data_questionnaire_agent.model.server_model import (
     server_messages_factory,
 )
 from data_questionnaire_agent.model.session_configuration import (
-    CLIENT_ID_KEY,
     DEFAULT_SESSION_STEPS,
     SESSION_STEPS_CONFIG_KEY,
-    SESSION_STEPS_LANGUAGE_KEY,
+    ChatType,
     SessionConfiguration,
     SessionConfigurationEntry,
+    SessionProperties,
+    chat_type_factory,
+    create_session_configurations,
 )
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
 from data_questionnaire_agent.service.advice_service import (
@@ -115,6 +117,7 @@ async def start_session(
     session_steps: int = 6,
     language: str = "en",
     client_id: str = "",
+    chat_type: str = ChatType.DIVERGING.value,
 ):
     """
     Start the session by setting the main topic.
@@ -134,7 +137,12 @@ async def start_session(
             await send_error(sid, session_id, t("db_insert_failed", locale=language))
             return
         server_messages = server_messages_factory([qs])
-        await insert_configuration(server_messages, session_steps, language, client_id)
+        session_properties = SessionProperties(
+            session_steps=session_steps,
+            session_language=language,
+            chat_type=chat_type_factory(chat_type),
+        )
+        await insert_configuration(server_messages, session_properties, client_id)
     else:
         # Get all messages on this session
         server_messages = server_messages_factory(questionnaire_messages)
@@ -153,22 +161,25 @@ async def start_session(
 @sio.event
 async def client_message(sid: str, session_id: str, answer: str):
     if session_id not in agent_sessions:
-        logger.warn(f"Session not found {session_id}")
+        logger.warning(f"Session not found {session_id}")
         # Create new session
         await start_session(sid, session_id)
     else:
         update_id = await update_answer(session_id, answer)
-        (
-            current_session_steps,
-            language,
-        ) = await select_current_session_steps_and_language(session_id)
+        session_properties: SessionProperties = (
+            await select_current_session_steps_and_language(session_id)
+        )
+        language = session_properties.session_language
+        current_session_steps = session_properties.session_steps
         if update_id is None:
             await send_error(sid, session_id, t("db_update_failed", locale=language))
             return
         questionnaire = await select_questionnaire(session_id)
         if current_session_steps - 1 > len(questionnaire):
             # We are generating questions
-            await handle_secondary_question(sid, session_id, questionnaire, language)
+            await handle_secondary_question(
+                sid, session_id, questionnaire, session_properties
+            )
         else:
             # Check if report is available
             report = await select_report(session_id)
@@ -191,10 +202,9 @@ async def generate_report_now(sid: str, session_id: str):
     questionnaire = await select_questionnaire(session_id)
     new_session_steps = len(questionnaire.questions)
     config_id = await update_session_steps(session_id, new_session_steps)
-    (
-        current_session_steps,
-        language,
-    ) = await select_current_session_steps_and_language(session_id)
+    session_properties = await select_current_session_steps_and_language(session_id)
+    language = session_properties.session_language
+    current_session_steps = session_properties.session_steps
     if config_id is None or current_session_steps != new_session_steps:
         await send_error(sid, session_id, "Failed to generate report now")
     else:
@@ -226,13 +236,10 @@ async def clarify_question(
 async def extend_session(sid: str, session_id: str, session_steps: int):
     final_report = await has_final_report(session_id)
     if final_report:
-        (
-            current_session_steps,
-            _,
-        ) = await select_current_session_steps_and_language(session_id)
+        session_properties = await select_current_session_steps_and_language(session_id)
         await sio.emit(
             Commands.EXTEND_SESSION,
-            current_session_steps,
+            session_properties.session_steps,
             room=sid,
         )
         return
@@ -269,14 +276,18 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
 
 
 async def handle_secondary_question(
-    sid: str, session_id: str, questionnaire: Questionnaire, language: str
+    sid: str,
+    session_id: str,
+    questionnaire: Questionnaire,
+    session_properties: SessionProperties,
 ):
+    language = session_properties.session_language
     total_cost = 0
     with get_openai_callback() as cb:
         confidence_rating, question_answers = await asyncio.gather(
             calculate_confidence_rating(questionnaire, language),
             process_secondary_questions(
-                questionnaire, cfg.questions_per_batch, language, session_id
+                questionnaire, cfg.questions_per_batch, session_properties, session_id
             ),
         )
         total_cost = cb.total_cost
@@ -353,30 +364,15 @@ async def append_first_suggestion(server_messages: ServerMessages, question: str
 
 async def insert_configuration(
     server_messages: ServerMessages,
-    session_steps: int,
-    language: str,
+    session_properties: SessionProperties,
     client_id: str = "",
 ):
     session_id = server_messages.session_id
-    session_configuration_entry = SessionConfigurationEntry(
+    session_keys = create_session_configurations(
         session_id=session_id,
-        config_key=SESSION_STEPS_CONFIG_KEY,
-        config_value=str(session_steps),
+        session_properties=session_properties,
+        client_id=client_id,
     )
-    session_configuration_language = SessionConfigurationEntry(
-        session_id=session_id,
-        config_key=SESSION_STEPS_LANGUAGE_KEY,
-        config_value=language,
-    )
-    session_keys = [session_configuration_entry, session_configuration_language]
-    if client_id is not None and len(client_id.strip()) > 0:
-        session_keys.append(
-            SessionConfigurationEntry(
-                session_id=session_id,
-                config_key=CLIENT_ID_KEY,
-                config_value=client_id,
-            )
-        )
     accepted_keys = []
     for session_key in session_keys:
         saved_entry = await save_session_configuration(session_key)

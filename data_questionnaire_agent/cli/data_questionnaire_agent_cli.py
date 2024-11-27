@@ -15,6 +15,10 @@ from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
     ResponseTags,
 )
+from data_questionnaire_agent.model.session_configuration import (
+    ChatType,
+    SessionProperties,
+)
 from data_questionnaire_agent.service.advice_service import (
     chain_factory_advice,
     prepare_conditional_advice,
@@ -95,7 +99,10 @@ if __name__ == "__main__":
     initial_question_chain = chain_factory_initial_question()
     has_questions_chain = sentiment_chain_factory()
     clarification_agent = create_clarification_agent()
-    secondary_question_chain = chain_factory_secondary_question()
+    session_properties = SessionProperties(
+        session_steps=6, session_language="en", chat_type=ChatType.DIVERGING
+    )
+    secondary_question_chain = chain_factory_secondary_question(session_properties)
     advice_chain = chain_factory_advice()
 
     workflow_step = WorkflowState.INITIAL

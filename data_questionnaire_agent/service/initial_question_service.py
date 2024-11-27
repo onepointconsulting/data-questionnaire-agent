@@ -1,4 +1,4 @@
-from typing import List
+from typing import Callable, List, Union
 
 from langchain.chains.llm import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
@@ -15,9 +15,15 @@ from data_questionnaire_agent.toml_support import get_prompts
 
 
 def prompt_factory_generic(
-    section: dict, input_variables: List[str], prompts: object
+    section: dict,
+    input_variables: List[str],
+    prompts: object,
+    prompt_transform: Union[Callable, None] = None,
 ) -> ChatPromptTemplate:
     human_message = section["human_message"]
+    human_message = (
+        prompt_transform() if prompt_transform is not None else human_message
+    )
     prompt_msgs = [
         SystemMessagePromptTemplate(
             prompt=PromptTemplate(
@@ -86,6 +92,7 @@ def prepare_initial_question(
 
 if __name__ == "__main__":
     import asyncio
+
     from data_questionnaire_agent.log_init import logger
     from data_questionnaire_agent.service.knowledge_base_service import fetch_context
 
