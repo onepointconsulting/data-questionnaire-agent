@@ -138,7 +138,7 @@ async def start_session(
             return
         server_messages = server_messages_factory([qs])
         session_properties = SessionProperties(
-            session_steps=session_steps,
+            session_steps=session_steps or DEFAULT_SESSION_STEPS,
             session_language=language,
             chat_type=chat_type_factory(chat_type),
         )
