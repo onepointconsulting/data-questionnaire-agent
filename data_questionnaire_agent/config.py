@@ -183,6 +183,8 @@ class JWTTokenConfig:
     timedelta_minutes = os.getenv("JWT_TIME_DELTA_MINUTES")
     assert timedelta_minutes is not None, "No time delta in minutes available"
     timedelta_minutes = int(timedelta_minutes)
+    dwell_url = os.getenv("DWELL_URL", "https://d-well.onepointltd.ai")
+    dwise_url = os.getenv("DWISE_URL", "https://d-wise.onepointltd.ai")
 
 
 jwt_token_cfg = JWTTokenConfig()

@@ -43,7 +43,7 @@ from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.jwt_token_service import (
     decode_token,
     generate_token,
-    generate_token_batch,
+    generate_token_batch_file,
 )
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
@@ -497,11 +497,6 @@ async def confidence(request: web.Request) -> web.Response:
     return web.json_response(confidence_rating.dict(), headers=CORS_HEADERS)
 
 
-@routes.options("/gen_jwt_token")
-async def generate_jwt_token_options(_: web.Request) -> web.Response:
-    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
-
-
 async def handle_error(fun: Awaitable, **kwargs) -> any:
     try:
         return await fun(kwargs["request"])
@@ -518,6 +513,11 @@ def extract_time_delta(json_content: dict) -> Union[int, None]:
         if "time_delta_minutes" in json_content is not None
         else None
     )
+
+
+@routes.options("/gen_jwt_token")
+async def generate_jwt_token_options(_: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
 
 
 @routes.post("/gen_jwt_token")
@@ -541,18 +541,41 @@ async def generate_jwt_token(request: web.Request) -> web.Response:
     return await handle_error(process, request=request)
 
 
+@routes.options("/generate_token_batch")
+async def generate_token_batch_options(_: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+
+
 @routes.post("/generate_token_batch")
 async def generate_token_batch_post(request: web.Request) -> web.Response:
+    """
+    Generates a batch of tokens
+    Example:
+    {
+        "name": "anonymous_postman",
+        "email": "anonymous_postman@test.com",
+        "time_delta_minutes": 60,
+        "amount": 3
+    }
+    """
+
     async def process(request: web.Request):
         json_content = await request.json()
         match json_content:
-            case {"name": name, "email": email, "amount": time_delta_minutes}:
+            case {"name": name, "email": email, "amount": amount}:
+                time_delta_minutes = extract_time_delta(json_content)
                 token_data = JWTTokenData(
                     name=name, email=email, time_delta_minutes=time_delta_minutes
                 )
-                time_delta_minutes = extract_time_delta(json_content)
-                generated = generate_token_batch(token_data, time_delta_minutes)
-                return web.json_response(generated, headers=CORS_HEADERS)
+                generated = await generate_token_batch_file(token_data, amount)
+                content_disposition = "attachment"
+                return web.FileResponse(
+                    generated,
+                    headers={
+                        **CORS_HEADERS,
+                        "CONTENT-DISPOSITION": f'{content_disposition}; filename="{generated.name}"',
+                    },
+                )
             case _:
                 raise web.HTTPBadRequest(
                     text="Please provide name, email and time_delta_minutes parameters in the JSON body"

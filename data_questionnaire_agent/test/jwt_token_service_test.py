@@ -1,10 +1,12 @@
 import asyncio
 
-from data_questionnaire_agent.test.provider.jwt_token_data_provider import generate_token_data
 from data_questionnaire_agent.service.jwt_token_service import (
     decode_token,
     generate_token_batch,
-    generate_token_batch_file
+    generate_token_batch_file,
+)
+from data_questionnaire_agent.test.provider.jwt_token_data_provider import (
+    generate_token_data,
 )
 
 
