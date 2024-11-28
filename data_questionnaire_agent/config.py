@@ -65,6 +65,8 @@ class Config:
     assert template_location.exists()
     pdf_folder = Path(os.getenv("PDF_FOLDER"))
     create_if_not_exists(pdf_folder)
+    jwt_gen_folder = Path(os.getenv("JWT_GEN_FOLDER"))
+    create_if_not_exists(jwt_gen_folder)
     pdf_banner = Path(os.getenv("PDF_BANNER"))
     assert pdf_banner.exists(), f"Cannot find PDF banner: {pdf_banner}"
 

@@ -1,9 +1,10 @@
 import asyncio
 
-from data_questionnaire_agent.model.jwt_token import JWTTokenData
+from data_questionnaire_agent.test.provider.jwt_token_data_provider import generate_token_data
 from data_questionnaire_agent.service.jwt_token_service import (
     decode_token,
     generate_token_batch,
+    generate_token_batch_file
 )
 
 
@@ -14,12 +15,17 @@ def test_decode_token():
 
 
 def test_generate_token_batch():
-    jwt_token_data = JWTTokenData(
-        name="anonymous", email="anonymous@test.com", time_delta_minutes=None
-    )
+    jwt_token_data = generate_token_data()
     amount = 5
     jwt_tokens = asyncio.run(generate_token_batch(jwt_token_data, amount))
     assert len(jwt_tokens) == amount
     for jwt_token in jwt_tokens:
         decoded = asyncio.run(decode_token(jwt_token.token))
         assert decoded is not None, "Decoded should not be none."
+
+
+def test_generate_token_batch_file():
+    jwt_token_data = generate_token_data()
+    amount = 5
+    file = asyncio.run(generate_token_batch_file(jwt_token_data, amount))
+    assert file.exists(), f"Cannot find file {file}"
