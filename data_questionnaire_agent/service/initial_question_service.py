@@ -22,7 +22,9 @@ def prompt_factory_generic(
 ) -> ChatPromptTemplate:
     human_message = section["human_message"]
     human_message = (
-        prompt_transform(human_message) if prompt_transform is not None else human_message
+        prompt_transform(human_message)
+        if prompt_transform is not None
+        else human_message
     )
     prompt_msgs = [
         SystemMessagePromptTemplate(

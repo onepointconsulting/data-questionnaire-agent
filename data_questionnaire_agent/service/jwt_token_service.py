@@ -1,13 +1,13 @@
 import secrets
 import time
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import List, Optional
 
 import jwt
 from ulid import ULID
 
 from data_questionnaire_agent.config import jwt_token_cfg
-from data_questionnaire_agent.model.jwt_token import JWTToken
+from data_questionnaire_agent.model.jwt_token import JWTToken, JWTTokenData
 from data_questionnaire_agent.service.persistence_service_async import insert_jwt_token
 
 
@@ -15,9 +15,12 @@ def generate_secret() -> str:
     return secrets.token_hex(20)
 
 
-async def generate_token(
-    name: str, email: str, time_delta_minutes: Optional[int]
-) -> Optional[JWTToken]:
+async def generate_token(token_data: JWTTokenData) -> Optional[JWTToken]:
+    name, email, time_delta_minutes = (
+        token_data.name,
+        token_data.email,
+        token_data.time_delta_minutes,
+    )
     payload = {"sub": str(ULID()), "name": name, "iat": int(time.time())}
     if time_delta_minutes is not None:
         payload["exp"] = datetime.now(timezone.utc) + timedelta(
@@ -35,12 +38,29 @@ async def decode_token(token: str) -> dict:
     return jwt.decode(token, jwt_token_cfg.secret, jwt_token_cfg.algorithm)
 
 
+async def generate_token_batch(base_data: JWTTokenData, amount: int) -> List[JWTToken]:
+    token_datas: List[JWTTokenData] = [
+        JWTTokenData(
+            name=f"{base_data.name}_{i}",
+            email=f"{i}_{base_data.email}",
+            time_delta_minutes=base_data.time_delta_minutes,
+        )
+        for i in range(amount)
+    ]
+    generated_tokens = []
+    for token_data in token_datas:
+        generated = await generate_token(token_data)
+        if generated:
+            generated_tokens.append(generated)
+    return generated_tokens
+
+
 if __name__ == "__main__":
     import asyncio
 
     print(generate_secret())
-
-    jwt_token = asyncio.run(generate_token("Gil", "test.test@test.com", 60))
+    data = JWTTokenData(name="Gil", email="test.test@test.com", time_delta_minutes=40)
+    jwt_token = asyncio.run(generate_token(data))
     print(jwt_token)
     assert jwt_token is not None
     print(asyncio.run(decode_token(jwt_token.token)))

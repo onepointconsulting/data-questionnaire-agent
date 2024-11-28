@@ -1,7 +1,7 @@
 import asyncio
 import json
 from enum import StrEnum
-from typing import Any, List, Tuple, Union
+from typing import Any, Awaitable, List, Tuple, Union
 
 import socketio
 from aiohttp import web
@@ -12,6 +12,7 @@ from data_questionnaire_agent.config import cfg, mail_config, websocket_cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
+from data_questionnaire_agent.model.jwt_token import JWTTokenData
 from data_questionnaire_agent.model.mail_data import MailData
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
@@ -42,6 +43,7 @@ from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.jwt_token_service import (
     decode_token,
     generate_token,
+    generate_token_batch,
 )
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
@@ -500,27 +502,63 @@ async def generate_jwt_token_options(_: web.Request) -> web.Response:
     return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
 
 
+async def handle_error(fun: Awaitable, **kwargs) -> any:
+    try:
+        return await fun(kwargs["request"])
+    except Exception as e:
+        logger.error(f"Error occurred: {e}", exc_info=True)
+        raise web.HTTPBadRequest(
+            text="Please make sure the JSON body is available and well formatted."
+        )
+
+
+def extract_time_delta(json_content: dict) -> Union[int, None]:
+    return (
+        int(json_content["time_delta_minutes"])
+        if "time_delta_minutes" in json_content is not None
+        else None
+    )
+
+
 @routes.post("/gen_jwt_token")
 async def generate_jwt_token(request: web.Request) -> web.Response:
-    try:
+    async def process(request: web.Request):
         json_content = await request.json()
         match json_content:
             case {"name": name, "email": email}:
-                time_delta_minutes = (
-                    int(json_content["time_delta_minutes"])
-                    if "time_delta_minutes" in json_content is not None
-                    else None
+                time_delta_minutes = extract_time_delta(json_content)
+                token = await generate_token(
+                    JWTTokenData(
+                        name=name, email=email, time_delta_minutes=time_delta_minutes
+                    )
                 )
-                token = await generate_token(name, email, time_delta_minutes)
                 return web.json_response(token.dict(), headers=CORS_HEADERS)
             case _:
                 raise web.HTTPBadRequest(
                     text="Please provide name and email parameters in the JSON body"
                 )
-    except json.JSONDecodeError:
-        raise web.HTTPBadRequest(
-            text="Please make sure the JSON body is available and well formatted."
-        )
+
+    return await handle_error(process, request=request)
+
+
+@routes.post("/generate_token_batch")
+async def generate_token_batch_post(request: web.Request) -> web.Response:
+    async def process(request: web.Request):
+        json_content = await request.json()
+        match json_content:
+            case {"name": name, "email": email, "amount": time_delta_minutes}:
+                token_data = JWTTokenData(
+                    name=name, email=email, time_delta_minutes=time_delta_minutes
+                )
+                time_delta_minutes = extract_time_delta(json_content)
+                generated = generate_token_batch(token_data, time_delta_minutes)
+                return web.json_response(generated, headers=CORS_HEADERS)
+            case _:
+                raise web.HTTPBadRequest(
+                    text="Please provide name, email and time_delta_minutes parameters in the JSON body"
+                )
+
+    return await handle_error(process, request=request)
 
 
 @routes.post("/validate_jwt_token")

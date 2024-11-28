@@ -106,6 +106,7 @@ CREATE TABLE PUBLIC.TB_JWT_TOKEN(
 );
 
 alter table tb_jwt_token alter column email TYPE character varying(256);
+ALTER TABLE tb_jwt_token ADD COLUMN CREATED_AT TIMESTAMP DEFAULT NOW() NULL;
 
 INSERT INTO public.tb_language(language_code) VALUES ('en');
 INSERT INTO public.tb_language(language_code) VALUES ('de');

@@ -6,9 +6,14 @@ from langchain_community.callbacks import get_openai_callback
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
+from data_questionnaire_agent.model.session_configuration import (
+    ChatType,
+    SessionProperties,
+)
 from data_questionnaire_agent.service.question_generation_service import (
     chain_factory_secondary_question,
     create_structured_question_call,
+    divergent_prompt_transformer,
     prepare_secondary_question,
 )
 from data_questionnaire_agent.test.provider.knowledge_base_provider import (
@@ -23,8 +28,6 @@ from data_questionnaire_agent.test.provider.session_properties_provider import (
     create_session_properties,
 )
 from data_questionnaire_agent.toml_support import get_prompts
-from data_questionnaire_agent.service.question_generation_service import divergent_prompt_transformer
-from data_questionnaire_agent.model.session_configuration import SessionProperties, ChatType
 
 
 def test_question_generation_en():
@@ -36,7 +39,11 @@ def test_question_generation_en():
     knowledge_base = provide_knowledge_base()
     input = prepare_secondary_question(questionnaire, knowledge_base)
     with get_openai_callback() as cb:
-        chain = chain_factory_secondary_question(SessionProperties(session_steps=6, session_language="en", chat_type=ChatType.DIVERGING))
+        chain = chain_factory_secondary_question(
+            SessionProperties(
+                session_steps=6, session_language="en", chat_type=ChatType.DIVERGING
+            )
+        )
         res: ResponseQuestions = asyncio.run(chain.arun(input))
         logger.info("total cost: %s", cb)
     assert isinstance(res, ResponseQuestions)
@@ -57,8 +64,11 @@ def test_divergent_prompt_transformer() -> str:
     prompts = get_prompts("en")
     human_message = prompts["questionnaire"]["secondary"]["human_message"]
     transformed = divergent_prompt_transformer(human_message, "en")
-    assert not "Main questionnaire topic:" in transformed
-    assert not "The questions should explore topics related to the main topic" in transformed
+    assert "Main questionnaire topic:" not in transformed
+    assert (
+        "The questions should explore topics related to the main topic"
+        not in transformed
+    )
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
