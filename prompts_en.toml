@@ -192,3 +192,24 @@ You miss the background information about the technological landscape of the cus
 For example, you should report a "low" confidence degree when:
 You know the main problem of the customer and nothing else. Or you do not even know about the main problem of the user.
 """
+
+[reporting]
+    [keyword_extraction_prompt]
+        system_message = "You are an expert at keyword extraction in long reports. You excel at extracting keywords with concepts from large amounts of text."
+        human_message = """
+Based on the text below starting from === Questionnaire === and ending at === Questionnaire End === can you please extract the following items from the questionnaire section which always starts with "# Questionnaire":
+- stated problems as keywords with problem area as keywords, degree and sentiment as keywords
+- concepts as keywords with corresponding area as keywords
+
+From the recommendations (starting with "# Recommendations") sections can you please extract the following:
+- recommendations as keywords
+- strategies as keywords
+
+From the "# What to avoid" section can you please extract extract the negative recommendations as keywords.
+
+From the "# Positive outcomes" section can you please extract extract the positive outcomes as keywords.
+
+=== Questionnaire ===
+{full_questionnaire}
+=== Questionnaire End ===
+"""

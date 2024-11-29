@@ -1,10 +1,8 @@
 import asyncio
-import sys
-from typing import Any, Callable, Coroutine, List, Union
+from typing import List, Union
 
 from psycopg import AsyncConnection, AsyncCursor
 
-from data_questionnaire_agent.config import db_cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
@@ -27,60 +25,12 @@ from data_questionnaire_agent.model.session_configuration import (
     SessionConfigurationEntry,
     SessionProperties,
 )
+from data_questionnaire_agent.service.query_support import (
+    create_cursor,
+    select_from,
+    use_connection,
+)
 from data_questionnaire_agent.toml_support import get_prompts
-
-if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-
-async def create_connection() -> AsyncConnection:
-    return await AsyncConnection.connect(conninfo=db_cfg.db_conn_str)
-
-
-async def create_cursor(func: Callable, commit=False) -> Any:
-    # await asynch_pool.check()
-    try:
-        conn = await create_connection()
-        # async with asynch_pool.connection() as conn:
-        async with conn.cursor() as cur:
-            return await func(cur)
-    except:
-        logger.exception("Could not create cursor.")
-        return None
-    finally:
-        if "conn" in locals() and conn is not None:
-            if commit:
-                await conn.commit()
-            await conn.close()
-
-
-async def use_connection(func: Coroutine, commit=True) -> any:
-    try:
-        conn = await create_connection()
-        return await func(conn)
-    except:
-        logger.exception("Could not create database connection.")
-    finally:
-        if conn is not None:
-            if commit:
-                await conn.commit()
-            await conn.close()
-
-
-async def handle_select_func(query: str, query_params: dict):
-    async def func(cur: AsyncCursor):
-        await cur.execute(
-            query,
-            query_params,
-        )
-        return list(await cur.fetchall())
-
-    return func
-
-
-async def select_from(query: str, parameter_map: dict) -> list:
-    handle_select = await handle_select_func(query, parameter_map)
-    return await create_cursor(handle_select)
 
 
 async def select_initial_question(language: str) -> str:
@@ -695,6 +645,57 @@ WHERE session_id = %(session_id)s
     return r[0] > 0
 
 
+async def select_questionnaires_by_tokens(
+    tokens: List[str],
+) -> List[QuestionnaireStatus]:
+    sql = """
+SELECT ID,
+	SESSION_ID,
+	QUESTION,
+	ANSWER,
+	FINAL_REPORT,
+	CREATED_AT,
+	UPDATED_AT,
+	TOTAL_COST,
+	CLARIFICATION
+FROM TB_QUESTIONNAIRE_STATUS
+WHERE SESSION_ID IN
+		(SELECT DISTINCT C.SESSION_ID
+			FROM TB_SESSION_CONFIGURATION C
+			INNER JOIN TB_QUESTIONNAIRE_STATUS S ON S.SESSION_ID = C.SESSION_ID
+			WHERE C.CONFIG_KEY = 'session-client-id'
+				AND C.CONFIG_VALUE = ANY(%(tokens)s)
+				AND S.FINAL_REPORT = TRUE)
+ORDER BY ID ASC;
+"""
+    res = await select_from(sql, {"tokens": tokens})
+    ID = 0
+    SESSION_ID = 1
+    QUESTION = 2
+    ANSWER = 3
+    FINAL_REPORT = 4
+    CREATED_AT = 5
+    UPDATED_AT = 6
+    TOTAL_COST = 7
+    CLARIFICATION = 8
+    if res is None:
+        return []
+    return [
+        QuestionnaireStatus(
+            id=r[ID],
+            session_id=r[SESSION_ID],
+            question=r[QUESTION],
+            answer=r[ANSWER],
+            final_report=r[FINAL_REPORT],
+            created_at=r[CREATED_AT],
+            updated_at=r[UPDATED_AT],
+            total_cost=r[TOTAL_COST],
+            clarification=r[CLARIFICATION],
+        )
+        for r in res
+    ]
+
+
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.question_answer_provider import (
         create_question_answer_with_possible_answers,
@@ -874,6 +875,22 @@ if __name__ == "__main__":
         deleted2 = await delete_questionnaire_status(new_qs2.id)
         assert deleted2 == 1
 
+    async def test_select_questionnaires_by_tokens():
+        import pickle
+
+        from data_questionnaire_agent.config import cfg
+
+        res = await select_questionnaires_by_tokens(
+            [
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUpEMkpXTkhBNTZGN1lHRENDU1czRjJaQiIsIm5hbWUiOiJHaWwiLCJpYXQiOjE3MzIwMzI0ODR9.r8LTAiuORLPk2QnrS8YMcX7dHdlYKndHuXc3PEY6Msw",
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUpEVDY0S1gxR0hTSktTQVcwSE1aSEhERyIsIm5hbWUiOiJUZXN0XzQiLCJpYXQiOjE3MzI4MjQ0MjB9.PUMd-BBH3SjuXdlG8SWQXsvCJApRW7xy_giEVx84yA4",
+            ]
+        )
+        assert res is not None
+        assert len(res) > 0, "No results available"
+        with open(cfg.project_root / "data/questionnaire.pkl", "wb") as f:
+            pickle.dump(res, f)
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -887,4 +904,5 @@ if __name__ == "__main__":
     # asyncio.run(test_insert_confidence_rating())
     # asyncio.run(test_delete_last_question())
     # asyncio.run(test_create_jwt())
-    asyncio.run(test_check_question_exists())
+    # asyncio.run(test_check_question_exists())
+    asyncio.run(test_select_questionnaires_by_tokens())
