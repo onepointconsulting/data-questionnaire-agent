@@ -648,7 +648,7 @@ WHERE session_id = %(session_id)s
 async def select_questionnaires_by_tokens(
     tokens: List[str],
 ) -> List[QuestionnaireStatus]:
-    sql = """
+    sql = f"""
 SELECT ID,
 	SESSION_ID,
 	QUESTION,
@@ -664,11 +664,11 @@ WHERE SESSION_ID IN
 			FROM TB_SESSION_CONFIGURATION C
 			INNER JOIN TB_QUESTIONNAIRE_STATUS S ON S.SESSION_ID = C.SESSION_ID
 			WHERE C.CONFIG_KEY = 'session-client-id'
-				AND C.CONFIG_VALUE = ANY(%(tokens)s)
+				{'AND C.CONFIG_VALUE = ANY(%(tokens)s)' if len(tokens) > 0 else ""}
 				AND S.FINAL_REPORT = TRUE)
 ORDER BY ID ASC;
 """
-    res = await select_from(sql, {"tokens": tokens})
+    res = await select_from(sql, {"tokens": tokens} if len(tokens) > 0 else {})
     ID = 0
     SESSION_ID = 1
     QUESTION = 2
@@ -891,6 +891,17 @@ if __name__ == "__main__":
         with open(cfg.project_root / "data/questionnaire.pkl", "wb") as f:
             pickle.dump(res, f)
 
+    async def test_select_questionnaires_by_tokens_all():
+        import pickle
+
+        from data_questionnaire_agent.config import cfg
+
+        res = await select_questionnaires_by_tokens([])
+        assert res is not None
+        assert len(res) > 0, "No results available"
+        with open(cfg.project_root / "data/questionnaire_all.pkl", "wb") as f:
+            pickle.dump(res, f)
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -906,3 +917,4 @@ if __name__ == "__main__":
     # asyncio.run(test_create_jwt())
     # asyncio.run(test_check_question_exists())
     asyncio.run(test_select_questionnaires_by_tokens())
+    asyncio.run(test_select_questionnaires_by_tokens_all())

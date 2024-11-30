@@ -7,16 +7,17 @@ from data_questionnaire_agent.service.persistence_service_async import (
 )
 
 
-async def aggregate_reports(tokens: List[str]) -> List[str]:
+async def aggregate_reports(tokens: List[str]) -> str:
     questionnaire_statuses = await select_questionnaires_by_tokens(tokens)
-    return convert_to_str(questionnaire_statuses)
+    str_list = convert_to_str(questionnaire_statuses)
+    return "\n".join(str_list)
 
 
 def create_bullet_list(items: List[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
 
-def convert_to_str(questionnaire_statuses: List[QuestionnaireStatus]):
+def convert_to_str(questionnaire_statuses: List[QuestionnaireStatus]) -> List[str]:
     questionnaires = []
     questionnaire = []
     questionnaire.append("# Questionnaire")

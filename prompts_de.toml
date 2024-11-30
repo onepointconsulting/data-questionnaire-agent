@@ -187,3 +187,51 @@ Zum Beispiel, du solltest einen "low" Vertrauensgrad melden, wenn:
 Du kennst das Hauptproblem des Kunden und sonst nichts. Oder du kennst nicht einmal das Hauptproblem des Benutzers.
 """
 
+[reporting]
+    [reporting.keyword_extraction_prompt]
+        system_message = "Sie sind Experte für die Schlüsselwortextraktion in langen Berichten. Sie sind hervorragend darin, Schlüsselwörter mit Konzepten aus großen Textmengen zu extrahieren."
+        human_message = """
+Basierend auf dem unten stehenden Text, der mit === Fragebogen === beginnt und mit === Fragebogen Ende === endet, können Sie bitte die folgenden Elemente aus dem Abschnitt extrahieren, der immer mit "# Fragebogen" beginnt:
+- genannte Probleme als Schlüsselwörter mit Problembereich als Schlüsselwörter, Grad und Stimmung als Schlüsselwörter
+- Konzepte als Schlüsselwörter mit entsprechendem Bereich als Schlüsselwörter
+
+Aus dem Abschnitt Empfehlungen (beginnend mit "# Empfehlungen") können Sie bitte Folgendes extrahieren:
+- Empfehlungen als Schlüsselwörter
+- Strategien als Schlüsselwörter
+
+Aus dem Abschnitt "# Was zu vermeiden ist" können Sie bitte die negativen Empfehlungen als Schlüsselwörter extrahieren.
+
+Aus dem Abschnitt "# Positive Ergebnisse" können Sie bitte die positiven Ergebnisse als Schlüsselwörter extrahieren.
+
+=== Fragebogen ===
+{full_questionnaires}
+=== Fragebogen Ende ===
+"""
+    [reporting.keyword_document_classifier]
+        system_message = "Sie sind Experte für Dokumentklassifikation. Sie können erkennen, ob bestimmte Schlüsselwörter für ein Dokument relevant sind oder nicht."
+        human_message = """
+Basierend auf dem untenstehenden Text, der mit === Fragebogen === beginnt und mit === Fragebogen Ende === endet, können Sie bitte identifizieren, ob die folgenden Schlüsselwörter in verschiedenen Kategorien für den Fragebogen relevant sind oder nicht.
+
+Kategorie: Probleme
+{problems}
+
+Kategorie: Problembereiche
+{problem_areas}
+
+Kategorie: Konzepte
+{concepts}
+
+Kategorie: Empfehlungen
+{recommendations}
+
+Kategorie: Negative Empfehlungen
+{negative_recommendations}
+
+Kategorie: Positive Ergebnisse
+{positive_outcomes}
+
+=== Fragebogen ===
+{full_questionnaires}
+=== Fragebogen Ende ===
+
+"""

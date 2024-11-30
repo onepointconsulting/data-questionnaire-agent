@@ -194,11 +194,11 @@ You know the main problem of the customer and nothing else. Or you do not even k
 """
 
 [reporting]
-    [keyword_extraction_prompt]
+    [reporting.keyword_extraction_prompt]
         system_message = "You are an expert at keyword extraction in long reports. You excel at extracting keywords with concepts from large amounts of text."
         human_message = """
 Based on the text below starting from === Questionnaire === and ending at === Questionnaire End === can you please extract the following items from the questionnaire section which always starts with "# Questionnaire":
-- stated problems as keywords with problem area as keywords, degree and sentiment as keywords
+- stated problems as keywords with problem area as keywords and degree as keywords
 - concepts as keywords with corresponding area as keywords
 
 From the recommendations (starting with "# Recommendations") sections can you please extract the following:
@@ -209,7 +209,64 @@ From the "# What to avoid" section can you please extract extract the negative r
 
 From the "# Positive outcomes" section can you please extract extract the positive outcomes as keywords.
 
+Regarding the problems and areas, here are some examples of problems:
+
+name: data duplication, area: data quality, degree: negative
+name: resistence to change, area: human resources, degree: moderate
+name: data silos, area: enterprise data architecture, degree: very negative
+name: skill shortage, area: human resources, degree: moderate
+
+Regarding the concepts, here are some examples:
+
+name: data lake, area: enterprise data architecture
+name: data mart, area: enterprise data architecture
+
+Regarding the recommendations, here are some examples:
+
+name: Invest in Data Quality Training, area: data quality
+name: Implement Data Governance Policies, area: data gouvernance
+name: Adopt Feedback Loops, area: human resources
+
+Regarding negative recommendations (about what you should avoid), here are some examples:
+
+- Avoid Overburdening Your Team
+- Do Not Rely Solely on External Consultants
+
+Regarding positive outcomes, here are some examples:
+
+- Enhanced ability to extract meaningful insights from data
+- Improved data governance
+- Improved data quality
+
+=== Questionnaire ===
+{full_questionnaires}
+=== Questionnaire End ===
+"""
+    [reporting.keyword_document_classifier]
+        system_message = "You are an expert at document classification. You can detect whether some keywords are relevant to a document or not."
+        human_message = """
+Based on the text below starting from === Questionnaire === and ending at === Questionnaire End === can you please identify whether the following keywords in different categories are relevant to the questionnaire or not.
+
+Category: Problems
+{problems}
+
+Category: Problem Areas
+{problem_areas}
+
+Category: Concepts 
+{concepts}
+
+Category: Recommendations
+{recommendations}
+
+Category: Negative recommendations
+{negative_recommendations}
+
+Category: Positive outcomes
+{positive_outcomes}
+
 === Questionnaire ===
 {full_questionnaire}
 === Questionnaire End ===
+
 """

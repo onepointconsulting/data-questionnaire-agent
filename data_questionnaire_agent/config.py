@@ -190,6 +190,14 @@ class JWTTokenConfig:
 jwt_token_cfg = JWTTokenConfig()
 
 
+class ReportAggregationConfig:
+    report_token_limit_str = os.getenv("REPORT_TOKEN_LIMIT", "30000")
+    report_token_limit = int(report_token_limit_str)
+
+
+report_agg_cfg = ReportAggregationConfig()
+
+
 if __name__ == "__main__":
     logger.info("Model: %s", cfg.model)
     logger.info("Verbose: %s", cfg.verbose_llm)
@@ -199,3 +207,5 @@ if __name__ == "__main__":
 
     logger.info("JWT_SECRET: %s", jwt_token_cfg.secret)
     logger.info("JWT_ALGORITHM: %s", jwt_token_cfg.algorithm)
+
+    print(ReportAggregationConfig.report_token_limit)
