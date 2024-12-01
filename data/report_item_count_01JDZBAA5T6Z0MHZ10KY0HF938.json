@@ -1,0 +1,538 @@
+{
+    "problem_count": [
+        {
+            "key": "Poor data quality",
+            "count": 21
+        },
+        {
+            "key": "Compliance and security risks",
+            "count": 10
+        },
+        {
+            "key": "Inconsistent data strategies",
+            "count": 10
+        },
+        {
+            "key": "misunderstanding of Data Fabric and Data Mesh",
+            "count": 10
+        },
+        {
+            "key": "Lack of skilled personnel",
+            "count": 24
+        },
+        {
+            "key": "Cost and complexity",
+            "count": 18
+        },
+        {
+            "key": "Resistance to change",
+            "count": 9
+        },
+        {
+            "key": "Data silos",
+            "count": 11
+        },
+        {
+            "key": "Data overload",
+            "count": 1
+        }
+    ],
+    "concept_count": [
+        {
+            "key": "Data Quality",
+            "count": 49
+        },
+        {
+            "key": "Data Governance",
+            "count": 56
+        },
+        {
+            "key": "Compliance and Security",
+            "count": 14
+        },
+        {
+            "key": "Data Mesh",
+            "count": 10
+        },
+        {
+            "key": "Generative AI",
+            "count": 10
+        },
+        {
+            "key": "Data Fabric",
+            "count": 10
+        },
+        {
+            "key": "Data Lake",
+            "count": 7
+        },
+        {
+            "key": "Data Literacy",
+            "count": 21
+        },
+        {
+            "key": "Data Catalog",
+            "count": 30
+        },
+        {
+            "key": "Data Integration",
+            "count": 31
+        }
+    ],
+    "problem_area_count": [
+        {
+            "key": "Data Management",
+            "count": 27
+        },
+        {
+            "key": "Data Architecture",
+            "count": 3
+        },
+        {
+            "key": "data strategy",
+            "count": 14
+        },
+        {
+            "key": "Data Governance",
+            "count": 38
+        },
+        {
+            "key": "Operations",
+            "count": 4
+        },
+        {
+            "key": "Human Resources",
+            "count": 2
+        }
+    ],
+    "recommendation_count": [
+        {
+            "key": "Implement a data validation process within your ETL pipeline",
+            "count": 5
+        },
+        {
+            "key": "Leverage data profiling tools",
+            "count": 5
+        },
+        {
+            "key": "Adopt a data governance framework",
+            "count": 32
+        },
+        {
+            "key": "Utilise data cleansing tools",
+            "count": 16
+        },
+        {
+            "key": "Implement data observability practices",
+            "count": 3
+        },
+        {
+            "key": "Enhance data security measures",
+            "count": 2
+        },
+        {
+            "key": "Conduct regular audits and assessments",
+            "count": 6
+        },
+        {
+            "key": "Integrate data observability practices",
+            "count": 1
+        },
+        {
+            "key": "Consider transitioning to a Data Mesh approach",
+            "count": 5
+        },
+        {
+            "key": "Implement a self-service data platform",
+            "count": 6
+        },
+        {
+            "key": "Establish federated governance",
+            "count": 3
+        },
+        {
+            "key": "Focus on developing data products",
+            "count": 2
+        },
+        {
+            "key": "Invest in robust metadata management practices",
+            "count": 4
+        },
+        {
+            "key": "Implement training programmes",
+            "count": 19
+        },
+        {
+            "key": "Create a data catalogue",
+            "count": 28
+        },
+        {
+            "key": "Engage with industry peers or consultants",
+            "count": 2
+        },
+        {
+            "key": "Utilise data governance frameworks",
+            "count": 4
+        },
+        {
+            "key": "Implement data governance policies",
+            "count": 20
+        },
+        {
+            "key": "Create data catalogue",
+            "count": 10
+        },
+        {
+            "key": "Regularly review data quality",
+            "count": 3
+        },
+        {
+            "key": "Implement regular training sessions",
+            "count": 9
+        },
+        {
+            "key": "Implement a mentorship programme",
+            "count": 7
+        },
+        {
+            "key": "Use automated tools for data integration and quality",
+            "count": 6
+        },
+        {
+            "key": "Encourage cross-functional meetings",
+            "count": 5
+        },
+        {
+            "key": "Conduct data quality training",
+            "count": 7
+        },
+        {
+            "key": "Create centralised repository for documentation",
+            "count": 3
+        },
+        {
+            "key": "Establish clear definition of modern data strategies",
+            "count": 2
+        },
+        {
+            "key": "Implement regular training and workshops",
+            "count": 4
+        },
+        {
+            "key": "Use data science platforms",
+            "count": 2
+        },
+        {
+            "key": "Establish data lifecycle management policies",
+            "count": 1
+        },
+        {
+            "key": "Implement automated data integrity checks",
+            "count": 1
+        },
+        {
+            "key": "Offer data quality training",
+            "count": 3
+        },
+        {
+            "key": "Develop a structured communication plan",
+            "count": 1
+        },
+        {
+            "key": "Allocate dedicated training time",
+            "count": 1
+        }
+    ],
+    "negative_recommendations_count": [
+        {
+            "key": "Avoid relying solely on manual processes for data validation and merging",
+            "count": 3
+        },
+        {
+            "key": "Do not neglect the importance of data governance",
+            "count": 4
+        },
+        {
+            "key": "Avoid using outdated or inadequate tools for data integration and cleansing",
+            "count": 3
+        },
+        {
+            "key": "Avoid relying solely on automated tools for monitoring data masking and anonymisation",
+            "count": 1
+        },
+        {
+            "key": "Do not neglect the importance of employee training on data governance and security practices",
+            "count": 4
+        },
+        {
+            "key": "Avoid implementing data governance and security measures in isolation",
+            "count": 4
+        },
+        {
+            "key": "Do not attempt to maintain a centralised data governance model while transitioning to a Data Mesh",
+            "count": 1
+        },
+        {
+            "key": "Avoid implementing new tools or platforms without assessing their alignment with your existing data strategy",
+            "count": 5
+        },
+        {
+            "key": "Refrain from neglecting the importance of data literacy within your organisation",
+            "count": 2
+        },
+        {
+            "key": "Do not ignore the importance of data documentation",
+            "count": 16
+        },
+        {
+            "key": "Avoid neglecting data documentation",
+            "count": 9
+        },
+        {
+            "key": "Avoid introducing new technologies without proper training and support",
+            "count": 3
+        },
+        {
+            "key": "Do not underestimate the importance of leadership involvement",
+            "count": 1
+        },
+        {
+            "key": "Refrain from making abrupt changes without effective communication",
+            "count": 1
+        },
+        {
+            "key": "Refrain from neglecting the importance of data quality",
+            "count": 8
+        },
+        {
+            "key": "Refrain from implementing changes without consultation",
+            "count": 6
+        },
+        {
+            "key": "Avoid relying solely on manual checks",
+            "count": 3
+        },
+        {
+            "key": "Ignorieren Sie nicht die Bedeutung von Dokumentation und Schulung",
+            "count": 3
+        },
+        {
+            "key": "Avoid over-reliance on external consultants",
+            "count": 4
+        },
+        {
+            "key": "Unterlassen Sie es, die Schulung als einmalige Veranstaltung zu betrachten",
+            "count": 1
+        },
+        {
+            "key": "Avoid overloading employees with new responsibilities",
+            "count": 4
+        },
+        {
+            "key": "Vermeiden Sie es, Daten ohne klare Governance-Richtlinien zu verwalten",
+            "count": 2
+        },
+        {
+            "key": "Ignorieren Sie nicht die Bedeutung der Datenqualit�t",
+            "count": 2
+        },
+        {
+            "key": "Avoid allowing teams to operate in silos",
+            "count": 4
+        },
+        {
+            "key": "Refrain from allowing data silos to persist",
+            "count": 6
+        },
+        {
+            "key": "Avoid ignoring employee concerns",
+            "count": 3
+        },
+        {
+            "key": "Avoid relying solely on manual processes for data integration",
+            "count": 7
+        },
+        {
+            "key": "Do not ignore the importance of data quality checks",
+            "count": 6
+        },
+        {
+            "key": "Avoid relying solely on manual data integration processes",
+            "count": 4
+        },
+        {
+            "key": "Avoid neglecting the importance of metadata management",
+            "count": 2
+        },
+        {
+            "key": "Do not overlook the potential of a Modern Data Strategy",
+            "count": 2
+        },
+        {
+            "key": "Avoid implementing data governance policies without involving key stakeholders",
+            "count": 2
+        },
+        {
+            "key": "Steer clear of using outdated or legacy systems for data sharing",
+            "count": 3
+        },
+        {
+            "key": "Avoid relying solely on outdated technology for data collection",
+            "count": 2
+        },
+        {
+            "key": "Do not neglect the importance of communication",
+            "count": 2
+        },
+        {
+            "key": "Lassen Sie keine Daten ohne Validierung in Ihre Systeme",
+            "count": 1
+        },
+        {
+            "key": "Avoid relying solely on theoretical concepts in training",
+            "count": 1
+        },
+        {
+            "key": "Underlassen Sie es, die Schulung als einmalige Veranstaltung zu betrachten",
+            "count": 1
+        },
+        {
+            "key": "Do not rely solely on basic monitoring systems",
+            "count": 1
+        },
+        {
+            "key": "Avoid relying solely on manual audits for data security",
+            "count": 1
+        },
+        {
+            "key": "Do not overlook the importance of regular updates to your data classification system",
+            "count": 1
+        },
+        {
+            "key": "Steer clear of implementing data security measures in isolation",
+            "count": 1
+        },
+        {
+            "key": "Do not ignore the importance of data consistency",
+            "count": 1
+        },
+        {
+            "key": "Avoid neglecting the need for skilled personnel",
+            "count": 1
+        },
+        {
+            "key": "Avoid relying solely on traditional data warehouses for unstructured data",
+            "count": 1
+        },
+        {
+            "key": "Do not delay the formation of a data governance team",
+            "count": 1
+        },
+        {
+            "key": "Avoid implementing changes without adequate support",
+            "count": 1
+        },
+        {
+            "key": "Do not neglect engagement in training sessions",
+            "count": 1
+        },
+        {
+            "key": "Avoid unstructured training approaches",
+            "count": 1
+        }
+    ],
+    "positive_outcomes_count": [
+        {
+            "key": "Improved data accuracy and reliability",
+            "count": 7
+        },
+        {
+            "key": "Enhanced operational efficiency",
+            "count": 16
+        },
+        {
+            "key": "Increased customer satisfaction",
+            "count": 10
+        },
+        {
+            "key": "Enhanced compliance with GDPR and other data protection regulations",
+            "count": 3
+        },
+        {
+            "key": "Improved data security and protection of sensitive information",
+            "count": 5
+        },
+        {
+            "key": "Real-time detection and resolution of data anomalies",
+            "count": 1
+        },
+        {
+            "key": "Enhanced scalability and flexibility in data architecture",
+            "count": 1
+        },
+        {
+            "key": "Improved data ingestion speed",
+            "count": 1
+        },
+        {
+            "key": "Greater collaboration across teams",
+            "count": 13
+        },
+        {
+            "key": "Improved decision-making capabilities",
+            "count": 24
+        },
+        {
+            "key": "Enhanced customer engagement",
+            "count": 2
+        },
+        {
+            "key": "A stronger data culture within the organisation",
+            "count": 3
+        },
+        {
+            "key": "Enhanced collaboration among teams",
+            "count": 12
+        },
+        {
+            "key": "Increased data literacy",
+            "count": 7
+        },
+        {
+            "key": "Improved data quality",
+            "count": 33
+        },
+        {
+            "key": "Reduced operational costs",
+            "count": 5
+        },
+        {
+            "key": "Improved stakeholder confidence",
+            "count": 2
+        },
+        {
+            "key": "Enhanced data governance and quality",
+            "count": 8
+        },
+        {
+            "key": "Greater operational efficiency",
+            "count": 4
+        },
+        {
+            "key": "Improved decision-making and operational efficiency",
+            "count": 4
+        },
+        {
+            "key": "More efficient data governance practices",
+            "count": 1
+        },
+        {
+            "key": "Enhanced decision-making speed",
+            "count": 1
+        },
+        {
+            "key": "Improved communication of insights",
+            "count": 2
+        }
+    ]
+}

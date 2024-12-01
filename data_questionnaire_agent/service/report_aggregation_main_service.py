@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple
 import pandas as pd
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
+from ulid import ULID
 
 from data_questionnaire_agent.config import cfg, report_agg_cfg
 from data_questionnaire_agent.log_init import logger
@@ -19,6 +20,12 @@ from data_questionnaire_agent.model.report_aggregation_schema import (
 )
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,
+)
+from data_questionnaire_agent.service.persistence_service_async import (
+    select_questionnaires_by_tokens,
+)
+from data_questionnaire_agent.service.report_aggregation_service import (
+    convert_to_str,
 )
 from data_questionnaire_agent.service.similarity_search import num_tokens_from_string
 from data_questionnaire_agent.toml_support import get_prompts
@@ -231,13 +238,21 @@ def convert_to_dataframe(report_item_count: ReportItemCount) -> Dict[str, pd.Dat
         df = df.sort_values(by=col_count, ascending=False).reset_index(drop=True)
         df["percent"] = (df["count"] / sum(df["count"]) * 100).round(2)
         return df
-    
+
     problem_df = convert_to_map(report_item_count.problem_count, "Problem")
-    problem_area_df = convert_to_map(report_item_count.problem_area_count, "Problem Area")
+    problem_area_df = convert_to_map(
+        report_item_count.problem_area_count, "Problem Area"
+    )
     concept_df = convert_to_map(report_item_count.concept_count, "Concept")
-    recommendation_df = convert_to_map(report_item_count.recommendation_count, "Recommendation")
-    negative_recommendations_count_df = convert_to_map(report_item_count.negative_recommendations_count, "What to avoid")
-    positive_outcomes_count_df = convert_to_map(report_item_count.positive_outcomes_count, "Potential positive outcomes")
+    recommendation_df = convert_to_map(
+        report_item_count.recommendation_count, "Recommendation"
+    )
+    negative_recommendations_count_df = convert_to_map(
+        report_item_count.negative_recommendations_count, "What to avoid"
+    )
+    positive_outcomes_count_df = convert_to_map(
+        report_item_count.positive_outcomes_count, "Potential positive outcomes"
+    )
     return {
         "problem_df": {"df": problem_df, "sheet name": "Problems"},
         "problem_area_df": {"df": problem_area_df, "sheet name": "Problem Area"},
@@ -258,33 +273,51 @@ def create_multiple_excel(df_dict: Dict[str, pd.DataFrame], excel_path: Path):
     with pd.ExcelWriter(excel_path, engine="xlsxwriter") as writer:
         workbook = writer.book
         for i, (_, v) in enumerate(df_dict.items()):
-            sheet_name = v["sheet name"]
+            sheet_name = v["sheet name"].replace(" ", "_")
             v["df"].to_excel(writer, sheet_name=sheet_name)
             worksheet = writer.sheets[sheet_name]
             # Create a Pie chart.
-            chart = workbook.add_chart({'type': 'pie'})
+            chart = workbook.add_chart({"type": "pie"})
             initial_row = 2
             last_row = len(v["df"]) + initial_row
             # Add the chart series.
-            chart.add_series({
-                'categories': f'={sheet_name}!B2:B{last_row}',
-                'values':     f'={sheet_name}!C2:C{last_row}'
-            })
-            worksheet.insert_chart(f'F1', chart)
+
+            chart.add_series(
+                {
+                    "categories": f"={sheet_name}!B2:B{last_row}",
+                    "values": f"={sheet_name}!C2:C{last_row}",
+                }
+            )
+            worksheet.insert_chart("F1", chart)
 
 
-            
+async def aggregate_reports_main(tokens: List[str], language: str = "en") -> Path:
+    # Fetch statuses from the database
+    questionnaire_data: List[
+        QuestionnaireStatus
+    ] = await select_questionnaires_by_tokens(tokens)
+    # Extract the dimensions in batches
+    keyword_lists = await extract_report_dimensions(questionnaire_data, language)
+    # Merge the batches together
+    merged_report_aggregation_keywords = merge_reports(keyword_lists)
+    # Generate the document classifications
+    report_doc_classification = await generate_document_classification(
+        questionnaire_data, merged_report_aggregation_keywords, batch_size=2
+    )
+    # Do some counting
+    report_item_count = group_reports(report_doc_classification)
+    # Convert to dataframe
+    df_dict = convert_to_dataframe(report_item_count)
+    aggregation_report_path = (
+        cfg.aggregator_report_folder / f"aggregation_report_{str(ULID())}.xlsx"
+    )
+    create_multiple_excel(df_dict, aggregation_report_path)
+    return aggregation_report_path
 
 
 if __name__ == "__main__":
     import asyncio
     import pickle
-
-    from ulid import ULID
-
-    from data_questionnaire_agent.service.report_aggregation_service import (
-        convert_to_str,
-    )
 
     def write_to_disk(
         report_aggregation_keywords: ReportAggregationKeywords, aggregate: bool
@@ -333,4 +366,8 @@ if __name__ == "__main__":
             report_item_count = group_reports(report_doc_classification)
             write_report_item_count(report_item_count)
 
-    asyncio.run(test_extract_report_dimensions())
+    async def test_aggregate_reports_main():
+        aggregation_report_path = await aggregate_reports_main([])
+        print(aggregation_report_path)
+
+    asyncio.run(test_aggregate_reports_main())

@@ -2,15 +2,6 @@ from typing import List
 
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
-from data_questionnaire_agent.service.persistence_service_async import (
-    select_questionnaires_by_tokens,
-)
-
-
-async def aggregate_reports(tokens: List[str]) -> str:
-    questionnaire_statuses = await select_questionnaires_by_tokens(tokens)
-    str_list = convert_to_str(questionnaire_statuses)
-    return "\n".join(str_list)
 
 
 def create_bullet_list(items: List[str]) -> str:

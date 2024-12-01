@@ -117,6 +117,13 @@ class Config:
     graphrag_context_size_str = os.getenv("GRAPHRAG_CONTEXT_SIZE", "10000")
     graphrag_context_size = int(graphrag_context_size_str)
 
+    aggregator_report_folder_str = os.getenv("AGGREGATOR_REPORT_FOLDER")
+    assert (
+        aggregator_report_folder_str is not None
+    ), "The aggregator report is not None."
+    aggregator_report_folder = Path(aggregator_report_folder_str)
+    create_if_not_exists(aggregator_report_folder)
+
 
 cfg = Config()
 
