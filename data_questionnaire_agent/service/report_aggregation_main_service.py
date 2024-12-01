@@ -1,6 +1,8 @@
 from collections import Counter, OrderedDict
-from typing import List, Tuple
+from pathlib import Path
+from typing import Dict, List, Tuple
 
+import pandas as pd
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 
@@ -215,8 +217,63 @@ def group_reports(
         problem_area_count=problem_area_count,
         recommendation_count=recommendation_count,
         negative_recommendations_count=negative_recommendations_count,
-        positive_outcomes_count=positive_outcomes_count
+        positive_outcomes_count=positive_outcomes_count,
     )
+
+
+def convert_to_dataframe(report_item_count: ReportItemCount) -> Dict[str, pd.DataFrame]:
+    def convert_to_map(key_counts: List[KeyCount], key_name: str) -> pd.DataFrame:
+        col_count = "count"
+        data = []
+        for kc in key_counts:
+            data.append({key_name: kc.key, col_count: kc.count})
+        df = pd.DataFrame(data)
+        df = df.sort_values(by=col_count, ascending=False).reset_index(drop=True)
+        df["percent"] = (df["count"] / sum(df["count"]) * 100).round(2)
+        return df
+    
+    problem_df = convert_to_map(report_item_count.problem_count, "Problem")
+    problem_area_df = convert_to_map(report_item_count.problem_area_count, "Problem Area")
+    concept_df = convert_to_map(report_item_count.concept_count, "Concept")
+    recommendation_df = convert_to_map(report_item_count.recommendation_count, "Recommendation")
+    negative_recommendations_count_df = convert_to_map(report_item_count.negative_recommendations_count, "What to avoid")
+    positive_outcomes_count_df = convert_to_map(report_item_count.positive_outcomes_count, "Potential positive outcomes")
+    return {
+        "problem_df": {"df": problem_df, "sheet name": "Problems"},
+        "problem_area_df": {"df": problem_area_df, "sheet name": "Problem Area"},
+        "concept_df": {"df": concept_df, "sheet name": "Concepts"},
+        "recommendation_df": {"df": recommendation_df, "sheet name": "Recommendations"},
+        "negative_recommendations_count_df": {
+            "df": negative_recommendations_count_df,
+            "sheet name": "What to avoid",
+        },
+        "positive_outcomes_count_df": {
+            "df": positive_outcomes_count_df,
+            "sheet name": "Predicted outcomes",
+        },
+    }
+
+
+def create_multiple_excel(df_dict: Dict[str, pd.DataFrame], excel_path: Path):
+    with pd.ExcelWriter(excel_path, engine="xlsxwriter") as writer:
+        workbook = writer.book
+        for i, (_, v) in enumerate(df_dict.items()):
+            sheet_name = v["sheet name"]
+            v["df"].to_excel(writer, sheet_name=sheet_name)
+            worksheet = writer.sheets[sheet_name]
+            # Create a Pie chart.
+            chart = workbook.add_chart({'type': 'pie'})
+            initial_row = 2
+            last_row = len(v["df"]) + initial_row
+            # Add the chart series.
+            chart.add_series({
+                'categories': f'={sheet_name}!B2:B{last_row}',
+                'values':     f'={sheet_name}!C2:C{last_row}'
+            })
+            worksheet.insert_chart(f'F1', chart)
+
+
+            
 
 
 if __name__ == "__main__":
@@ -248,10 +305,7 @@ if __name__ == "__main__":
             f.write(report_doc_classification.model_dump_json())
             print(f"Wrote to {file_path}")
 
-
-    def write_report_item_count(
-            report_item_count: ReportItemCount
-    ):
+    def write_report_item_count(report_item_count: ReportItemCount):
         id = str(ULID())
         file_path = f"./report_item_count_{id}.json"
         with open(file_path, "w") as f:

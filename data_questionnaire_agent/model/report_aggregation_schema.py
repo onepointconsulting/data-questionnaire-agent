@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import Dict, List
+from typing import List
 
 from pydantic import BaseModel, Field
 
@@ -94,26 +94,17 @@ class ExtendedReportAggregationKeywords(ReportAggregationKeywords):
     def get_positive_outcome_bullets(self) -> List[str]:
         return bulletize([o.name for o in self.positive_outcomes])
 
+
 class KeyValue(BaseModel):
-    key: str = Field(
-        ...,
-        description="A key as string"
-    )
+    key: str = Field(..., description="A key as string")
     value: bool = Field(
-        ...,
-        description="A boolean to indicate whether the key is true or not"
+        ..., description="A boolean to indicate whether the key is true or not"
     )
 
 
 class KeyCount(BaseModel):
-    key: str = Field(
-        ...,
-        description="A key as string"
-    )
-    count: int = Field(
-        ...,
-        description="The frequency of a problem"
-    )
+    key: str = Field(..., description="A key as string")
+    count: int = Field(..., description="The frequency of a problem")
 
 
 class ReportDocumentClassification(BaseModel):
@@ -208,6 +199,7 @@ class ReportItemCount(BaseModel):
             "Increased Employee Engagement": 2,
         },
     )
+
 
 if __name__ == "__main__":
     print(ReportDocumentClassification.schema_json())

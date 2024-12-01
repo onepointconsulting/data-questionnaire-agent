@@ -31,6 +31,7 @@ python-i18n = {extras = ["yaml"], version = "^0.3.9"}
 python-ulid = "^2.7.0"
 pyjwt = "^2.9.0"
 pandas = "^2.2.3"
+xlsxwriter = "^3.2.0"
 
 [tool.poetry.scripts]
 build-ui = "data_questionnaire_agent.build:ui"
