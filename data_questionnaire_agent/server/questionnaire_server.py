@@ -74,6 +74,9 @@ from data_questionnaire_agent.service.persistence_service_async import (
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
 )
+from data_questionnaire_agent.service.report_aggregation_main_service import (
+    aggregate_reports_main,
+)
 from data_questionnaire_agent.service.secondary_question_processor import (
     process_secondary_questions,
 )
@@ -497,24 +500,6 @@ async def confidence(request: web.Request) -> web.Response:
     return web.json_response(confidence_rating.dict(), headers=CORS_HEADERS)
 
 
-async def handle_error(fun: Awaitable, **kwargs) -> any:
-    try:
-        return await fun(kwargs["request"])
-    except Exception as e:
-        logger.error(f"Error occurred: {e}", exc_info=True)
-        raise web.HTTPBadRequest(
-            text="Please make sure the JSON body is available and well formatted."
-        )
-
-
-def extract_time_delta(json_content: dict) -> Union[int, None]:
-    return (
-        int(json_content["time_delta_minutes"])
-        if "time_delta_minutes" in json_content is not None
-        else None
-    )
-
-
 @routes.options("/gen_jwt_token")
 async def generate_jwt_token_options(_: web.Request) -> web.Response:
     return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
@@ -605,6 +590,46 @@ async def validate_jwt_token(request: web.Request) -> web.Response:
         raise web.HTTPBadRequest(
             text=f"Please make sure the JSON body is available and well formatted: {e}"
         )
+
+
+@routes.post("/generate_aggregated_report")
+async def generate_aggregated_report(request: web.Request) -> web.Response:
+    async def process_report(tokens: List[str], language: str):
+        await aggregate_reports_main(tokens, language)
+
+    async def process(request: web.Request):
+        json_content = await request.json()
+        match json_content:
+            case {"tokens": tokens, "language": language}:
+                asyncio.create_task(process_report(tokens, language))
+                return web.json_response(
+                    {"result": "OK", "message": "Report submitted successfully."},
+                    headers=CORS_HEADERS,
+                )
+            case _:
+                raise web.HTTPBadRequest(
+                    text="Please provide the token in the JSON body"
+                )
+
+    return await handle_error(process, request=request)
+
+
+async def handle_error(fun: Awaitable, **kwargs) -> any:
+    try:
+        return await fun(kwargs["request"])
+    except Exception as e:
+        logger.error(f"Error occurred: {e}", exc_info=True)
+        raise web.HTTPBadRequest(
+            text="Please make sure the JSON body is available and well formatted."
+        )
+
+
+def extract_time_delta(json_content: dict) -> Union[int, None]:
+    return (
+        int(json_content["time_delta_minutes"])
+        if "time_delta_minutes" in json_content is not None
+        else None
+    )
 
 
 async def find_confidence_rating(

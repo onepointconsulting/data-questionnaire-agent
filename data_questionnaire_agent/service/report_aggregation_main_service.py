@@ -190,7 +190,7 @@ async def generate_document_classification(
         try:
             batch_res = await chain.abatch(batch)
             final_results.extend(batch_res)
-            logger.info(f"Processed {i * batch_size} documents")
+            logger.info(f"Processed {i * batch_size + batch_size}  documents")
         except Exception as e:
             logger.exception(e)
 
@@ -293,25 +293,33 @@ def create_multiple_excel(df_dict: Dict[str, pd.DataFrame], excel_path: Path):
 
 async def aggregate_reports_main(tokens: List[str], language: str = "en") -> Path:
     # Fetch statuses from the database
+    logger.info("Report: Fetch statuses from the database")
     questionnaire_data: List[
         QuestionnaireStatus
     ] = await select_questionnaires_by_tokens(tokens)
     # Extract the dimensions in batches
+    logger.info("Report: Extract the dimensions in batches")
     keyword_lists = await extract_report_dimensions(questionnaire_data, language)
     # Merge the batches together
+    logger.info("Report: Merge the batches together")
     merged_report_aggregation_keywords = merge_reports(keyword_lists)
     # Generate the document classifications
+    logger.info("Report: Generate the document classifications")
     report_doc_classification = await generate_document_classification(
         questionnaire_data, merged_report_aggregation_keywords, batch_size=2
     )
     # Do some counting
+    logger.info("Report: Doing the counting")
     report_item_count = group_reports(report_doc_classification)
     # Convert to dataframe
+    logger.info("Report: Dataframe conversion")
     df_dict = convert_to_dataframe(report_item_count)
     aggregation_report_path = (
         cfg.aggregator_report_folder / f"aggregation_report_{str(ULID())}.xlsx"
     )
+    logger.info("Report: Creating Excel with multiple sheets")
     create_multiple_excel(df_dict, aggregation_report_path)
+    logger.info("Report: Aggregated report finished.")
     return aggregation_report_path
 
 
