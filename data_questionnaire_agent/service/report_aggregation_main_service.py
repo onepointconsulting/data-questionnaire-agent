@@ -9,6 +9,7 @@ from ulid import ULID
 
 from data_questionnaire_agent.config import cfg, report_agg_cfg
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.model.mail_data import Email
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.report_aggregation_schema import (
     ExtendedReportAggregationKeywords,
@@ -21,6 +22,7 @@ from data_questionnaire_agent.model.report_aggregation_schema import (
 from data_questionnaire_agent.service.initial_question_service import (
     prompt_factory_generic,
 )
+from data_questionnaire_agent.service.mail_sender import send_mail_with_attachment
 from data_questionnaire_agent.service.persistence_service_async import (
     select_questionnaires_by_tokens,
 )
@@ -29,6 +31,7 @@ from data_questionnaire_agent.service.report_aggregation_service import (
 )
 from data_questionnaire_agent.service.similarity_search import num_tokens_from_string
 from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.translation import t
 
 
 def create_structured_question_call(language: str = "en") -> RunnableSequence:
@@ -291,7 +294,30 @@ def create_multiple_excel(df_dict: Dict[str, pd.DataFrame], excel_path: Path):
             worksheet.insert_chart("F1", chart)
 
 
-async def aggregate_reports_main(tokens: List[str], language: str = "en") -> Path:
+def prepare_send_email(
+    aggregation_report_path: Path, email_list: list[str], language: str = "en"
+):
+    if not email_list:
+        return
+    mail_template = cfg.template_location / "mail-template.html"
+    mail_template_text = mail_template.read_text(encoding="utf-8")
+    body = mail_template_text.format(
+        text=t("Please check the attached report", locale=language)
+    )
+    for email in email_list:
+        send_mail_with_attachment(
+            email=Email(
+                recipient=email,
+                subject=t("Data Wellness Aggregation Report", locale=language),
+                html_body=body,
+                files=[aggregation_report_path],
+            )
+        )
+
+
+async def aggregate_reports_main(
+    tokens: List[str], email_list: list[str], language: str = "en"
+) -> Path:
     # Fetch statuses from the database
     logger.info("Report: Fetch statuses from the database")
     questionnaire_data: List[
@@ -320,6 +346,7 @@ async def aggregate_reports_main(tokens: List[str], language: str = "en") -> Pat
     logger.info("Report: Creating Excel with multiple sheets")
     create_multiple_excel(df_dict, aggregation_report_path)
     logger.info("Report: Aggregated report finished.")
+    prepare_send_email(aggregation_report_path, email_list, language)
     return aggregation_report_path
 
 

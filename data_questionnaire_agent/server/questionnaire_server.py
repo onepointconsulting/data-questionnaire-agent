@@ -594,14 +594,28 @@ async def validate_jwt_token(request: web.Request) -> web.Response:
 
 @routes.post("/generate_aggregated_report")
 async def generate_aggregated_report(request: web.Request) -> web.Response:
-    async def process_report(tokens: List[str], language: str):
-        await aggregate_reports_main(tokens, language)
+    """
+    Example:
+    {
+        "tokens": [
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUpEMkpXTkhBNTZGN1lHRENDU1czRjJaQiIsIm5hbWUiOiJHaWwiLCJpYXQiOjE3MzIwMzI0ODR9.r8LTAiuORLPk2QnrS8YMcX7dHdlYKndHuXc3PEY6Msw",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUpEVDY0S1gxR0hTSktTQVcwSE1aSEhERyIsIm5hbWUiOiJUZXN0XzQiLCJpYXQiOjE3MzI4MjQ0MjB9.PUMd-BBH3SjuXdlG8SWQXsvCJApRW7xy_giEVx84yA4"
+        ],
+        "language": "de",
+        "email_list": "gil.fernandes@gmail.com"
+    }
+    """
 
     async def process(request: web.Request):
         json_content = await request.json()
         match json_content:
             case {"tokens": tokens, "language": language}:
-                asyncio.create_task(process_report(tokens, language))
+                email_list = json_content.get("email_list", [])
+                if isinstance(email_list, str):
+                    email_list = [email_list]
+                asyncio.create_task(
+                    aggregate_reports_main(tokens, email_list, language)
+                )
                 return web.json_response(
                     {"result": "OK", "message": "Report submitted successfully."},
                     headers=CORS_HEADERS,

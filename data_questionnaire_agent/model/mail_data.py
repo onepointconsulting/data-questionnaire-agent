@@ -1,4 +1,6 @@
-from pydantic.v1 import BaseModel, Field
+from pathlib import Path
+
+from pydantic import BaseModel, Field
 
 
 class MailData(BaseModel):
@@ -6,10 +8,8 @@ class MailData(BaseModel):
     email: str = Field(..., description="The actual name of the person")
 
 
-if __name__ == "__main__":
-    mail_data = MailData(person_name="John Doe", email="john@gmail.com")
-    json_data = mail_data.json()
-    print(json_data)
-    copy = MailData.parse_raw(json_data)
-    print(copy)
-    assert mail_data == copy
+class Email(BaseModel):
+    recipient: str = Field(..., description="The recipient email")
+    subject: str = Field(..., description="The email subject")
+    html_body: str = Field(..., description="The html email body")
+    files: list[Path] = Field(..., description="The attachment files")
