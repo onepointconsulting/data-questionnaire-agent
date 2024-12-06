@@ -10,7 +10,7 @@ from data_questionnaire_agent.model.session_configuration import (
     ChatType,
     SessionProperties,
 )
-from data_questionnaire_agent.service.initial_question_service import (
+from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts

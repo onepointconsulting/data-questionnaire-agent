@@ -30,7 +30,7 @@ enables you to detect issues early on and take corrective actions before they af
         ],
         what_you_should_avoid=[],
         positive_outcomes=[],
-        confidence=None
+        confidence=None,
     )
 
 

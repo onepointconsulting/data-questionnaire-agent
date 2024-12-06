@@ -19,12 +19,13 @@ from data_questionnaire_agent.model.report_aggregation_schema import (
     ReportDocumentClassificationContainer,
     ReportItemCount,
 )
-from data_questionnaire_agent.service.initial_question_service import (
-    prompt_factory_generic,
-)
 from data_questionnaire_agent.service.mail_sender import send_mail_with_attachment
 from data_questionnaire_agent.service.persistence_service_async import (
     select_questionnaires_by_tokens,
+)
+from data_questionnaire_agent.service.prompt_support import (
+    prompt_factory_generic,
+    factory_prompt,
 )
 from data_questionnaire_agent.service.report_aggregation_service import (
     convert_to_str,
@@ -43,14 +44,12 @@ def create_structured_question_call(language: str = "en") -> RunnableSequence:
 def prompt_factory_keyword_extraction_prompt(
     language: str = "en",
 ) -> ChatPromptTemplate:
-    prompts = get_prompts(language)
-    section = prompts["reporting"]["keyword_extraction_prompt"]
-    return prompt_factory_generic(
-        section,
+    return factory_prompt(
+        lambda prompts: prompts["reporting"]["keyword_extraction_prompt"],
         [
             "full_questionnaires",
         ],
-        prompts,
+        language
     )
 
 
@@ -323,7 +322,7 @@ async def aggregate_reports_main(
     questionnaire_data: List[
         QuestionnaireStatus
     ] = await select_questionnaires_by_tokens(tokens)
-    
+
     # Extract the dimensions in batches
     logger.info("Report: Extract the dimensions in batches")
     keyword_lists = await extract_report_dimensions(questionnaire_data, language)

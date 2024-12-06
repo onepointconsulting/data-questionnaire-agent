@@ -7,10 +7,10 @@ from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
-from data_questionnaire_agent.service.initial_question_service import (
+from data_questionnaire_agent.service.ontology_service import PARAM_QUESTIONS_ANSWERS
+from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-from data_questionnaire_agent.service.ontology_service import PARAM_QUESTIONS_ANSWERS
 from data_questionnaire_agent.toml_support import get_prompts
 
 

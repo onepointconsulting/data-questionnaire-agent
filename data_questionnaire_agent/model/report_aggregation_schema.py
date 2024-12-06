@@ -201,5 +201,8 @@ class ReportItemCount(BaseModel):
     )
 
 
+class ReportDocumentSummarization(BaseModel):
+    summary: str = Field(..., description="The summary of the whole document.")
+
 if __name__ == "__main__":
     print(ReportDocumentClassification.schema_json())

@@ -1,8 +1,8 @@
 from typing import List, Optional, Union
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic.v1 import BaseModel as PydanticV1BaseModel
 from pydantic import Field
+from pydantic.v1 import BaseModel as PydanticV1BaseModel
 from pydantic.v1 import Field as FieldV1
 
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
@@ -130,7 +130,9 @@ class ConditionalAdvice(PydanticV1BaseModel):
             t("Positive outcomes (if you follow the advices)", locale=language),
         )
 
-        if self.confidence is not None and isinstance(self.confidence, ConfidenceRating):
+        if self.confidence is not None and isinstance(
+            self.confidence, ConfidenceRating
+        ):
             markdown += self.confidence.to_markdown(locale=language)
 
         return markdown
