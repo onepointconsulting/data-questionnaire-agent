@@ -188,6 +188,28 @@ Du kennst das Hauptproblem des Kunden und sonst nichts. Oder du kennst nicht ein
 """
 
 [reporting]
+    [reporting.summarization_prompt]
+        system_message = "Sie sind ein Experte im Erstellen von Dialogzusammenfassungen, in denen Sie die Hauptthemen von Fragebögen und die bereitgestellten Ratschläge erfassen."
+        human_message = """
+Basierend auf dem Text unten, beginnend mit === Fragebogen === und endend mit === Fragebogen Ende ===, können Sie bitte den Inhalt des Fragebogens und die gegebenen Ratschläge zusammenfassen?
+
+Bitte fassen Sie die Originalabschnitte zusammen und bewahren Sie sie auf. Behalten Sie also bitte die folgenden Abschnitte bei und fassen Sie sie dann wie folgt zusammen:
+
+# Fragebogen
+<Zusammenfassung>
+# Empfehlungen
+<Zusammenfassung>
+# Was Sie vermeiden sollten
+<Zusammenfassung>
+# Positive Ergebnisse
+<Zusammenfassung>
+
+<Zusammenfassung> ist nur ein Platzhalter für Ihre Zusammenfassung.
+
+=== Fragebogen ===
+{full_questionnaire}
+=== Ende des Fragebogens ===
+"""
     [reporting.keyword_extraction_prompt]
         system_message = "Sie sind Experte für die Schlüsselwortextraktion in langen Berichten. Sie sind hervorragend darin, Schlüsselwörter mit Konzepten aus großen Textmengen zu extrahieren."
         human_message = """

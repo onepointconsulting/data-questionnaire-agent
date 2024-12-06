@@ -1,7 +1,9 @@
 from typing import List, Optional, Union
 
-from pydantic.v1 import BaseModel as PydanticBaseModel
-from pydantic.v1 import Field
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic.v1 import BaseModel as PydanticV1BaseModel
+from pydantic import Field
+from pydantic.v1 import Field as FieldV1
 
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.translation import t
@@ -57,26 +59,26 @@ class ResponseTags(BaseModel):
     )
 
 
-class ConditionalAdvice(BaseModel):
+class ConditionalAdvice(PydanticV1BaseModel):
     """If there is enough information to give advice then advice will be available here."""
 
-    has_advice: bool = Field(
+    has_advice: bool = FieldV1(
         ...,
         description="Whether there is advice here or not",
     )
-    advices: Optional[List[str]] = Field(
+    advices: Optional[List[str]] = FieldV1(
         ...,
         description="In case there is enough information to give advice, this list will contain advice to give to the user",
     )
-    what_you_should_avoid: Optional[List[str]] = Field(
+    what_you_should_avoid: Optional[List[str]] = FieldV1(
         default=[],
         description="A list of advice about what you should not do and avoid.",
     )
-    positive_outcomes: Optional[List[str]] = Field(
+    positive_outcomes: Optional[List[str]] = FieldV1(
         default=[],
         description="A list of potential positive outcomes in case the user follows the advice.",
     )
-    confidence: Optional[ConfidenceRating] = Field(
+    confidence: Optional[ConfidenceRating] = FieldV1(
         default=None, description="The confidence rating at the time of the report."
     )
 
@@ -128,7 +130,7 @@ class ConditionalAdvice(BaseModel):
             t("Positive outcomes (if you follow the advices)", locale=language),
         )
 
-        if self.confidence is not None:
+        if self.confidence is not None and isinstance(self.confidence, ConfidenceRating):
             markdown += self.confidence.to_markdown(locale=language)
 
         return markdown

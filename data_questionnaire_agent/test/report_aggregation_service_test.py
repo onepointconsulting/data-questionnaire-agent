@@ -12,8 +12,6 @@ def test_convert_to_str():
     assert questionnaire_pkl.exists()
     with open(questionnaire_pkl, "rb") as f:
         questionnaire_data = pickle.load(f)
-        questionnaire_statuses: List[QuestionnaireStatus] = convert_to_str(
-            questionnaire_data
-        )
+        questionnaire_statuses: List[QuestionnaireStatus] = convert_to_str(questionnaire_data)
         assert len(questionnaire_statuses) > 0
         print(num_tokens_from_string("\n".join(questionnaire_statuses)))

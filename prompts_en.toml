@@ -194,6 +194,28 @@ You know the main problem of the customer and nothing else. Or you do not even k
 """
 
 [reporting]
+    [reporting.summarization_prompt]
+        system_message = "You are an expert at creating summaries of dialogues in which you capture the main topics of questionnaires and provided types of advice."
+        human_message = """
+Based on the text below starting from === Questionnaire === and ending at === Questionnaire End === can you please summarize the content of the questionnaire and provided advices?
+
+Please summarize and keep the original sections. So, please keep the following sections and then summarize each, like so:
+
+# Questionnaire
+<summary>
+# Recommendations
+<summary>
+# What to avoid
+<summary>
+# Positive outcomes
+<summary>
+
+<summary> is just a placeholder for you summary.
+
+=== Questionnaire ===
+{full_questionnaire}
+=== Questionnaire End ===
+"""
     [reporting.keyword_extraction_prompt]
         system_message = "You are an expert at keyword extraction in long reports. You excel at extracting keywords with concepts from large amounts of text."
         human_message = """

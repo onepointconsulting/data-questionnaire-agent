@@ -22,13 +22,10 @@ def prompt_factory_conditional_advice(language: str) -> ChatPromptTemplate:
     )
 
 
-def chain_factory_advice(language: str) -> LLMChain:
-    return create_structured_output_chain(
-        ConditionalAdvice,
-        cfg.llm,
-        prompt_factory_conditional_advice(language),
-        verbose=cfg.verbose_llm,
-    )
+def chain_factory_advice(language: str) -> RunnableSequence:
+    model = cfg.llm.with_structured_output(ConditionalAdvice)
+    prompt = prompt_factory_conditional_advice(language)
+    return prompt | model
 
 
 def create_structured_question_call(language: str) -> RunnableSequence:

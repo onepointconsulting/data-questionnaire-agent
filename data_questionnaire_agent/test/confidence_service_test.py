@@ -25,7 +25,7 @@ def test_prompt_factory_confidence():
 
 
 def test_calculate_confidence_rating_mediocre():
-    eval_questionnaire(create_questionnaire_2_questions(), ["mediocre"])
+    eval_questionnaire(create_questionnaire_2_questions(), ["low", "mediocre"])
 
 
 def test_calculate_confidence_rating_mediocre_2():

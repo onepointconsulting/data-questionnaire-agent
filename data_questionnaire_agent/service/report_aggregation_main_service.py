@@ -323,6 +323,7 @@ async def aggregate_reports_main(
     questionnaire_data: List[
         QuestionnaireStatus
     ] = await select_questionnaires_by_tokens(tokens)
+    
     # Extract the dimensions in batches
     logger.info("Report: Extract the dimensions in batches")
     keyword_lists = await extract_report_dimensions(questionnaire_data, language)

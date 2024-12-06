@@ -28,6 +28,9 @@ is crucial for identifying areas where improvements can be made. Regularly monit
 enables you to detect issues early on and take corrective actions before they affect business operations.
 """,
         ],
+        what_you_should_avoid=[],
+        positive_outcomes=[],
+        confidence=None
     )
 
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Union
 
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 
 class QuestionnaireStatus(BaseModel):
