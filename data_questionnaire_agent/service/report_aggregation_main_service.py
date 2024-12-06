@@ -30,6 +30,7 @@ from data_questionnaire_agent.service.prompt_support import (
 from data_questionnaire_agent.service.report_aggregation_service import (
     convert_to_str,
 )
+from data_questionnaire_agent.service.report_aggregation_summarization_service import aexecute_summarization_batch_str
 from data_questionnaire_agent.service.similarity_search import num_tokens_from_string
 from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.translation import t
@@ -101,11 +102,19 @@ def batch_list(
     return batch_list, token_counts
 
 
+def count_all_tokens(all_questionnaires: List[str]) -> int:
+    return sum([num_tokens_from_string(string) for string in all_questionnaires])
+
+
 async def extract_report_dimensions(
     questionnaire_data: List[QuestionnaireStatus], language: str
 ) -> List[ReportAggregationKeywords]:
     questionnaire_list_str = convert_to_str(questionnaire_data)
-    batched_list, count_list = batch_list(
+    sum_tokens = count_all_tokens(questionnaire_list_str)
+    # Only summarize in case the token count is high
+    if sum_tokens > report_agg_cfg.report_token_limit:
+        questionnaire_list_str = aexecute_summarization_batch_str(questionnaire_list_str)
+    batched_list, count_list = await batch_list(
         questionnaire_list_str, report_agg_cfg.report_token_limit
     )
     assert sum([len(b) for b in batched_list]) == len(

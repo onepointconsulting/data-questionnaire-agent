@@ -11,7 +11,6 @@ def create_bullet_list(items: List[str]) -> str:
 def convert_to_str(questionnaire_statuses: List[QuestionnaireStatus]) -> List[str]:
     questionnaires = []
     questionnaire = []
-    questionnaire.append("# Questionnaire")
     for qs in questionnaire_statuses:
         question, answer, final_report = qs.question, qs.answer, qs.final_report
         if not final_report:
@@ -48,6 +47,7 @@ A: {answer}
 {positive_outcomes_str}
 """
             )
+            questionnaire.insert(0, "# Questionnaire")
             questionnaires.append("\n".join(questionnaire))
             questionnaire.clear()
     return questionnaires
