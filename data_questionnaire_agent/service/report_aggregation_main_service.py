@@ -113,8 +113,8 @@ async def extract_report_dimensions(
     sum_tokens = count_all_tokens(questionnaire_list_str)
     # Only summarize in case the token count is high
     if sum_tokens > report_agg_cfg.report_token_limit:
-        questionnaire_list_str = aexecute_summarization_batch_str(questionnaire_list_str)
-    batched_list, count_list = await batch_list(
+        questionnaire_list_str = await aexecute_summarization_batch_str(questionnaire_list_str)
+    batched_list, count_list = batch_list(
         questionnaire_list_str, report_agg_cfg.report_token_limit
     )
     assert sum([len(b) for b in batched_list]) == len(

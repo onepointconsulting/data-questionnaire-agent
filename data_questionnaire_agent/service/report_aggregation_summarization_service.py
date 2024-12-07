@@ -8,6 +8,7 @@ from data_questionnaire_agent.model.report_aggregation_schema import (
 from data_questionnaire_agent.service.prompt_support import (
     factory_prompt,
 )
+from data_questionnaire_agent.log_init import logger
 
 KEY_QUESTIONNAIRE = "full_questionnaire"
 
@@ -35,9 +36,10 @@ async def aexecute_summarization_batch(
     batches = [
         inputs_dict[i : i + batch_size] for i in range(len(inputs_dict))[::batch_size]
     ]
-    for b in batches:
+    for i, b in enumerate(batches):
         res = await chain.abatch(b)
         summaries.extend(res)
+        logger.info(f"Summarized {i + batch_size} records.")
     return summaries
 
 
