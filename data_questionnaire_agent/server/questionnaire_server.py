@@ -590,6 +590,11 @@ async def validate_jwt_token(request: web.Request) -> web.Response:
         raise web.HTTPBadRequest(
             text=f"Please make sure the JSON body is available and well formatted: {e}"
         )
+    
+
+@routes.options("/generate_aggregated_report")
+async def generate_aggregated_report_options(_: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
 
 
 @routes.post("/generate_aggregated_report")

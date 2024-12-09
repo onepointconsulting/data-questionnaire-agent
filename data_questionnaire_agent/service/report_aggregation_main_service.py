@@ -331,6 +331,7 @@ async def aggregate_reports_main(
     questionnaire_data: List[
         QuestionnaireStatus
     ] = await select_questionnaires_by_tokens(tokens)
+    logger.info(f"Report: {len(questionnaire_data)} reports available.")
 
     # Extract the dimensions in batches
     logger.info("Report: Extract the dimensions in batches")
