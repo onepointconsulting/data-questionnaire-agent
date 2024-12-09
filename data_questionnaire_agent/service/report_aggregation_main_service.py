@@ -122,7 +122,7 @@ async def extract_report_dimensions(
     ), "The batching operation is not accurate."
     logger.info("Batch sizes in tokens:")
     for c in count_list:
-        logger.info(c)
+        logger.info("Batch size: %d", c)
     chain = create_structured_question_call(language)
     keyword_list = []
     for batch in batched_list:

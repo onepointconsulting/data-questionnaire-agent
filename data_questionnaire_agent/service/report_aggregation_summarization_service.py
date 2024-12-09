@@ -37,13 +37,17 @@ async def aexecute_summarization_batch(
         inputs_dict[i : i + batch_size] for i in range(len(inputs_dict))[::batch_size]
     ]
     for i, b in enumerate(batches):
-        res = await chain.abatch(b)
-        summaries.extend(res)
-        logger.info(f"Summarized {i + batch_size} records.")
+        try:
+            res = await chain.abatch(b)
+            summaries.extend(res)
+            logger.info(f"Summarized {i + batch_size} records.")
+        except Exception as e:
+            logger.exception(e)
     return summaries
 
 
 async def aexecute_summarization_batch_str(
     inputs: list[str], batch_size: int = 2, language: str = "en"
 ) -> list[str]:
+    logger.info("Summarizing %d questionnaires.")
     return [summ.summary for summ in await aexecute_summarization_batch(inputs, batch_size, language)]
