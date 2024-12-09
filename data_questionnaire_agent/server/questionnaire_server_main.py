@@ -11,7 +11,7 @@ from data_questionnaire_agent.server.questionnaire_server import (
 
 FILE_INDEX = "index.html"
 PATH_INDEX = web_server_cfg.ui_folder / FILE_INDEX
-
+INDEX_LINKS = ["/", "/jwt-token", "/reports"]
 
 async def get_index(request: web.Request) -> web.Response:
     return web.FileResponse(PATH_INDEX)
@@ -20,8 +20,8 @@ async def get_index(request: web.Request) -> web.Response:
 def run_server():
     for i in range(MAX_SESSION_STEPS):
         app.router.add_get(f"/{i}", get_index)
-    app.router.add_get("/", get_index)
-    app.router.add_get("/jwt-token", get_index)
+    for url in INDEX_LINKS:
+        app.router.add_get(url, get_index)
     app.add_routes(routes)
     app.router.add_static(
         "/images", path=web_server_cfg.images_folder.as_posix(), name="images"
