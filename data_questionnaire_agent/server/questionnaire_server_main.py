@@ -11,7 +11,7 @@ from data_questionnaire_agent.server.questionnaire_server import (
 
 FILE_INDEX = "index.html"
 PATH_INDEX = web_server_cfg.ui_folder / FILE_INDEX
-INDEX_LINKS = ["/", "/jwt-token", "/reports"]
+INDEX_LINKS = ["/", "/admin"]
 
 async def get_index(request: web.Request) -> web.Response:
     return web.FileResponse(PATH_INDEX)

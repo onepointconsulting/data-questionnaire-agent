@@ -40,7 +40,7 @@ async def aexecute_summarization_batch(
         try:
             res = await chain.abatch(b)
             summaries.extend(res)
-            logger.info(f"Summarized {i + batch_size} records.")
+            logger.info(f"Summarized {(i + batch_size) * batch_size} records.")
         except Exception as e:
             logger.exception(e)
     return summaries
