@@ -584,8 +584,25 @@ async def select_confidence(
 ) -> Union[ConfidenceRating, None]:
     res = await select_from(
         """
-SELECT ID, CONFIDENCE_RATING, CONFIDENCE_REASONING FROM PUBLIC.TB_QUESTIONNAIRE_STATUS
-WHERE SESSION_ID = %(session_id)s ORDER BY ID OFFSET %(step)s LIMIT 1
+SELECT 
+    ID, 
+    CASE 
+        WHEN final_report = true AND QUESTION ILIKE '%%{%%' 
+        THEN (QUESTION::json->'confidence'->>'rating') 
+        ELSE CONFIDENCE_RATING 
+    END as CONFIDENCE_RATING,
+    CASE 
+        WHEN final_report = true AND QUESTION ILIKE '%%{%%' 
+        THEN (QUESTION::json->'confidence'->>'reasoning') 
+        ELSE CONFIDENCE_REASONING 
+    END as CONFIDENCE_REASONING
+FROM 
+    PUBLIC.TB_QUESTIONNAIRE_STATUS
+WHERE 
+    SESSION_ID = %(session_id)s 
+ORDER BY 
+    ID 
+OFFSET %(step)s LIMIT 1;
 """,
         {"session_id": session_id, "step": step},
     )
