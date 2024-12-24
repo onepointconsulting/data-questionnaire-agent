@@ -57,12 +57,6 @@ def convert_questionnaire(
 def server_messages_factory(questionnaire: List[QuestionnaireStatus]) -> ServerMessages:
     assert_server_messages_factory(questionnaire)
     session_id = questionnaire[0].session_id
-    if len(questionnaire) > 1:
-        # TODO: remove. this does not make much sense.
-        for qs in questionnaire:
-            if qs.final_report:
-                qs.question = qs.question
-
     return ServerMessages(
         session_id=session_id,
         server_messages=convert_questionnaire(questionnaire),

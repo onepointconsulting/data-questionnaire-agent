@@ -84,10 +84,6 @@ ORDER BY ID ASC""",
     for r in res:
         final_report = r[FINAL_REPORT]
         question = r[QUESTION]
-        language = r[LANGUAGE]
-        if final_report:
-            conditional_advice = ConditionalAdvice.parse_raw(question)
-            question = conditional_advice.to_markdown(language)
         final_res.append(
             QuestionnaireStatus(
                 id=r[ID],
