@@ -113,7 +113,7 @@ class ConditionalAdvice(PydanticV1BaseModel):
 
     def to_markdown(self, language: str = "en") -> str:
         def convert_to_text(text_list: List[str], title: str):
-            md = f"# {title} ...\n\n"
+            md = f"# {title}\n\n"
             if text_list is not None:
                 for text in text_list:
                     md += f"- {text}\n\n"
