@@ -135,6 +135,7 @@ async def start_session(
     server_messages = None
     question = None
 
+    global_configuration = await select_global_configuration()
     if len(questionnaire_messages) == 0:
         # No question yet. Start from scratch
         question = await select_initial_question(language)
@@ -144,7 +145,7 @@ async def start_session(
             return
         server_messages = server_messages_factory([qs])
         session_properties = SessionProperties(
-            session_steps=session_steps or DEFAULT_SESSION_STEPS,
+            session_steps=global_configuration.get_default_session_steps(DEFAULT_SESSION_STEPS) or session_steps,
             session_language=language,
             chat_type=chat_type_factory(chat_type),
         )
@@ -154,7 +155,7 @@ async def start_session(
         server_messages = server_messages_factory(questionnaire_messages)
         question = questionnaire_messages[0].question
         await load_configuration(server_messages)
-    server_messages.global_configuration = await select_global_configuration()
+    server_messages.global_configuration = global_configuration
 
     await append_first_suggestion(server_messages, question)
     await append_other_suggestions(server_messages, questionnaire_messages)
@@ -384,7 +385,7 @@ async def insert_configuration(
     for session_key in session_keys:
         saved_entry = await save_session_configuration(session_key)
         if saved_entry is None:
-            # Something went wrong. We will use the dafault value.
+            # Something went wrong. We will use the default value.
             logger.error(
                 f"Could not save configuration with {session_key.config_key}: {session_key.config_value}"
             )

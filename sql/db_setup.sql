@@ -317,4 +317,7 @@ update tb_question_suggestions set svg_image = '<svg width="40" height="46" view
 </svg>' where title = 'Resistance to change';
 
 INSERT INTO PUBLIC.TB_GLOBAL_CONFIGURATION(CONFIG_KEY, CONFIG_VALUE, DESCRIPTION)
-VALUES('MESSAGE_UPPER_LIMIT', 10, 'Maximum number of messages after which the report is generated.');
+VALUES('MESSAGE_UPPER_LIMIT', 12, 'Maximum number of messages after which the report is generated.');
+
+INSERT INTO PUBLIC.TB_GLOBAL_CONFIGURATION(CONFIG_KEY, CONFIG_VALUE, DESCRIPTION)
+VALUES('MESSAGE_LOWER_LIMIT', 8, 'Number of messages after which the user is given the option of stopping the questionnaire before time');
