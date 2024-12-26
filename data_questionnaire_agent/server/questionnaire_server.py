@@ -70,6 +70,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_answer,
     update_clarification,
     update_session_steps,
+    select_global_configuration
 )
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
@@ -153,6 +154,7 @@ async def start_session(
         server_messages = server_messages_factory(questionnaire_messages)
         question = questionnaire_messages[0].question
         await load_configuration(server_messages)
+    server_messages.global_configuration = await select_global_configuration()
 
     await append_first_suggestion(server_messages, question)
     await append_other_suggestions(server_messages, questionnaire_messages)
@@ -590,7 +592,7 @@ async def validate_jwt_token(request: web.Request) -> web.Response:
         raise web.HTTPBadRequest(
             text=f"Please make sure the JSON body is available and well formatted: {e}"
         )
-    
+
 
 @routes.options("/generate_aggregated_report")
 async def generate_aggregated_report_options(_: web.Request) -> web.Response:

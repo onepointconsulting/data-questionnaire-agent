@@ -4,6 +4,7 @@ from pydantic.v1 import BaseModel, Field
 
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import SessionConfiguration
+from data_questionnaire_agent.model.global_configuration import GlobalConfiguration
 
 
 class ServerMessage(BaseModel):
@@ -31,6 +32,9 @@ class ServerMessages(BaseModel):
     )
     session_configuration: Union[SessionConfiguration, None] = Field(
         default=None, description="The session configuration"
+    )
+    global_configuration: Union[GlobalConfiguration, None] = Field(
+        default=None, description="The global configuration with key value pairs"
     )
 
 

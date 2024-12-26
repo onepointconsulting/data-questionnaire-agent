@@ -2,13 +2,13 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.report_aggregation_schema import (
     ReportDocumentSummarization,
 )
 from data_questionnaire_agent.service.prompt_support import (
     factory_prompt,
 )
-from data_questionnaire_agent.log_init import logger
 
 KEY_QUESTIONNAIRE = "full_questionnaire"
 
@@ -50,4 +50,7 @@ async def aexecute_summarization_batch_str(
     inputs: list[str], batch_size: int = 2, language: str = "en"
 ) -> list[str]:
     logger.info("Summarizing %d questionnaires.", len(inputs))
-    return [summ.summary for summ in await aexecute_summarization_batch(inputs, batch_size, language)]
+    return [
+        summ.summary
+        for summ in await aexecute_summarization_batch(inputs, batch_size, language)
+    ]

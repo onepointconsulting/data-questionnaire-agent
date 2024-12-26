@@ -24,13 +24,15 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_questionnaires_by_tokens,
 )
 from data_questionnaire_agent.service.prompt_support import (
-    prompt_factory_generic,
     factory_prompt,
+    prompt_factory_generic,
 )
 from data_questionnaire_agent.service.report_aggregation_service import (
     convert_to_str,
 )
-from data_questionnaire_agent.service.report_aggregation_summarization_service import aexecute_summarization_batch_str
+from data_questionnaire_agent.service.report_aggregation_summarization_service import (
+    aexecute_summarization_batch_str,
+)
 from data_questionnaire_agent.service.similarity_search import num_tokens_from_string
 from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.translation import t
@@ -50,7 +52,7 @@ def prompt_factory_keyword_extraction_prompt(
         [
             "full_questionnaires",
         ],
-        language
+        language,
     )
 
 
@@ -113,7 +115,9 @@ async def extract_report_dimensions(
     sum_tokens = count_all_tokens(questionnaire_list_str)
     # Only summarize in case the token count is high
     if sum_tokens > report_agg_cfg.report_token_limit:
-        questionnaire_list_str = await aexecute_summarization_batch_str(questionnaire_list_str)
+        questionnaire_list_str = await aexecute_summarization_batch_str(
+            questionnaire_list_str
+        )
     batched_list, count_list = batch_list(
         questionnaire_list_str, report_agg_cfg.report_token_limit
     )

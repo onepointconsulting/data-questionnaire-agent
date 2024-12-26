@@ -9,6 +9,10 @@ from data_questionnaire_agent.model.application_schema import (
     Questionnaire,
 )
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
+from data_questionnaire_agent.model.global_configuration import (
+    GlobalConfiguration,
+    GlobalConfigurationProperty,
+)
 from data_questionnaire_agent.model.jwt_token import JWTToken
 from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
 from data_questionnaire_agent.model.ontology_schema import Ontology
@@ -663,8 +667,8 @@ async def select_questionnaires_by_tokens(
 ) -> List[QuestionnaireStatus]:
     sql = f"""
 SELECT ID,
-	SESSION_ID,
 	QUESTION,
+	SESSION_ID,
 	ANSWER,
 	FINAL_REPORT,
 	CREATED_AT,
@@ -707,6 +711,17 @@ ORDER BY ID ASC;
         )
         for r in res
     ]
+
+
+async def select_global_configuration() -> GlobalConfiguration:
+    sql = """SELECT CONFIG_KEY, CONFIG_VALUE FROM PUBLIC.TB_GLOBAL_CONFIGURATION;"""
+    res = await select_from(sql, {})
+    if not res:
+        return GlobalConfiguration(properties=[])
+    properties = [
+        GlobalConfigurationProperty(config_key=r[0], config_value=r[1]) for r in res
+    ]
+    return GlobalConfiguration(properties=properties)
 
 
 if __name__ == "__main__":
@@ -915,6 +930,12 @@ if __name__ == "__main__":
         with open(cfg.project_root / "data/questionnaire_all.pkl", "wb") as f:
             pickle.dump(res, f)
 
+
+    async def test_select_global_configuration():
+        global_configuration = await select_global_configuration()
+        assert global_configuration is not None
+        assert global_configuration.properties is not None
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -929,5 +950,6 @@ if __name__ == "__main__":
     # asyncio.run(test_delete_last_question())
     # asyncio.run(test_create_jwt())
     # asyncio.run(test_check_question_exists())
-    asyncio.run(test_select_questionnaires_by_tokens())
-    asyncio.run(test_select_questionnaires_by_tokens_all())
+    # asyncio.run(test_select_questionnaires_by_tokens())
+    # asyncio.run(test_select_questionnaires_by_tokens_all())
+    asyncio.run(test_select_global_configuration())

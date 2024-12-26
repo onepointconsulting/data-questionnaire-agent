@@ -22,7 +22,8 @@ async def create_cursor(func: Callable, commit=False) -> Any:
         # async with asynch_pool.connection() as conn:
         async with conn.cursor() as cur:
             return await func(cur)
-    except:
+    except Exception as e:
+        logger.error(str(e))
         logger.exception("Could not create cursor.")
         return None
     finally:
