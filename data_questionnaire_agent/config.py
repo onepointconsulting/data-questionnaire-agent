@@ -102,6 +102,13 @@ class Config:
         translation_path is not None
     ), "Please specifiy the translation path TRANSLATION_PATH."
 
+    aggregator_report_folder_str = os.getenv("AGGREGATOR_REPORT_FOLDER")
+    assert (
+        aggregator_report_folder_str is not None
+    ), "The aggregator report is not None."
+    aggregator_report_folder = Path(aggregator_report_folder_str)
+    create_if_not_exists(aggregator_report_folder)
+
     use_graphrag = os.getenv("USE_GRAPHRAG") == "true"
     graphrag_base_url = os.getenv("GRAPHRAG_BASE_URL")
     if use_graphrag:
@@ -116,13 +123,11 @@ class Config:
     ], "GraphRAG mode not recognized"
     graphrag_context_size_str = os.getenv("GRAPHRAG_CONTEXT_SIZE", "10000")
     graphrag_context_size = int(graphrag_context_size_str)
-
-    aggregator_report_folder_str = os.getenv("AGGREGATOR_REPORT_FOLDER")
-    assert (
-        aggregator_report_folder_str is not None
-    ), "The aggregator report is not None."
-    aggregator_report_folder = Path(aggregator_report_folder_str)
-    create_if_not_exists(aggregator_report_folder)
+    graphrag_jwt = os.getenv("GRAPHRAG_JWT")
+    assert graphrag_jwt is not None, "JWT is needed to access GraphRAG server"
+    graphrag_project = os.getenv("GRAPHRAG_PROJECT")
+    assert graphrag_project is not None, "GraphRAG project is required."
+        
 
 
 cfg = Config()
@@ -216,3 +221,5 @@ if __name__ == "__main__":
     logger.info("JWT_ALGORITHM: %s", jwt_token_cfg.algorithm)
 
     print(ReportAggregationConfig.report_token_limit)
+
+    logger.info("GRAPHRAG_JWT: %s", cfg.graphrag_jwt)
