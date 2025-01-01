@@ -51,6 +51,10 @@ Die Benutzerantworten befinden sich in dem Abschnitt, der mit ==== ANSWERS ==== 
 {answers}
 ==== ANSWERS END ====
 """
+    [questionnaire.secondary_regenerate]
+    human_message = """Bitte beachten Sie: Zuvor wurde eine Frage generiert, aber der Endbenutzer hat beschlossen, eine weitere Frage zu generieren. 
+Dies war die vorherige Frage, die dem Benutzer nicht gefallen hat: {previous_question}.
+Stellen sicher, dass Du eine andere Frage generierst."""
     [questionnaire.clarification]
     system_message = "Sie sind ein hilfreicher Assistent. Sie erklären die Bedeutung der Fragen Schritt für Schritt. Ich hebe die Hauptthemen in fettgedrucktem Markdown hervor. Verwende Hochdeutsch."
     human_message = """Bitte erklären Sie die folgende Frage so, dass ein Laie sie verstehen kann:

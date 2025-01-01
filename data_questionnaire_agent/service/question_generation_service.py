@@ -14,6 +14,7 @@ from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
+from langchain.prompts import HumanMessagePromptTemplate, PromptTemplate
 
 
 def divergent_prompt_transformer(prompt: str, language: str = "en") -> str:
@@ -63,6 +64,31 @@ def prompt_factory_secondary_questions(
         prompts,
         prompt_transformer,
     )
+
+
+def prompt_factory_recreate_question(session_properties: SessionProperties) -> ChatPromptTemplate:
+    language = session_properties.session_language
+    regenerate_template = prompt_factory_secondary_questions(session_properties)
+    # Build the normal prompt template and then modify it to avoid code duplication
+    main_message_index = 1
+    main_template: HumanMessagePromptTemplate = regenerate_template.messages[main_message_index]
+    main_template_prompt: PromptTemplate = main_template.prompt
+    template, input_variables = main_template_prompt.template, main_template_prompt.input_variables
+    input_variables.append("previous_question")
+    insertion_mark = "\n==== KNOWLEDGE BASE START ====\n"
+    insertion_index = template.find(insertion_mark)
+    prompts = get_prompts(language)
+    # manipulate the template
+    section_mod_human_message = prompts["questionnaire"]["secondary_regenerate"]["human_message"]
+    previous = template[0:insertion_index]
+    after = template[insertion_index:]
+    changed_template = f"""{previous}
+{section_mod_human_message}
+{after}
+"""
+    main_template_prompt.template = changed_template
+    return regenerate_template
+    
 
 
 def create_structured_question_call(

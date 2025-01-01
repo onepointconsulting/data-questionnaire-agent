@@ -15,6 +15,7 @@ from data_questionnaire_agent.service.question_generation_service import (
     create_structured_question_call,
     divergent_prompt_transformer,
     prepare_secondary_question,
+    prompt_factory_recreate_question
 )
 from data_questionnaire_agent.test.provider.knowledge_base_provider import (
     provide_knowledge_base,
@@ -69,6 +70,22 @@ def test_divergent_prompt_transformer() -> str:
         "The questions should explore topics related to the main topic"
         not in transformed
     )
+
+
+def test_prompt_factory_recreate_question():
+    session_properties = SessionProperties(
+        session_steps=6, session_language="en", chat_type=ChatType.TO_THE_POINT
+    )
+    chat_prompt_template = prompt_factory_recreate_question(session_properties)
+    assert chat_prompt_template is not None, "There is no chat prompt template"
+    assert chat_prompt_template.messages is not None, "There are no messages in the prompt template"
+    assert len(chat_prompt_template.messages) == 4, "The template does not have the 4 expected messages"
+    main_message = chat_prompt_template.messages[1]
+    assert main_message.prompt is not None, "The main message does not have a prompt"
+    prompt = main_message.prompt
+    assert "{previous_question}" in prompt.template, "Cannot find {previous_question}"
+    assert "previous_question" in prompt.input_variables, "previous_question parameter not found"
+
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
