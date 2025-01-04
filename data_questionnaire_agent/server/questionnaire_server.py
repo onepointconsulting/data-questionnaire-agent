@@ -20,6 +20,7 @@ from data_questionnaire_agent.model.server_model import (
     ServerMessage,
     ServerMessages,
     server_messages_factory,
+    ErrorMessage
 )
 from data_questionnaire_agent.model.session_configuration import (
     DEFAULT_SESSION_STEPS,
@@ -35,6 +36,7 @@ from data_questionnaire_agent.server.agent_session import AgentSession, agent_se
 from data_questionnaire_agent.service.advice_service import (
     create_structured_question_call,
 )
+from data_questionnaire_agent.service.question_generation_service import create_structured_question_call as create_structured_regeneration_call
 from data_questionnaire_agent.service.confidence_service import (
     calculate_confidence_rating,
 )
@@ -60,6 +62,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     save_session_configuration,
     select_confidence,
     select_current_session_steps_and_language,
+    select_global_configuration,
     select_initial_question,
     select_questionnaire,
     select_questionnaire_status_suggestions,
@@ -70,7 +73,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_answer,
     update_clarification,
     update_session_steps,
-    select_global_configuration
+    update_regenerated_question
 )
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
@@ -83,6 +86,13 @@ from data_questionnaire_agent.service.secondary_question_processor import (
 )
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
+from data_questionnaire_agent.model.openai_schema import (
+    ResponseQuestions,
+)
+from data_questionnaire_agent.service.knowledge_base_service import fetch_context
+from data_questionnaire_agent.service.question_generation_service import (
+    prepare_secondary_question,
+)
 
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 FAILED_SESSION_STEPS = -1
@@ -104,6 +114,7 @@ class Commands(StrEnum):
     CLARIFICATION_TOKEN = "clarification_token"
     EXTEND_SESSION = "extend_session"
     ERROR = "error"
+    REGENERATE_QUESTION = "regenerate_question"
 
 
 @sio.event
@@ -145,7 +156,10 @@ async def start_session(
             return
         server_messages = server_messages_factory([qs])
         session_properties = SessionProperties(
-            session_steps=global_configuration.get_default_session_steps(DEFAULT_SESSION_STEPS) or session_steps,
+            session_steps=global_configuration.get_default_session_steps(
+                DEFAULT_SESSION_STEPS
+            )
+            or session_steps,
             session_language=language,
             chat_type=chat_type_factory(chat_type),
         )
@@ -169,9 +183,7 @@ async def start_session(
 @sio.event
 async def client_message(sid: str, session_id: str, answer: str):
     if session_id not in agent_sessions:
-        logger.warning(f"Session not found {session_id}")
-        # Create new session
-        await start_session(sid, session_id)
+        await handle_missing_session(sid, session_id)
     else:
         update_id = await update_answer(session_id, answer)
         session_properties: SessionProperties = (
@@ -197,6 +209,45 @@ async def client_message(sid: str, session_id: str, answer: str):
                 await generate_report(session_id, questionnaire, language)
 
             await send_report_message(sid, session_id)
+
+
+@sio.event
+async def regenerate_question(sid: str, session_id: str):
+    if session_id not in agent_sessions:
+        await handle_missing_session(sid, session_id)
+    else:
+        try:
+            session_properties: SessionProperties = (
+                await select_current_session_steps_and_language(session_id)
+            )
+            runnable = create_structured_regeneration_call(
+                session_properties, is_recreate=True)
+            questionnaire = await select_questionnaire(session_id)
+            knowledge_base = await fetch_context(questionnaire)
+            input = prepare_secondary_question(
+                questionnaire, knowledge_base, questions_per_batch=1, is_recreate=True
+            )
+            res: ResponseQuestions = await runnable.ainvoke(input)
+            # replace latest question in the database.
+            previous_question = questionnaire.questions[-1]
+            new_question = res.questions[-1]
+            # replace suggestions too
+            suggestions = res.possible_answers
+            await update_regenerated_question(session_id, previous_question.question, new_question, suggestions)
+            await select_all_messages_and_send(sid, session_id, is_regenerate=True)
+        except Exception as e:
+            logger.error(str(e))
+            await sio.emit(
+                Commands.REGENERATE_QUESTION,
+                ErrorMessage(session_id=session_id, error=t("regeneration_failed", locale=session_properties.session_language)).json(),
+                room=sid,
+            )
+
+
+async def handle_missing_session(sid: str, session_id: str):
+    logger.warning(f"Session not found {session_id}")
+    # Create new session
+    await start_session(sid, session_id)
 
 
 async def send_report_message(sid: str, session_id: str):
@@ -313,10 +364,15 @@ async def handle_secondary_question(
         await send_error(sid, session_id, t("failed_insert_question", locale=language))
         return
     await insert_questionnaire_status_suggestions(qs_res.id, last_question_answer)
+    await select_all_messages_and_send(sid, session_id)
+    
+
+
+async def select_all_messages_and_send(sid: str, session_id: str, is_regenerate: bool=False):
     questionnaire_messages = await select_questionnaire_statuses(session_id)
     server_messages = server_messages_factory(questionnaire_messages)
 
-    await append_suggestions_and_send(sid, server_messages, questionnaire_messages)
+    await append_suggestions_and_send(sid, server_messages, questionnaire_messages, is_regenerate)
 
 
 async def save_confidence_rating(
@@ -337,11 +393,12 @@ async def append_suggestions_and_send(
     sid: str,
     server_messages: ServerMessages,
     questionnaire_messages: List[QuestionnaireStatus],
+    is_regenerate: bool=False
 ):
     await append_first_suggestion(server_messages, questionnaire_messages[0].question)
     await append_other_suggestions(server_messages, questionnaire_messages)
     await sio.emit(
-        Commands.SERVER_MESSAGE,
+        Commands.SERVER_MESSAGE if not is_regenerate else Commands.REGENERATE_QUESTION,
         server_messages.json(),
         room=sid,
     )

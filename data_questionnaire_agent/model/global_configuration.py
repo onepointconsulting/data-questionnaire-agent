@@ -1,4 +1,5 @@
 from pydantic.v1 import BaseModel, Field
+
 from data_questionnaire_agent.log_init import logger
 
 
@@ -18,6 +19,8 @@ class GlobalConfiguration(BaseModel):
                 try:
                     return int(p.config_value)
                 except ValueError as e:
-                    logger.warn(f"Could not extract default steps from configuration: {e}")
+                    logger.warn(
+                        f"Could not extract default steps from configuration: {e}"
+                    )
                     return default_steps
         return default_steps

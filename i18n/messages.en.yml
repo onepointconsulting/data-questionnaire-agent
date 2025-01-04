@@ -29,5 +29,6 @@ en:
   failed_insert_question: "Failed to insert question in database"
   no_answer_from_chatgpt: "Could not get any answers from ChatGPT"
   no_report_id: "Report ID is not available"
+  regeneration_failed: "The question could not be re-generated."
 
   

@@ -2,9 +2,9 @@ from typing import Any, List, Union
 
 from pydantic.v1 import BaseModel, Field
 
+from data_questionnaire_agent.model.global_configuration import GlobalConfiguration
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import SessionConfiguration
-from data_questionnaire_agent.model.global_configuration import GlobalConfiguration
 
 
 class ServerMessage(BaseModel):
@@ -36,6 +36,10 @@ class ServerMessages(BaseModel):
     global_configuration: Union[GlobalConfiguration, None] = Field(
         default=None, description="The global configuration with key value pairs"
     )
+
+class ErrorMessage(BaseModel):
+    session_id: str = Field(..., description="The application's source identifier")
+    error: str = Field(..., description="The error message")
 
 
 def assert_server_messages_factory(questionnaire: List[QuestionnaireStatus]):

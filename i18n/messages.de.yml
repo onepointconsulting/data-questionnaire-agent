@@ -29,3 +29,4 @@ de:
   failed_insert_question: "Fehler beim Einfügen der Frage in die Datenbank"
   no_answer_from_chatgpt: "Konnte keine Antworten von ChatGPT erhalten"
   no_report_id: "Berichts-ID ist nicht verfügbar"
+  regeneration_failed: "Die Frage konnte nicht neu generiert werden."

@@ -15,7 +15,7 @@ from data_questionnaire_agent.service.question_generation_service import (
     create_structured_question_call,
     divergent_prompt_transformer,
     prepare_secondary_question,
-    prompt_factory_recreate_question
+    prompt_factory_recreate_question,
 )
 from data_questionnaire_agent.test.provider.knowledge_base_provider import (
     provide_knowledge_base,
@@ -61,6 +61,21 @@ def test_question_generation_new_en():
     assert isinstance(res, ResponseQuestions)
 
 
+def test_question_regeneration_new_en():
+    session_properties = create_session_properties()
+    runnable = create_structured_question_call(session_properties, is_recreate=True)
+    questionnaire = create_questionnaire_2_questions()
+    knowledge_base = provide_knowledge_base()
+    input = prepare_secondary_question(
+        questionnaire, knowledge_base, questions_per_batch=1, is_recreate=True
+    )
+    res: ResponseQuestions = asyncio.run(runnable.ainvoke(input))
+    assert isinstance(res, ResponseQuestions)
+    previous_question = questionnaire.questions[-1].question
+    assert len(res.questions) == 1, "Expected question length is not 1"
+    assert res.questions[0] != previous_question, "The question is the same"
+
+
 def test_divergent_prompt_transformer() -> str:
     prompts = get_prompts("en")
     human_message = prompts["questionnaire"]["secondary"]["human_message"]
@@ -78,14 +93,19 @@ def test_prompt_factory_recreate_question():
     )
     chat_prompt_template = prompt_factory_recreate_question(session_properties)
     assert chat_prompt_template is not None, "There is no chat prompt template"
-    assert chat_prompt_template.messages is not None, "There are no messages in the prompt template"
-    assert len(chat_prompt_template.messages) == 4, "The template does not have the 4 expected messages"
+    assert (
+        chat_prompt_template.messages is not None
+    ), "There are no messages in the prompt template"
+    assert (
+        len(chat_prompt_template.messages) == 4
+    ), "The template does not have the 4 expected messages"
     main_message = chat_prompt_template.messages[1]
     assert main_message.prompt is not None, "The main message does not have a prompt"
     prompt = main_message.prompt
     assert "{previous_question}" in prompt.template, "Cannot find {previous_question}"
-    assert "previous_question" in prompt.input_variables, "previous_question parameter not found"
-
+    assert (
+        "previous_question" in prompt.input_variables
+    ), "previous_question parameter not found"
 
 
 @pytest.mark.skip(reason="no way of currently testing this")

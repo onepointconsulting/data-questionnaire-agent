@@ -1,6 +1,10 @@
 from langchain.chains.llm import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
-from langchain.prompts import ChatPromptTemplate
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    PromptTemplate,
+)
 from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
@@ -14,7 +18,6 @@ from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
-from langchain.prompts import HumanMessagePromptTemplate, PromptTemplate
 
 
 def divergent_prompt_transformer(prompt: str, language: str = "en") -> str:
@@ -66,20 +69,29 @@ def prompt_factory_secondary_questions(
     )
 
 
-def prompt_factory_recreate_question(session_properties: SessionProperties) -> ChatPromptTemplate:
+def prompt_factory_recreate_question(
+    session_properties: SessionProperties,
+) -> ChatPromptTemplate:
     language = session_properties.session_language
     regenerate_template = prompt_factory_secondary_questions(session_properties)
     # Build the normal prompt template and then modify it to avoid code duplication
     main_message_index = 1
-    main_template: HumanMessagePromptTemplate = regenerate_template.messages[main_message_index]
+    main_template: HumanMessagePromptTemplate = regenerate_template.messages[
+        main_message_index
+    ]
     main_template_prompt: PromptTemplate = main_template.prompt
-    template, input_variables = main_template_prompt.template, main_template_prompt.input_variables
+    template, input_variables = (
+        main_template_prompt.template,
+        main_template_prompt.input_variables,
+    )
     input_variables.append("previous_question")
     insertion_mark = "\n==== KNOWLEDGE BASE START ====\n"
     insertion_index = template.find(insertion_mark)
     prompts = get_prompts(language)
     # manipulate the template
-    section_mod_human_message = prompts["questionnaire"]["secondary_regenerate"]["human_message"]
+    section_mod_human_message = prompts["questionnaire"]["secondary_regenerate"][
+        "human_message"
+    ]
     previous = template[0:insertion_index]
     after = template[insertion_index:]
     changed_template = f"""{previous}
@@ -88,14 +100,17 @@ def prompt_factory_recreate_question(session_properties: SessionProperties) -> C
 """
     main_template_prompt.template = changed_template
     return regenerate_template
-    
 
 
 def create_structured_question_call(
-    session_properties: SessionProperties,
+    session_properties: SessionProperties, is_recreate: bool = False
 ) -> RunnableSequence:
     model = cfg.llm.with_structured_output(ResponseQuestions)
-    prompt = prompt_factory_secondary_questions(session_properties)
+    prompt = (
+        prompt_factory_secondary_questions(session_properties)
+        if not is_recreate
+        else prompt_factory_recreate_question(session_properties)
+    )
     return prompt | model
 
 
@@ -112,8 +127,9 @@ def prepare_secondary_question(
     questionnaire: Questionnaire,
     knowledge_base: str,
     questions_per_batch: int = cfg.questions_per_batch,
+    is_recreate: bool = False,
 ) -> dict:
-    return {
+    params = {
         "knowledge_base": knowledge_base,
         "questions_answers": str(questionnaire),
         "answers": questionnaire.answers_str(),
@@ -122,3 +138,6 @@ def prepare_secondary_question(
         if len(questionnaire.questions) > 0
         else "",
     }
+    if is_recreate:
+        params["previous_question"] = questionnaire.questions[-1].question
+    return params

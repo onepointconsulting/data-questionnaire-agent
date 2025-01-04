@@ -45,7 +45,7 @@ class Questionnaire:
     def answers_str(self) -> str:
         return "\n\n".join(
             [
-                qa.answer["content"] if isinstance(qa.answer, dict) else qa.answer
+                qa.answer["content"] or "" if isinstance(qa.answer, dict) else qa.answer or ""
                 for qa in self.questions
             ]
         )

@@ -127,7 +127,6 @@ class Config:
     assert graphrag_jwt is not None, "JWT is needed to access GraphRAG server"
     graphrag_project = os.getenv("GRAPHRAG_PROJECT")
     assert graphrag_project is not None, "GraphRAG project is required."
-        
 
 
 cfg = Config()
