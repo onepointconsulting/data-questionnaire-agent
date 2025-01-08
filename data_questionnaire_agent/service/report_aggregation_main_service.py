@@ -250,8 +250,11 @@ def convert_to_dataframe(report_item_count: ReportItemCount) -> Dict[str, pd.Dat
         for kc in key_counts:
             data.append({key_name: kc.key, col_count: kc.count})
         df = pd.DataFrame(data)
-        df = df.sort_values(by=col_count, ascending=False).reset_index(drop=True)
-        df["percent"] = (df["count"] / sum(df["count"]) * 100).round(2)
+        if len(df) > 0:
+            df = df.sort_values(by=col_count, ascending=False).reset_index(drop=True)
+            df["percent"] = (df["count"] / sum(df["count"]) * 100).round(2)
+        else:
+            logger.warning("The dataframe is empty.")
         return df
 
     problem_df = convert_to_map(report_item_count.problem_count, "Problem")
