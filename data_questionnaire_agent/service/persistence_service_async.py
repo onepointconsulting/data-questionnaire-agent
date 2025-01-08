@@ -666,8 +666,8 @@ async def select_questionnaires_by_tokens(
 ) -> List[QuestionnaireStatus]:
     sql = f"""
 SELECT ID,
+    SESSION_ID,
 	QUESTION,
-	SESSION_ID,
 	ANSWER,
 	FINAL_REPORT,
 	CREATED_AT,
@@ -680,11 +680,11 @@ WHERE SESSION_ID IN
 			FROM TB_SESSION_CONFIGURATION C
 			INNER JOIN TB_QUESTIONNAIRE_STATUS S ON S.SESSION_ID = C.SESSION_ID
 			WHERE C.CONFIG_KEY = 'session-client-id'
-				{'AND C.CONFIG_VALUE = ANY(%(tokens)s)' if len(tokens) > 0 else ""}
+				{f'AND C.CONFIG_VALUE = ANY(ARRAY[{",".join([f"'{t}'" for t in tokens])}])' if len(tokens) > 0 else ""}
 				AND S.FINAL_REPORT = TRUE)
 ORDER BY ID ASC;
 """
-    res = await select_from(sql, {"tokens": tokens} if len(tokens) > 0 else {})
+    res = await select_from(sql, {})
     ID = 0
     SESSION_ID = 1
     QUESTION = 2
@@ -769,3 +769,4 @@ VALUES(({select_questionnaire_id}), %(suggestion)s)
         return first_row_count == 1
 
     return await create_cursor(process_update, True)
+

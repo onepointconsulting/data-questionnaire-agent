@@ -22,9 +22,16 @@ async def graphrag_context(question: str) -> Union[str, None]:
     }
 
     async with httpx.AsyncClient() as client:
+        timeout = httpx.Timeout(
+            connect=5.0,  # 5 seconds for connection establishment
+            read=cfg.graphrag_read_timeout,    # 20 seconds for reading response
+            write=10.0,   # 10 seconds for sending request data
+            pool=5.0      # 5 seconds for acquiring a connection from the pool
+        )
+        context_url = f"{cfg.graphrag_base_url}/context"
         try:
             response = await client.get(
-                f"{cfg.graphrag_base_url}/context", params=params, headers=headers
+                context_url, params=params, headers=headers, timeout=timeout
             )
 
             if response.status_code == 200:
@@ -40,5 +47,11 @@ async def graphrag_context(question: str) -> Union[str, None]:
                 )
                 return None
         except httpx.RequestError:
-            logger.exception("Failed to process query to fetch graphrag context.")
+            logger.exception(f"Failed to process query ({context_url}) to fetch graphrag context.")
             return None
+        
+
+if __name__ == "__main__":
+    import asyncio
+    res = asyncio.run(graphrag_context("Which areas of your data ecosystem are you most converned about?"))
+    print(res)
