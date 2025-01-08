@@ -684,6 +684,7 @@ WHERE SESSION_ID IN
 				AND S.FINAL_REPORT = TRUE)
 ORDER BY ID ASC;
 """
+    logger.info("select_questionnaires_by_tokens SQL: %s", sql)
     res = await select_from(sql, {})
     ID = 0
     SESSION_ID = 1
