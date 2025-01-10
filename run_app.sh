@@ -6,6 +6,3 @@ conda activate $ENV_NAME
 cd /home/ubuntu/projects/data-wellness-companion-staging
 
 python ./data_questionnaire_agent/server/questionnaire_server_main.py
-
-(base) ubuntu@ip-10-0-0-22:~/projects/data-wellness-companion-staging$ whereis sh
-sh: /bin/sh /bin/sh.distrib /usr/share/man/man1/sh.1.gz
