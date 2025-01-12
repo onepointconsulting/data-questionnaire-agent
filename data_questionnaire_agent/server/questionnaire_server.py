@@ -195,7 +195,7 @@ async def client_message(sid: str, session_id: str, answer: str):
             await send_error(sid, session_id, t("db_update_failed", locale=language))
             return
         questionnaire = await select_questionnaire(session_id)
-        if current_session_steps - 1 > len(questionnaire):
+        if current_session_steps > len(questionnaire):
             # We are generating questions
             await handle_secondary_question(
                 sid, session_id, questionnaire, session_properties
