@@ -32,6 +32,7 @@ python-ulid = "^2.7.0"
 pyjwt = "^2.9.0"
 pandas = "^2.2.3"
 xlsxwriter = "^3.2.0"
+openpyxl = "^3.1.5"
 
 [tool.poetry.scripts]
 build-ui = "data_questionnaire_agent.build:ui"

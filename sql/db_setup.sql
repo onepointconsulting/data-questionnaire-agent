@@ -337,4 +337,4 @@ INSERT INTO PUBLIC.TB_GLOBAL_CONFIGURATION(CONFIG_KEY, CONFIG_VALUE, DESCRIPTION
 VALUES('MESSAGE_UPPER_LIMIT', 14, 'Maximum number of messages after which the report is generated.');
 
 INSERT INTO PUBLIC.TB_GLOBAL_CONFIGURATION(CONFIG_KEY, CONFIG_VALUE, DESCRIPTION)
-VALUES('MESSAGE_LOWER_LIMIT', 8, 'Number of messages after which the user is given the option of stopping the questionnaire before time');
+VALUES('MESSAGE_LOWER_LIMIT', 9, 'Number of messages after which the user is given the option of stopping the questionnaire before time');

@@ -1,7 +1,7 @@
 import asyncio
 import json
 from enum import StrEnum
-from typing import Any, Awaitable, List, Tuple, Union
+from typing import Any, List, Tuple, Union
 
 import socketio
 from aiohttp import web
@@ -93,8 +93,8 @@ from data_questionnaire_agent.service.knowledge_base_service import fetch_contex
 from data_questionnaire_agent.service.question_generation_service import (
     prepare_secondary_question,
 )
+from data_questionnaire_agent.server.server_support import CORS_HEADERS, handle_error, routes
 
-CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
 
@@ -104,8 +104,6 @@ sio = socketio.AsyncServer(
 )
 app = web.Application()
 sio.attach(app)
-
-routes = web.RouteTableDef()
 
 
 class Commands(StrEnum):
@@ -670,7 +668,6 @@ async def generate_aggregated_report(request: web.Request) -> web.Response:
         "email_list": "gil.fernandes@gmail.com"
     }
     """
-
     async def process(request: web.Request):
         json_content = await request.json()
         match json_content:
@@ -691,16 +688,6 @@ async def generate_aggregated_report(request: web.Request) -> web.Response:
                 )
 
     return await handle_error(process, request=request)
-
-
-async def handle_error(fun: Awaitable, **kwargs) -> any:
-    try:
-        return await fun(kwargs["request"])
-    except Exception as e:
-        logger.error(f"Error occurred: {e}", exc_info=True)
-        raise web.HTTPBadRequest(
-            text="Please make sure the JSON body is available and well formatted."
-        )
 
 
 def extract_time_delta(json_content: dict) -> Union[int, None]:

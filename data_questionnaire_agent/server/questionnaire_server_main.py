@@ -6,8 +6,11 @@ from data_questionnaire_agent.config import web_server_cfg, websocket_cfg
 from data_questionnaire_agent.server.questionnaire_server import (
     MAX_SESSION_STEPS,
     app,
-    routes,
+    routes
 )
+from data_questionnaire_agent.server.questionnaire_server_configuration import routes as config_routes
+
+assert config_routes == routes
 
 FILE_INDEX = "index.html"
 PATH_INDEX = web_server_cfg.ui_folder / FILE_INDEX

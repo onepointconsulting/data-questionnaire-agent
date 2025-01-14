@@ -26,7 +26,8 @@ from data_questionnaire_agent.service.persistence_service_async import (
     check_question_exists,
     select_questionnaires_by_tokens,
     select_global_configuration,
-    update_regenerated_question
+    update_regenerated_question,
+    update_global_configuration
 )
 from data_questionnaire_agent.model.session_configuration import (
     DEFAULT_SESSION_STEPS,
@@ -34,6 +35,7 @@ from data_questionnaire_agent.model.session_configuration import (
     SessionProperties,
 )
 from data_questionnaire_agent.model.jwt_token import JWTToken
+from data_questionnaire_agent.model.global_configuration import GlobalConfiguration, GlobalConfigurationProperty
 
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.question_answer_provider import (
@@ -257,6 +259,16 @@ if __name__ == "__main__":
         deleted_id = await delete_last_question(qs.session_id)
         assert deleted_id is not None, "Delete last question failed."
 
+    async def test_update_global_configuration():
+        properties = [
+            GlobalConfigurationProperty(config_key='MESSAGE_LOWER_LIMIT', config_value='9'),
+            GlobalConfigurationProperty(config_key='MESSAGE_UPPER_LIMIT', config_value='16')
+        ]
+        gc = GlobalConfiguration(properties=properties)
+        updated = await update_global_configuration(gc)
+        assert updated == 2
+
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -274,5 +286,5 @@ if __name__ == "__main__":
     # asyncio.run(test_select_questionnaires_by_tokens())
     # asyncio.run(test_select_questionnaires_by_tokens_all())
     # asyncio.run(test_select_global_configuration())
-    asyncio.run(test_update_regenerated_question())
-    
+    asyncio.run(test_update_global_configuration())
+        

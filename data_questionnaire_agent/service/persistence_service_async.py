@@ -724,6 +724,20 @@ async def select_global_configuration() -> GlobalConfiguration:
     return GlobalConfiguration(properties=properties)
 
 
+async def update_global_configuration(global_configuration: GlobalConfiguration) -> GlobalConfiguration:
+    async def process_update(cur: AsyncCursor):
+        sql = """INSERT INTO public.tb_global_configuration(config_key, config_value, description, created_at)
+VALUES(%(config_key)s, %(config_value)s, 'Number of messages after which the user is given the option of stopping the questionnaire before time', now())
+ON CONFLICT (config_key)
+DO UPDATE set config_value = %(config_value)s"""
+        total_count = 0
+        for prop in global_configuration.properties:
+            await cur.execute(sql, {"config_key": prop.config_key, "config_value": prop.config_value})
+            total_count += cur.rowcount
+        return total_count
+    return await create_cursor(process_update, True)
+
+
 async def update_regenerated_question(
     session_id: str, previous_question: str, new_question: str, suggestions: list[str]
 ) -> bool:
