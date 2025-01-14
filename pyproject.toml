@@ -38,6 +38,7 @@ openpyxl = "^3.1.5"
 build-ui = "data_questionnaire_agent.build:ui"
 build-check = "data_questionnaire_agent.build:check"
 run = "data_questionnaire_agent.server.questionnaire_server_main:run_server"
+generate_tokens = "data_questionnaire_agent.service.jwt_token_service:generate_from_file_cmdline"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
