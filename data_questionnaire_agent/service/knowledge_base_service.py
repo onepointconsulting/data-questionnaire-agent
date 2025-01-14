@@ -1,13 +1,13 @@
 from typing import Union
 
 from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.service.graphrag_service import graphrag_context
 from data_questionnaire_agent.service.similarity_search import (
     init_vector_search,
     similarity_search,
 )
-from data_questionnaire_agent.log_init import logger
 
 docsearch = None
 

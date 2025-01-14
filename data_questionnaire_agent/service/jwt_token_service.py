@@ -95,7 +95,7 @@ async def generate_from_file(excel_file: Path) -> Path:
         email = f"{remove_bad_chars(full_name)}@{remove_bad_chars(company)}.clustre.com"
         token = await generate_token(JWTTokenData(name=full_name, email=email, time_delta_minutes=None))
         if token:
-            token_list.append({"name": full_name, "company": company, "clustre_url": f"https://clustre-d-well.onepointltd.ai/0?id={token.token}"})
+            token_list.append({"First name": first_name, "Last name": last_name, "Company": company, "Personal link": f"https://clustre-d-well.onepointltd.ai/0?id={token.token}", "Sent": False})
         else:
             logger.error(f"Failed to generate token for {full_name}")
     token_df = pd.DataFrame(token_list)

@@ -724,7 +724,9 @@ async def select_global_configuration() -> GlobalConfiguration:
     return GlobalConfiguration(properties=properties)
 
 
-async def update_global_configuration(global_configuration: GlobalConfiguration) -> GlobalConfiguration:
+async def update_global_configuration(
+    global_configuration: GlobalConfiguration,
+) -> GlobalConfiguration:
     async def process_update(cur: AsyncCursor):
         sql = """INSERT INTO public.tb_global_configuration(config_key, config_value, description, created_at)
 VALUES(%(config_key)s, %(config_value)s, 'Number of messages after which the user is given the option of stopping the questionnaire before time', now())
@@ -732,9 +734,12 @@ ON CONFLICT (config_key)
 DO UPDATE set config_value = %(config_value)s"""
         total_count = 0
         for prop in global_configuration.properties:
-            await cur.execute(sql, {"config_key": prop.config_key, "config_value": prop.config_value})
+            await cur.execute(
+                sql, {"config_key": prop.config_key, "config_value": prop.config_value}
+            )
             total_count += cur.rowcount
         return total_count
+
     return await create_cursor(process_update, True)
 
 
@@ -765,23 +770,21 @@ WHERE ID = {select_questionnaire_id}
         )
         first_row_count = cur.rowcount
         # Delete previous suggestions
-        await cur.execute(f"""
+        await cur.execute(
+            f"""
 DELETE FROM tb_questionnaire_status_suggestions 
 WHERE questionnaire_status_id = {select_questionnaire_id}
 """,
-            {
-                "session_id": session_id
-            })
+            {"session_id": session_id},
+        )
         for suggestion in suggestions:
-            await cur.execute(f"""
+            await cur.execute(
+                f"""
 INSERT INTO tb_questionnaire_status_suggestions (questionnaire_status_id, main_text)
 VALUES(({select_questionnaire_id}), %(suggestion)s)
 """,
-            {
-                "session_id": session_id,
-                "suggestion": suggestion
-            })
+                {"session_id": session_id, "suggestion": suggestion},
+            )
         return first_row_count == 1
 
     return await create_cursor(process_update, True)
-

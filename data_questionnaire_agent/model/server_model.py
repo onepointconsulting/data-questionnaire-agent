@@ -37,6 +37,7 @@ class ServerMessages(BaseModel):
         default=None, description="The global configuration with key value pairs"
     )
 
+
 class ErrorMessage(BaseModel):
     session_id: str = Field(..., description="The application's source identifier")
     error: str = Field(..., description="The error message")

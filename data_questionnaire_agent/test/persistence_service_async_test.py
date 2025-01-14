@@ -1,41 +1,45 @@
 import asyncio
-from data_questionnaire_agent.service.persistence_service_async import (
-    delete_questionnaire_status,
-    insert_questionnaire_status,
-    select_questionnaire,
-    select_initial_question,
-    select_suggestions,
-    update_answer,
-    save_session_configuration,
-    select_session_configuration,
-    update_session_steps,
-    delete_session_configuration,
-    select_current_session_steps_and_language,
-    save_report,
-    insert_questionnaire_status_suggestions,
-    select_questionnaire_status_suggestions,
-    save_ontology,
-    fetch_ontology,
-    delete_ontology,
-    save_confidence,
-    select_confidence,
-    has_final_report,
-    delete_last_question,
-    insert_jwt_token,
-    delete_jwt_token,
-    check_question_exists,
-    select_questionnaires_by_tokens,
-    select_global_configuration,
-    update_regenerated_question,
-    update_global_configuration
+
+from data_questionnaire_agent.model.global_configuration import (
+    GlobalConfiguration,
+    GlobalConfigurationProperty,
 )
+from data_questionnaire_agent.model.jwt_token import JWTToken
 from data_questionnaire_agent.model.session_configuration import (
     DEFAULT_SESSION_STEPS,
     SessionConfigurationEntry,
     SessionProperties,
 )
-from data_questionnaire_agent.model.jwt_token import JWTToken
-from data_questionnaire_agent.model.global_configuration import GlobalConfiguration, GlobalConfigurationProperty
+from data_questionnaire_agent.service.persistence_service_async import (
+    check_question_exists,
+    delete_jwt_token,
+    delete_last_question,
+    delete_ontology,
+    delete_questionnaire_status,
+    delete_session_configuration,
+    fetch_ontology,
+    has_final_report,
+    insert_jwt_token,
+    insert_questionnaire_status,
+    insert_questionnaire_status_suggestions,
+    save_confidence,
+    save_ontology,
+    save_report,
+    save_session_configuration,
+    select_confidence,
+    select_current_session_steps_and_language,
+    select_global_configuration,
+    select_initial_question,
+    select_questionnaire,
+    select_questionnaire_status_suggestions,
+    select_questionnaires_by_tokens,
+    select_session_configuration,
+    select_suggestions,
+    update_answer,
+    update_global_configuration,
+    update_regenerated_question,
+    update_session_steps,
+)
 
 if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.question_answer_provider import (
@@ -253,21 +257,25 @@ if __name__ == "__main__":
         new_qs = await insert_questionnaire_status(qs)
         assert new_qs is not None
         assert new_qs.id is not None
-        updated = await update_regenerated_question(qs.session_id, qs.question, 
-                                                    "What if?", ["Could be this", "Could be that"])
+        updated = await update_regenerated_question(
+            qs.session_id, qs.question, "What if?", ["Could be this", "Could be that"]
+        )
         assert updated, "Not a single row was updated."
         deleted_id = await delete_last_question(qs.session_id)
         assert deleted_id is not None, "Delete last question failed."
 
     async def test_update_global_configuration():
         properties = [
-            GlobalConfigurationProperty(config_key='MESSAGE_LOWER_LIMIT', config_value='9'),
-            GlobalConfigurationProperty(config_key='MESSAGE_UPPER_LIMIT', config_value='16')
+            GlobalConfigurationProperty(
+                config_key="MESSAGE_LOWER_LIMIT", config_value="9"
+            ),
+            GlobalConfigurationProperty(
+                config_key="MESSAGE_UPPER_LIMIT", config_value="16"
+            ),
         ]
         gc = GlobalConfiguration(properties=properties)
         updated = await update_global_configuration(gc)
         assert updated == 2
-
 
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
@@ -287,4 +295,3 @@ if __name__ == "__main__":
     # asyncio.run(test_select_questionnaires_by_tokens_all())
     # asyncio.run(test_select_global_configuration())
     asyncio.run(test_update_global_configuration())
-        

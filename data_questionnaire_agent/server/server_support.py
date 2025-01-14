@@ -1,4 +1,5 @@
 from typing import Awaitable
+
 from aiohttp import web
 
 from data_questionnaire_agent.log_init import logger
@@ -6,6 +7,7 @@ from data_questionnaire_agent.log_init import logger
 CORS_HEADERS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}
 
 routes = web.RouteTableDef()
+
 
 async def handle_error(fun: Awaitable, **kwargs) -> any:
     try:

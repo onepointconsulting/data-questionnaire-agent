@@ -14,13 +14,16 @@ from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.jwt_token import JWTTokenData
 from data_questionnaire_agent.model.mail_data import MailData
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.model.openai_schema import (
+    ConditionalAdvice,
+    ResponseQuestions,
+)
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.server_model import (
+    ErrorMessage,
     ServerMessage,
     ServerMessages,
     server_messages_factory,
-    ErrorMessage
 )
 from data_questionnaire_agent.model.session_configuration import (
     DEFAULT_SESSION_STEPS,
@@ -33,10 +36,14 @@ from data_questionnaire_agent.model.session_configuration import (
     create_session_configurations,
 )
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
+from data_questionnaire_agent.server.server_support import (
+    CORS_HEADERS,
+    handle_error,
+    routes,
+)
 from data_questionnaire_agent.service.advice_service import (
     create_structured_question_call,
 )
-from data_questionnaire_agent.service.question_generation_service import create_structured_question_call as create_structured_regeneration_call
 from data_questionnaire_agent.service.confidence_service import (
     calculate_confidence_rating,
 )
@@ -47,6 +54,7 @@ from data_questionnaire_agent.service.jwt_token_service import (
     generate_token,
     generate_token_batch_file,
 )
+from data_questionnaire_agent.service.knowledge_base_service import fetch_context
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.ontology_service import create_ontology
@@ -72,11 +80,17 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_suggestions,
     update_answer,
     update_clarification,
+    update_regenerated_question,
     update_session_steps,
-    update_regenerated_question
 )
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,
+)
+from data_questionnaire_agent.service.question_generation_service import (
+    create_structured_question_call as create_structured_regeneration_call,
+)
+from data_questionnaire_agent.service.question_generation_service import (
+    prepare_secondary_question,
 )
 from data_questionnaire_agent.service.report_aggregation_main_service import (
     aggregate_reports_main,
@@ -86,14 +100,6 @@ from data_questionnaire_agent.service.secondary_question_processor import (
 )
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
-from data_questionnaire_agent.model.openai_schema import (
-    ResponseQuestions,
-)
-from data_questionnaire_agent.service.knowledge_base_service import fetch_context
-from data_questionnaire_agent.service.question_generation_service import (
-    prepare_secondary_question,
-)
-from data_questionnaire_agent.server.server_support import CORS_HEADERS, handle_error, routes
 
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
@@ -219,7 +225,8 @@ async def regenerate_question(sid: str, session_id: str):
                 await select_current_session_steps_and_language(session_id)
             )
             runnable = create_structured_regeneration_call(
-                session_properties, is_recreate=True)
+                session_properties, is_recreate=True
+            )
             questionnaire = await select_questionnaire(session_id)
             knowledge_base = await fetch_context(questionnaire)
             input = prepare_secondary_question(
@@ -231,13 +238,21 @@ async def regenerate_question(sid: str, session_id: str):
             new_question = res.questions[-1]
             # replace suggestions too
             suggestions = res.possible_answers
-            await update_regenerated_question(session_id, previous_question.question, new_question, suggestions)
+            await update_regenerated_question(
+                session_id, previous_question.question, new_question, suggestions
+            )
             await select_all_messages_and_send(sid, session_id, is_regenerate=True)
         except Exception as e:
             logger.error(str(e))
             await sio.emit(
                 Commands.REGENERATE_QUESTION,
-                ErrorMessage(session_id=session_id, error=t("regeneration_failed", locale=session_properties.session_language)).json(),
+                ErrorMessage(
+                    session_id=session_id,
+                    error=t(
+                        "regeneration_failed",
+                        locale=session_properties.session_language,
+                    ),
+                ).json(),
                 room=sid,
             )
 
@@ -363,14 +378,17 @@ async def handle_secondary_question(
         return
     await insert_questionnaire_status_suggestions(qs_res.id, last_question_answer)
     await select_all_messages_and_send(sid, session_id)
-    
 
 
-async def select_all_messages_and_send(sid: str, session_id: str, is_regenerate: bool=False):
+async def select_all_messages_and_send(
+    sid: str, session_id: str, is_regenerate: bool = False
+):
     questionnaire_messages = await select_questionnaire_statuses(session_id)
     server_messages = server_messages_factory(questionnaire_messages)
 
-    await append_suggestions_and_send(sid, server_messages, questionnaire_messages, is_regenerate)
+    await append_suggestions_and_send(
+        sid, server_messages, questionnaire_messages, is_regenerate
+    )
 
 
 async def save_confidence_rating(
@@ -391,7 +409,7 @@ async def append_suggestions_and_send(
     sid: str,
     server_messages: ServerMessages,
     questionnaire_messages: List[QuestionnaireStatus],
-    is_regenerate: bool=False
+    is_regenerate: bool = False,
 ):
     await append_first_suggestion(server_messages, questionnaire_messages[0].question)
     await append_other_suggestions(server_messages, questionnaire_messages)
@@ -668,6 +686,7 @@ async def generate_aggregated_report(request: web.Request) -> web.Response:
         "email_list": "gil.fernandes@gmail.com"
     }
     """
+
     async def process(request: web.Request):
         json_content = await request.json()
         match json_content:
