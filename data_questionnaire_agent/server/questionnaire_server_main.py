@@ -19,7 +19,7 @@ PATH_INDEX = web_server_cfg.ui_folder / FILE_INDEX
 INDEX_LINKS = ["/", "/admin"]
 
 
-async def get_index(request: web.Request) -> web.Response:
+async def get_index(_: web.Request) -> web.Response:
     return web.FileResponse(PATH_INDEX)
 
 
