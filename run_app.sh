@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Change the environment as needed.
 ENV_NAME=data_wellness_agent_staging
 source /home/ubuntu/miniconda3/etc/profile.d/conda.sh
