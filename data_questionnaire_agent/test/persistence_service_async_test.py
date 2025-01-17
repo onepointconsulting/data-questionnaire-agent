@@ -5,6 +5,7 @@ from data_questionnaire_agent.model.global_configuration import (
     GlobalConfigurationProperty,
 )
 from data_questionnaire_agent.model.jwt_token import JWTToken
+from data_questionnaire_agent.model.question_suggestion import QuestionAndSuggestions
 from data_questionnaire_agent.model.session_configuration import (
     DEFAULT_SESSION_STEPS,
     SessionConfigurationEntry,
@@ -29,16 +30,21 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_confidence,
     select_current_session_steps_and_language,
     select_global_configuration,
-    select_initial_question,
     select_questionnaire,
     select_questionnaire_status_suggestions,
     select_questionnaires_by_tokens,
     select_session_configuration,
-    select_suggestions,
     update_answer,
     update_global_configuration,
     update_regenerated_question,
     update_session_steps,
+)
+from data_questionnaire_agent.service.persistence_service_questions_async import (
+    update_question,
+    select_questions,
+    select_initial_question,
+    select_question_and_suggestions,
+    select_suggestions,
 )
 
 if __name__ == "__main__":
@@ -277,6 +283,32 @@ if __name__ == "__main__":
         updated = await update_global_configuration(gc)
         assert updated == 2
 
+    async def test_select_question_and_suggestions():
+        question_and_suggestions: QuestionAndSuggestions = await select_question_and_suggestions("en")
+        assert question_and_suggestions is not None
+        assert len(question_and_suggestions.question_and_suggestions) > 0
+        for qs in question_and_suggestions.question_and_suggestions:
+            assert qs.id >= 0
+            print("id", qs.id)
+            assert qs.question is not None
+            print("id", qs.question)
+            assert qs.suggestions is not None
+            for suggestion in qs.suggestions:
+                print(suggestion)
+
+    async def test_update_question():
+        questions = await select_questions("en")
+        assert questions is not None
+        if len(questions):
+            for question in questions:
+                id = question[0]
+                question_text = question[1]
+                assert id is not None, "id is not available for question"
+                assert question_text is not None, "question_text is not available for question"
+                rowcount = await update_question(id, question_text)
+                assert rowcount > 0, "No rows updated."
+
+
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
     # asyncio.run(test_select_initial_en())
@@ -294,4 +326,5 @@ if __name__ == "__main__":
     # asyncio.run(test_select_questionnaires_by_tokens())
     # asyncio.run(test_select_questionnaires_by_tokens_all())
     # asyncio.run(test_select_global_configuration())
-    asyncio.run(test_update_global_configuration())
+    # asyncio.run(test_select_question_and_suggestions())
+    asyncio.run(test_update_question())

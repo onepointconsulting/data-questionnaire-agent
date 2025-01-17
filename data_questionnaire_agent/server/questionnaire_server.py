@@ -71,17 +71,19 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_confidence,
     select_current_session_steps_and_language,
     select_global_configuration,
-    select_initial_question,
     select_questionnaire,
     select_questionnaire_status_suggestions,
     select_questionnaire_statuses,
     select_report,
     select_session_configuration,
-    select_suggestions,
     update_answer,
     update_clarification,
     update_regenerated_question,
     update_session_steps,
+)
+from data_questionnaire_agent.service.persistence_service_questions_async import (
+    select_initial_question,
+    select_suggestions,
 )
 from data_questionnaire_agent.service.question_clarifications import (
     chain_factory_question_clarifications,

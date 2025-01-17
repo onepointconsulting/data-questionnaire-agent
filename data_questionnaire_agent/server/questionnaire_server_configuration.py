@@ -1,3 +1,5 @@
+import json
+
 from aiohttp import web
 
 from data_questionnaire_agent.model.global_configuration import (
@@ -10,9 +12,15 @@ from data_questionnaire_agent.server.server_support import (
     routes,
 )
 from data_questionnaire_agent.service.persistence_service_async import (
+    select_global_configuration,
     update_global_configuration,
-    select_global_configuration
 )
+from data_questionnaire_agent.service.persistence_service_questions_async import (
+    select_question_and_suggestions,
+    update_question
+)
+
+SUPPORTED_LANGUAGES = ["en", "de"]
 
 
 @routes.get("/global_configuration")
@@ -20,6 +28,7 @@ async def global_configuration(request: web.Request) -> web.Response:
     async def process(_: web.Request):
         global_configuration: GlobalConfiguration = await select_global_configuration()
         return web.json_response(global_configuration.dict(), headers=CORS_HEADERS)
+
     return await handle_error(process, request=request)
 
 
@@ -53,7 +62,72 @@ async def update_global_configuration_web(request: web.Request) -> web.Response:
             case _:
                 raise web.HTTPBadRequest(
                     text="Please provide the message_lower_limit and message_upper_limit properties.",
-                    headers=CORS_HEADERS
+                    headers=CORS_HEADERS,
                 )
 
     return await handle_error(process, request=request)
+
+
+@routes.get("/questions/{language}")
+async def read_questions(request: web.Request) -> web.Response:
+    async def process(request: web.Request):
+        lang_response = process_language(request)
+        if isinstance(lang_response, web.Response):
+            return lang_response
+        question_and_suggestions = await select_question_and_suggestions(lang_response)
+        return web.json_response(question_and_suggestions.dict(), headers=CORS_HEADERS)
+
+    return await handle_error(process, request=request)
+
+
+@routes.options("/protected/questions/update")
+async def update_questions_options(_: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+
+
+@routes.post("/protected/questions/update")
+async def update_questions(request: web.Request) -> web.Response:
+    async def process(request: web.Request):
+        json_content = await request.json()
+        match json_content:
+            case [{"id": int(id), "question": str(question)} as item, *_]:
+                rowcount = 0
+                for entry in json_content:
+                    match entry:
+                        case {"id": id, "question": question}:
+                            rowcount += await update_question(id, question)
+                        case _:
+                            return send_rest_error(
+                                """Wrong JSON format: Expected 'id' and 'question' keys in JSON.""",
+                                400
+                            )
+                return web.json_response({"updated": rowcount}, headers=CORS_HEADERS)
+            case _:
+                return send_rest_error(
+                    """Wrong JSON format: Expected list with objects with'id' and 'question' keys in JSON.""",
+                    400
+                )
+    return await handle_error(process, request=request)
+
+
+def process_language(request: web.Request) -> str | web.Response:
+    language = request.match_info.get("language")
+    if language not in SUPPORTED_LANGUAGES:
+        return send_rest_error(
+            f"Invalid langguage: {language}. Available languages: {SUPPORTED_LANGUAGES}",
+            400
+        )
+    return language
+
+
+def send_rest_error(error_message: str, error_code) -> web.Response:
+    return web.Response(
+        text=json.dumps(
+            {
+                "error": error_message
+            }
+        ),
+        status=400,
+        content_type="application/json",
+        headers=CORS_HEADERS,
+    )

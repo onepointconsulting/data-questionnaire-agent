@@ -10,3 +10,15 @@ class QuestionSuggestion(BaseModel):
     title: str = Field(..., description="The suggestion title")
     main_text: str = Field(..., description="The suggestion text")
     svg_image: str = Field(..., description="The SVG image")
+
+
+class QuestionAndSuggestions(BaseModel):
+    id: Union[int, None] = Field(default=None, description="The unique identifier")
+    question: str = Field(default=None, description="The actual question")
+    suggestions: list[QuestionSuggestion] = Field(
+        ..., description="The list of suggested question suggestions"
+    )
+
+
+class QuestionInfo(BaseModel):
+    question_and_suggestions: list[QuestionAndSuggestions] = Field(..., description="Theh list of question and suggestions")

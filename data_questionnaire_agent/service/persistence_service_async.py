@@ -33,23 +33,6 @@ from data_questionnaire_agent.service.query_support import (
     select_from,
     use_connection,
 )
-from data_questionnaire_agent.toml_support import get_prompts
-
-
-async def select_initial_question(language: str) -> str:
-    res = await select_from(
-        """
-SELECT question FROM TB_QUESTION Q INNER JOIN public.tb_language L on Q.language_id = L.id
-WHERE LANGUAGE_CODE = %(language)s
-ORDER BY PREFERRED_QUESTION_ORDER
-LIMIT 1
-""",
-        {"language": language},
-    )
-    if res is None or len(res) == 0:
-        return get_prompts(language)["questionnaire"]["initial"]["question"]
-    else:
-        return res[0][0]
 
 
 async def select_questionnaire_statuses(session_id: str) -> List[QuestionnaireStatus]:
@@ -314,35 +297,6 @@ WHERE SESSION_ID = %(session_id)s ORDER BY ID""",
             for r in res
         ]
     )
-
-
-async def select_suggestions(question: str) -> List[QuestionSuggestion]:
-    res = await select_from(
-        """SELECT S.id, img_src, img_alt, title, main_text, svg_image FROM TB_QUESTION_SUGGESTIONS S 
-INNER JOIN TB_QUESTION Q ON Q.ID = S.QUESTION_ID
-wHERE Q.question = %(question)s
-ORDER BY S.ID""",
-        {
-            "question": question,
-        },
-    )
-    ID = 0
-    IMG_SRC = 1
-    IMG_ALT = 2
-    TITLE = 3
-    MAIN_TEXT = 4
-    SVG_IMAGE = 5
-    return [
-        QuestionSuggestion(
-            id=r[ID],
-            img_src=r[IMG_SRC],
-            img_alt=r[IMG_ALT],
-            title=r[TITLE],
-            main_text=r[MAIN_TEXT],
-            svg_image=r[SVG_IMAGE],
-        )
-        for r in res
-    ]
 
 
 async def has_final_report(session_id: str) -> bool:
