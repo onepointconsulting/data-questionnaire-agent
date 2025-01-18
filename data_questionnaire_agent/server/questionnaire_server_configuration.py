@@ -90,12 +90,12 @@ async def update_questions(request: web.Request) -> web.Response:
     async def process(request: web.Request):
         json_content = await request.json()
         match json_content:
-            case [{"id": int(id), "question": str(question)} as item, *_]:
+            case [{"id": int(id), "question": str(question), "suggestions": list(suggestions)} as item, *_]:
                 rowcount = 0
                 for entry in json_content:
                     match entry:
                         case {"id": id, "question": question}:
-                            rowcount += await update_question(id, question)
+                            rowcount += await update_question(id, question, entry["suggestions"])
                         case _:
                             return send_rest_error(
                                 """Wrong JSON format: Expected 'id' and 'question' keys in JSON.""",

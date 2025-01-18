@@ -305,7 +305,7 @@ if __name__ == "__main__":
                 question_text = question[1]
                 assert id is not None, "id is not available for question"
                 assert question_text is not None, "question_text is not available for question"
-                rowcount = await update_question(id, question_text)
+                rowcount = await update_question(id, question_text, [])
                 assert rowcount > 0, "No rows updated."
 
 
