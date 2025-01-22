@@ -17,7 +17,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
 )
 from data_questionnaire_agent.service.persistence_service_questions_async import (
     select_question_and_suggestions,
-    update_question
+    update_question,
 )
 
 SUPPORTED_LANGUAGES = ["en", "de"]
@@ -90,23 +90,33 @@ async def update_questions(request: web.Request) -> web.Response:
     async def process(request: web.Request):
         json_content = await request.json()
         match json_content:
-            case [{"id": int(id), "question": str(question), "suggestions": list(suggestions)} as item, *_]:
+            case [
+                {
+                    "id": int(id),
+                    "question": str(question),
+                    "suggestions": list(suggestions),
+                } as item,
+                *_,
+            ]:
                 rowcount = 0
                 for entry in json_content:
                     match entry:
                         case {"id": id, "question": question}:
-                            rowcount += await update_question(id, question, entry["suggestions"])
+                            rowcount += await update_question(
+                                id, question, entry["suggestions"]
+                            )
                         case _:
                             return send_rest_error(
                                 """Wrong JSON format: Expected 'id' and 'question' keys in JSON.""",
-                                400
+                                400,
                             )
                 return web.json_response({"updated": rowcount}, headers=CORS_HEADERS)
             case _:
                 return send_rest_error(
                     """Wrong JSON format: Expected list with objects with'id' and 'question' keys in JSON.""",
-                    400
+                    400,
                 )
+
     return await handle_error(process, request=request)
 
 
@@ -115,18 +125,14 @@ def process_language(request: web.Request) -> str | web.Response:
     if language not in SUPPORTED_LANGUAGES:
         return send_rest_error(
             f"Invalid langguage: {language}. Available languages: {SUPPORTED_LANGUAGES}",
-            400
+            400,
         )
     return language
 
 
 def send_rest_error(error_message: str, error_code) -> web.Response:
     return web.Response(
-        text=json.dumps(
-            {
-                "error": error_message
-            }
-        ),
+        text=json.dumps({"error": error_message}),
         status=400,
         content_type="application/json",
         headers=CORS_HEADERS,

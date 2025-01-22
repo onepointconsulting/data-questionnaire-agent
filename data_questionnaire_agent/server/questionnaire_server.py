@@ -655,7 +655,7 @@ async def validate_jwt_token(request: web.Request) -> web.Response:
             case {"token": token}:
                 try:
                     decoded = await decode_token(token)
-                except:
+                except Exception:
                     raise web.HTTPBadRequest(
                         text="The token does not seem to be valid. Please send another valid token."
                     )

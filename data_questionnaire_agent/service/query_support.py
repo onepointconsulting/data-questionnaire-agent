@@ -11,8 +11,8 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
-async def create_connection() -> AsyncConnection:
-    return await AsyncConnection.connect(conninfo=db_cfg.db_conn_str)
+async def create_connection(conninfo: str = db_cfg.db_conn_str) -> AsyncConnection:
+    return await AsyncConnection.connect(conninfo)
 
 
 async def create_cursor(func: Callable, commit=False) -> Any:

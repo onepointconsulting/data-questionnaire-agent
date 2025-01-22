@@ -1,13 +1,11 @@
 from psycopg import AsyncCursor
+
 from data_questionnaire_agent.model.question_suggestion import (
     QuestionAndSuggestions,
+    QuestionInfo,
     QuestionSuggestion,
-    QuestionInfo
 )
-from data_questionnaire_agent.service.query_support import (
-    select_from,
-    create_cursor
-)
+from data_questionnaire_agent.service.query_support import create_cursor, select_from
 from data_questionnaire_agent.toml_support import get_prompts
 
 
@@ -47,13 +45,14 @@ async def select_question_and_suggestions(
 async def update_question(id: int, question: str, suggestions: list[dict]) -> int:
     async def process_update(cur: AsyncCursor):
         updated_question_count = 0
-        await cur.execute("""
+        await cur.execute(
+            """
 UPDATE TB_QUESTION
 SET QUESTION = %(question)s
 WHERE ID = %(id)s
 """,
-        {"id": id, "question": question}
-    )
+            {"id": id, "question": question},
+        )
         updated_question_count = cur.rowcount
         update_suggestion_sql = """
 UPDATE PUBLIC.TB_QUESTION_SUGGESTIONS
@@ -68,16 +67,20 @@ WHERE ID = %(id)s
         if len(suggestions) > 0:
             for suggestion in suggestions:
                 question_suggestion = QuestionSuggestion(**suggestion)
-                await cur.execute(update_suggestion_sql, {
-                    "img_src": question_suggestion.img_src,
-                    "img_alt": question_suggestion.img_alt,
-                    "title": question_suggestion.title,
-                    "main_text": question_suggestion.main_text,
-                    "question_id": id,
-                    "svg_image": question_suggestion.svg_image,
-                    "id": question_suggestion.id
-                })
+                await cur.execute(
+                    update_suggestion_sql,
+                    {
+                        "img_src": question_suggestion.img_src,
+                        "img_alt": question_suggestion.img_alt,
+                        "title": question_suggestion.title,
+                        "main_text": question_suggestion.main_text,
+                        "question_id": id,
+                        "svg_image": question_suggestion.svg_image,
+                        "id": question_suggestion.id,
+                    },
+                )
         return updated_question_count
+
     return await create_cursor(process_update, True)
 
 

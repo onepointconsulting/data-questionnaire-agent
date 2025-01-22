@@ -40,11 +40,11 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_session_steps,
 )
 from data_questionnaire_agent.service.persistence_service_questions_async import (
-    update_question,
-    select_questions,
     select_initial_question,
     select_question_and_suggestions,
+    select_questions,
     select_suggestions,
+    update_question,
 )
 
 if __name__ == "__main__":
@@ -284,7 +284,9 @@ if __name__ == "__main__":
         assert updated == 2
 
     async def test_select_question_and_suggestions():
-        question_and_suggestions: QuestionAndSuggestions = await select_question_and_suggestions("en")
+        question_and_suggestions: QuestionAndSuggestions = (
+            await select_question_and_suggestions("en")
+        )
         assert question_and_suggestions is not None
         assert len(question_and_suggestions.question_and_suggestions) > 0
         for qs in question_and_suggestions.question_and_suggestions:
@@ -304,10 +306,11 @@ if __name__ == "__main__":
                 id = question[0]
                 question_text = question[1]
                 assert id is not None, "id is not available for question"
-                assert question_text is not None, "question_text is not available for question"
+                assert (
+                    question_text is not None
+                ), "question_text is not available for question"
                 rowcount = await update_question(id, question_text, [])
                 assert rowcount > 0, "No rows updated."
-
 
     # asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())

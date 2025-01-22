@@ -4,7 +4,7 @@ from typing import Union
 from psycopg import AsyncCursor
 
 from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.service.persistence_service_async import create_connection
+from data_questionnaire_agent.service.query_support import create_connection
 
 
 async def execute_script(path: Path) -> Union[str, bool]:
@@ -19,7 +19,7 @@ async def execute_script(path: Path) -> Union[str, bool]:
         await conn.set_autocommit(True)
         async with conn.cursor() as cursor:
             exists = await table_exists("tb_session_configuration", cursor)
-            if not exists:
+            if not exists or "create database" in sql_script.lower():
                 # If there are no table or no questions the script is executed.
                 cursor = await cursor.execute(sql_script)
             else:

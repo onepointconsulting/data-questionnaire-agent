@@ -21,4 +21,6 @@ class QuestionAndSuggestions(BaseModel):
 
 
 class QuestionInfo(BaseModel):
-    question_and_suggestions: list[QuestionAndSuggestions] = Field(..., description="Theh list of question and suggestions")
+    question_and_suggestions: list[QuestionAndSuggestions] = Field(
+        ..., description="Theh list of question and suggestions"
+    )
