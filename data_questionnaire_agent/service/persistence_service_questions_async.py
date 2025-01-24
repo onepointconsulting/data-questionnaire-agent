@@ -70,8 +70,8 @@ WHERE ID = %(id)s
                 await cur.execute(
                     update_suggestion_sql,
                     {
-                        "img_src": question_suggestion.img_src,
-                        "img_alt": question_suggestion.img_alt,
+                        "img_src": "",
+                        "img_alt": "",
                         "title": question_suggestion.title,
                         "main_text": question_suggestion.main_text,
                         "question_id": id,
@@ -107,7 +107,7 @@ ORDER BY S.ID""",
             img_alt=r[IMG_ALT],
             title=r[TITLE],
             main_text=r[MAIN_TEXT],
-            svg_image=r[SVG_IMAGE],
+            svg_image=r[SVG_IMAGE] or "",
         )
         for r in res
     ]

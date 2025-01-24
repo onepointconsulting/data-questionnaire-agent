@@ -93,7 +93,7 @@ class Config:
         "wait": tenacity.wait_fixed(wait_fixed),
     }
 
-    product_title = "Onepoint Data Wellness Companion™"
+    product_title = "Hypergility Responsible AI Companion™"
     tracker_db_logs_password = os.getenv("TRACKER_DB_LOGS_PASSWORD")
 
     translation_path = os.getenv("TRANSLATION_PATH")
