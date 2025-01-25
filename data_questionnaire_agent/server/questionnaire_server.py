@@ -83,6 +83,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
 )
 from data_questionnaire_agent.service.persistence_service_questions_async import (
     select_initial_question,
+    select_outstanding_questions,
     select_suggestions,
 )
 from data_questionnaire_agent.service.question_clarifications import (
@@ -155,8 +156,8 @@ async def start_session(
     global_configuration = await select_global_configuration()
     if len(questionnaire_messages) == 0:
         # No question yet. Start from scratch
-        question = await select_initial_question(language)
-        qs, qs_res = await persist_question(session_id, question)
+        id, question = await select_initial_question(language)
+        qs, qs_res = await persist_question(session_id, question, id)
         if qs_res is None or qs_res.id is None:
             await send_error(sid, session_id, t("db_insert_failed", locale=language))
             return
@@ -357,21 +358,27 @@ async def handle_secondary_question(
 ):
     language = session_properties.session_language
     total_cost = 0
-    with get_openai_callback() as cb:
-        confidence_rating, question_answers = await asyncio.gather(
-            calculate_confidence_rating(questionnaire, language),
-            process_secondary_questions(
-                questionnaire, cfg.questions_per_batch, session_properties, session_id
-            ),
-        )
-        total_cost = cb.total_cost
+    # Find outstanding questions
+    question_answers = await select_outstanding_questions(language, session_id)
+    if len(question_answers) == 0:
+        # Generate questions using AI
+        with get_openai_callback() as cb:
+            confidence_rating, question_answers = await asyncio.gather(
+                calculate_confidence_rating(questionnaire, language),
+                process_secondary_questions(
+                    questionnaire, cfg.questions_per_batch, session_properties, session_id
+                ),
+            )
+            total_cost = cb.total_cost
+    else:
+        confidence_rating = await calculate_confidence_rating(questionnaire, language)
     if len(question_answers) == 0:
         await send_error(sid, session_id, t("no_answer_from_chatgpt", locale=language))
         return
-    last_question_answer = question_answers[-1]
+    last_question_answer = question_answers[0]
     # Save the generated question
     _, qs_res = await persist_question(
-        session_id, last_question_answer.question, total_cost
+        session_id, last_question_answer.question, last_question_answer.id, total_cost
     )
     await save_confidence_rating(confidence_rating, None, session_id, questionnaire)
     # Persist the suggestions for this answer
@@ -430,12 +437,13 @@ async def append_other_suggestions(server_messages, questionnaire_messages):
             ].suggestions = await select_questionnaire_status_suggestions(message.id)
 
 
-async def persist_question(session_id: str, question: str, total_cost: int = 0):
+async def persist_question(session_id: str, question: str, question_id: int | None, total_cost: int = 0):
     qs = QuestionnaireStatus(
         session_id=session_id,
         question=question,
         final_report=False,
         total_cost=total_cost,
+        question_id=question_id
     )
     qs_res = await insert_questionnaire_status(qs)
     return qs, qs_res
@@ -495,6 +503,7 @@ async def send_error(sid: str, session_id: str, error_message: str):
             session_id=session_id,
             clarification="",
             suggestions=[],
+            question_id=None
         ).json(),
         room=sid,
     )

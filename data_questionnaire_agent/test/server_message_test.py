@@ -5,7 +5,7 @@ def test_simple_server_message():
     question = "test"
     session_id = "1231231231231"
     server_message = ServerMessage(
-        question=question, session_id=session_id, clarification=None
+        question=question, session_id=session_id, clarification=None, question_id=None
     )
     server_message_str = server_message.json()
     assert question in server_message_str

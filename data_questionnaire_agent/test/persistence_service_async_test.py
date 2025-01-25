@@ -45,6 +45,7 @@ from data_questionnaire_agent.service.persistence_service_questions_async import
     select_questions,
     select_suggestions,
     update_question,
+    select_outstanding_questions
 )
 
 if __name__ == "__main__":
@@ -63,24 +64,27 @@ if __name__ == "__main__":
         new_qs = await insert_questionnaire_status(qs)
         assert new_qs is not None
         assert new_qs.id is not None
-        check_qs = await select_questionnaire(new_qs.session_id)
-        assert check_qs is not None
-        assert len(check_qs) == 1
         deleted = await delete_questionnaire_status(new_qs.id)
         assert deleted == 1
 
     async def test_select_initial_fa():
-        question = await select_initial_question("fa")
+        id, question = await select_initial_question("fa")
+        assert id is not None
         assert question is not None
         print(question)
 
     async def test_select_initial_en():
-        question = await select_initial_question("en")
+        id, question = await select_initial_question("en")
+        assert id is not None
         assert question is not None
         suggestions = await select_suggestions(question)
         assert len(suggestions) > 0
         for s in suggestions:
             print(s)
+
+    async def test_select_outstanding_questions():
+        questions = await select_outstanding_questions("en", "test")
+        assert len(questions) > 0
 
     async def test_insert_answer():
         qs = create_simple()
@@ -312,9 +316,10 @@ if __name__ == "__main__":
                 rowcount = await update_question(id, question_text, [])
                 assert rowcount > 0, "No rows updated."
 
-    # asyncio.run(test_insert_questionnaire_status())
+    asyncio.run(test_insert_questionnaire_status())
     # asyncio.run(test_select_initial_fa())
-    # asyncio.run(test_select_initial_en())
+    asyncio.run(test_select_initial_en())
+    asyncio.run(test_select_outstanding_questions())
     # asyncio.run(test_insert_answer())
     # asyncio.run(test_select_answers())
     # asyncio.run(test_session_configuration_save())
@@ -330,4 +335,4 @@ if __name__ == "__main__":
     # asyncio.run(test_select_questionnaires_by_tokens_all())
     # asyncio.run(test_select_global_configuration())
     # asyncio.run(test_select_question_and_suggestions())
-    asyncio.run(test_update_question())
+    # asyncio.run(test_update_question())

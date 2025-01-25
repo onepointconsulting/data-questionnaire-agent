@@ -1,14 +1,15 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 
 
 @dataclass
 class QuestionAnswer:
+    id: int | None
     question: str
-    answer: Union[str, dict]
-    clarification: Optional[str]
+    answer: str | dict
+    clarification: str | None
     possible_answers: List[str] = field(default_factory=list)
 
     def answer_str(self):
@@ -25,11 +26,11 @@ class QuestionAnswer:
 
     @staticmethod
     def question_answer_factory(question: str, answer: dict):
-        return QuestionAnswer(question=question, answer=answer, clarification="")
+        return QuestionAnswer(id=None, question=question, answer=answer, clarification="")
 
     @staticmethod
     def question_factory(question: str):
-        return QuestionAnswer(question=question, answer="", clarification="")
+        return QuestionAnswer(id=None, question=question, answer="", clarification="")
 
 
 @dataclass

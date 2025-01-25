@@ -45,7 +45,8 @@ async def select_questionnaire_statuses(session_id: str) -> List[QuestionnaireSt
 	CREATED_AT,
 	UPDATED_AT,
 	C.CONFIG_VALUE AS LANGUAGE,
-    CLARIFICATION
+    CLARIFICATION,
+    QUESTION_ID
 FROM TB_QUESTIONNAIRE_STATUS S
 INNER JOIN PUBLIC.TB_SESSION_CONFIGURATION C ON S.SESSION_ID = C.SESSION_ID
 AND C.CONFIG_KEY = 'session-language'
@@ -64,6 +65,7 @@ ORDER BY ID ASC""",
     UPDATED_AT = 6
     LANGUAGE = 7
     CLARIFICATION = 8
+    QUESTION_ID = 9
     final_res = []
     if res is None:
         return final_res
@@ -80,6 +82,7 @@ ORDER BY ID ASC""",
                 final_report=final_report,
                 created_at=r[CREATED_AT],
                 updated_at=r[UPDATED_AT],
+                question_id=r[QUESTION_ID]
             )
         )
     return final_res
@@ -147,13 +150,12 @@ async def select_questionnaire(
     session_id: str, include_last: bool = True
 ) -> Questionnaire:
     include_last_sql = "" if include_last else " AND FINAL_REPORT != true "
-    res = await select_from(
-        f"""SELECT QUESTION, ANSWER, FINAL_REPORT, C.CONFIG_VALUE AS LANGUAGE
+    sql = f"""SELECT QUESTION, ANSWER, FINAL_REPORT, C.CONFIG_VALUE AS LANGUAGE
 FROM TB_QUESTIONNAIRE_STATUS S
 INNER JOIN PUBLIC.TB_SESSION_CONFIGURATION C ON S.SESSION_ID = C.SESSION_ID
 AND C.CONFIG_KEY = 'session-language'
-WHERE S.SESSION_ID = %(session_id)s {include_last_sql} ORDER BY S.ID""",
-        {
+WHERE S.SESSION_ID = %(session_id)s {include_last_sql} ORDER BY S.ID"""
+    res = await select_from(sql, {
             "session_id": session_id,
         },
     )
@@ -162,7 +164,7 @@ WHERE S.SESSION_ID = %(session_id)s {include_last_sql} ORDER BY S.ID""",
         is_final_report = r[2]
         if not is_final_report:
             questions.append(
-                QuestionAnswer(question=r[0], answer=r[1], clarification=None)
+                QuestionAnswer(id=None, question=r[0], answer=r[1], clarification=None)
             )
         else:
             conditional_advice = ConditionalAdvice.parse_raw(r[0])
@@ -170,6 +172,7 @@ WHERE S.SESSION_ID = %(session_id)s {include_last_sql} ORDER BY S.ID""",
             language = r[LANGUAGE]
             questions.append(
                 QuestionAnswer(
+                    id=None,
                     question=conditional_advice.to_markdown(language),
                     answer=r[1],
                     clarification=None,
@@ -200,8 +203,8 @@ async def insert_questionnaire_status(
     async def process_save(cur: AsyncCursor):
         await cur.execute(
             """
-INSERT INTO TB_QUESTIONNAIRE_STATUS (SESSION_ID, QUESTION, FINAL_REPORT, TOTAL_COST, CREATED_AT, UPDATED_AT)
-VALUES (%(session_id)s, %(question)s, %(final_report)s, %(total_cost)s, now(), now()) RETURNING ID, CREATED_AT, UPDATED_AT;
+INSERT INTO TB_QUESTIONNAIRE_STATUS (SESSION_ID, QUESTION, FINAL_REPORT, TOTAL_COST, CREATED_AT, UPDATED_AT, QUESTION_ID)
+VALUES (%(session_id)s, %(question)s, %(final_report)s, %(total_cost)s, now(), now(), %(question_id)s) RETURNING ID, CREATED_AT, UPDATED_AT;
             """,
             {
                 "session_id": questionnaire_status.session_id,
@@ -209,6 +212,7 @@ VALUES (%(session_id)s, %(question)s, %(final_report)s, %(total_cost)s, now(), n
                 "answer": questionnaire_status.answer,
                 "final_report": questionnaire_status.final_report,
                 "total_cost": questionnaire_status.total_cost,
+                "question_id": questionnaire_status.question_id
             },
         )
         created_row = await cur.fetchone()
@@ -627,7 +631,8 @@ SELECT ID,
 	CREATED_AT,
 	UPDATED_AT,
 	TOTAL_COST,
-	CLARIFICATION
+	CLARIFICATION,
+    QUESTION_ID
 FROM TB_QUESTIONNAIRE_STATUS
 WHERE SESSION_ID IN
 		(SELECT DISTINCT C.SESSION_ID
@@ -648,7 +653,8 @@ ORDER BY ID ASC;
     CREATED_AT = 5
     UPDATED_AT = 6
     TOTAL_COST = 7
-    CLARIFICATION = 8
+    CLARIFICATION = 8,
+    QUESTION_ID = 9
     if res is None:
         return []
     return [
@@ -662,6 +668,7 @@ ORDER BY ID ASC;
             updated_at=r[UPDATED_AT],
             total_cost=r[TOTAL_COST],
             clarification=r[CLARIFICATION],
+            question_id=r[QUESTION_ID]
         )
         for r in res
     ]

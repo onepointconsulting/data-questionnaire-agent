@@ -77,26 +77,31 @@ def create_advice_with_questionnaire() -> Tuple[ConditionalAdvice, Questionnaire
     questionnaire = Questionnaire(
         questions=[
             QuestionAnswer(
+                id=None,
                 question="Which area of your data ecosystem are you most concerned about?",
                 answer="Poor data quality - Low-quality data can lead to incorrect insights and poor decision-making.",
                 clarification=None,
             ),
             QuestionAnswer(
+                id=None,
                 question="What specific challenges or pain points are you experiencing with data quality in your organisation?",
                 answer="We have too many customer duplicates.\n",
                 clarification=None,
             ),
             QuestionAnswer(
+                id=None,
                 question="How do you currently identify and manage duplicate customer records in your data systems?",
                 answer=" - We use manual checks to identify duplicates, which is time-consuming and prone to errors.",
                 clarification=None,
             ),
             QuestionAnswer(
+                id=None,
                 question="What are the main sources of data in your organisation, and how do they contribute to the issue of duplicate customer records?",
                 answer=" - Our main sources of data include CRM systems, e-commerce platforms, and customer service databases. Each system often has its own way of recording customer information, leading to inconsistencies and duplicates.",
                 clarification=None,
             ),
             QuestionAnswer(
+                id=None,
                 question="What are the key challenges you face in maintaining data consistency across different systems in your organisation?",
                 answer=" - Different systems have varying data formats and standards, making it difficult to ensure consistency.",
                 clarification=None,

@@ -23,6 +23,7 @@ class ServerMessage(BaseModel):
     clarification: Union[str, None] = Field(
         ..., description="The clarification or explanation of the question"
     )
+    question_id: int | None = Field(default=None, description="The question identifier in case a question is NOT generated")
 
 
 class ServerMessages(BaseModel):
@@ -58,6 +59,7 @@ def convert_questionnaire(
             answer="" if q.answer is None else q.answer,
             final_report=q.final_report,
             clarification=q.clarification,
+            question_id=q.question_id
         )
         for q in questionnaire
     ]
