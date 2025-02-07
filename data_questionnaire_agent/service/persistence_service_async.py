@@ -620,7 +620,7 @@ WHERE session_id = %(session_id)s
 
 
 async def select_questionnaires_by_tokens(
-    tokens: List[str],
+    tokens: List[str], final_report: bool = True
 ) -> List[QuestionnaireStatus]:
     sql = f"""
 SELECT ID,
@@ -640,11 +640,12 @@ WHERE SESSION_ID IN
 			INNER JOIN TB_QUESTIONNAIRE_STATUS S ON S.SESSION_ID = C.SESSION_ID
 			WHERE C.CONFIG_KEY = 'session-client-id'
 				{f'AND C.CONFIG_VALUE = ANY(ARRAY[{",".join([f"'{t}'" for t in tokens])}])' if len(tokens) > 0 else ""}
-				AND S.FINAL_REPORT = TRUE)
-ORDER BY ID ASC;
+				AND S.FINAL_REPORT = %(final_report)s)
+AND ANSWER is not null
+ORDER BY SESSION_ID, ID ASC;
 """
     logger.info("select_questionnaires_by_tokens SQL: %s", sql)
-    res = await select_from(sql, {})
+    res = await select_from(sql, {"final_report": final_report})
     ID = 0
     SESSION_ID = 1
     QUESTION = 2
@@ -653,7 +654,7 @@ ORDER BY ID ASC;
     CREATED_AT = 5
     UPDATED_AT = 6
     TOTAL_COST = 7
-    CLARIFICATION = 8,
+    CLARIFICATION = 8
     QUESTION_ID = 9
     if res is None:
         return []

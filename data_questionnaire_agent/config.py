@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI, OpenAI, OpenAIEmbeddings
 from tenacity import stop_after_attempt
 
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.config_support import create_db_conn_str
 
 load_dotenv()
 
@@ -168,20 +169,8 @@ web_server_cfg = WebServerConfig()
 
 
 class DBConfig:
-    db_name = os.getenv("DB_NAME")
-    assert db_name is not None
-    db_user = os.getenv("DB_USER")
-    assert db_user is not None
-    db_host = os.getenv("DB_HOST")
-    assert db_host is not None
-    db_port = os.getenv("DB_PORT")
-    assert db_port is not None
-    db_port = int(db_port)
-    db_password = os.getenv("DB_PASSWORD")
-    assert db_password is not None
     db_create = os.getenv("DB_CREATE", "false") == "true"
-
-    db_conn_str = f"dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}"
+    db_conn_str = create_db_conn_str()
 
 
 db_cfg = DBConfig()

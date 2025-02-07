@@ -15,10 +15,10 @@ async def create_connection(conninfo: str = db_cfg.db_conn_str) -> AsyncConnecti
     return await AsyncConnection.connect(conninfo)
 
 
-async def create_cursor(func: Callable, commit=False) -> Any:
+async def create_cursor(func: Callable, commit=False, conn_info: str = None) -> Any:
     # await asynch_pool.check()
     try:
-        conn = await create_connection()
+        conn = (await create_connection()) if conn_info is None else (await create_connection(conn_info))
         # async with asynch_pool.connection() as conn:
         async with conn.cursor() as cur:
             return await func(cur)
@@ -57,6 +57,6 @@ async def handle_select_func(query: str, query_params: dict):
     return func
 
 
-async def select_from(query: str, parameter_map: dict) -> list:
+async def select_from(query: str, parameter_map: dict, conn_info: str = None) -> list:
     handle_select = await handle_select_func(query, parameter_map)
-    return await create_cursor(handle_select)
+    return await create_cursor(handle_select, False, conn_info)

@@ -220,9 +220,11 @@ def group_reports(
     def perform_count(fetch_dict: callable) -> List[KeyCount]:
         counter = Counter()
         for cl in classification_list:
-            for p in fetch_dict(cl):
-                if p.value:
-                    counter.update([p.key])
+            key_value_list = fetch_dict(cl)
+            if isinstance(key_value_list, list):
+                for p in key_value_list:
+                    if p.value:
+                        counter.update([p.key])
         return [KeyCount(key=key, count=value) for key, value in counter.items()]
 
     problem_count = perform_count(lambda x: x.problem_dict)
@@ -331,13 +333,13 @@ def prepare_send_email(
 
 
 async def aggregate_reports_main(
-    tokens: List[str], email_list: list[str], language: str = "en"
+    tokens: List[str], email_list: list[str], language: str = "en", final_report: bool = True
 ) -> Path:
     # Fetch statuses from the database
     logger.info("Report: Fetch statuses from the database")
     questionnaire_data: List[
         QuestionnaireStatus
-    ] = await select_questionnaires_by_tokens(tokens)
+    ] = await select_questionnaires_by_tokens(tokens, final_report)
     logger.info(f"Report: {len(questionnaire_data)} reports available.")
 
     # Extract the dimensions in batches
