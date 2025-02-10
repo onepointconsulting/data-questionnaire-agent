@@ -14,14 +14,19 @@ def convert_to_str(questionnaire_statuses: List[QuestionnaireStatus]) -> List[st
     for i, qs in enumerate(questionnaire_statuses):
         question, answer, final_report = qs.question, qs.answer, qs.final_report
         if not final_report:
-            if (i+1 != len(questionnaire_statuses) and qs.session_id != questionnaire_statuses[i+1].session_id):
+            if (
+                i + 1 != len(questionnaire_statuses)
+                and qs.session_id != questionnaire_statuses[i + 1].session_id
+            ):
                 # There is a missing final report in this case
                 # Flush the report to the output list
                 questionnaire.insert(0, "# Questionnaire")
-                questionnaire.append(f"""
+                questionnaire.append(
+                    f"""
 Q: {question}
 A: {answer}
-""")
+"""
+                )
                 questionnaires.append("\n".join(questionnaire))
                 questionnaire.clear()
                 continue
@@ -31,7 +36,7 @@ Q: {question}
 A: {answer}
 """
             )
-            if i+1 == len(questionnaire_statuses):
+            if i + 1 == len(questionnaire_statuses):
                 # Last questions of last questionnaire
                 questionnaire.insert(0, "# Questionnaire")
                 questionnaires.append("\n".join(questionnaire))

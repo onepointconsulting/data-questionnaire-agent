@@ -6,20 +6,20 @@ authors = ["Gil Fernandes <gil.fernandes@onepointltd.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.13"
 openai = "^1.37.0"
 langchain = "^0.3.16"
 langchain-community = "0.3.16"
 prompt-toolkit = "^3.0.39"
 tomli = "^2.0.1"
 faiss-cpu = "^1.7.4"
-tiktoken = "^0.7.0"
+tiktoken = "^0.8.0"
 python-dotenv = "^1.0.0"
-pydantic = "2.7.4"
+pydantic = "2.10.6"
 duckduckgo-search = "^3.8.5"
 pdfkit = "^1.0.0"
 opencv-python = "^4.8.1.78"
-scikit-image = "^0.22.0"
+scikit-image = "^0.25.1"
 tenacity = "^8.2.3"
 psycopg = {extras = ["binary"], version = "^3.1.18"}
 aiohttp = "^3.9.3"
@@ -33,6 +33,7 @@ pyjwt = "^2.9.0"
 pandas = "^2.2.3"
 xlsxwriter = "^3.2.0"
 openpyxl = "^3.1.5"
+consultant-info-generator = {git = "https://github.com/OnepointConsultingLtd/consultant_info_generator.git"}
 
 [tool.poetry.scripts]
 build-ui = "data_questionnaire_agent.build:ui"

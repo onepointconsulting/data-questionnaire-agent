@@ -1,11 +1,11 @@
 from psycopg import AsyncCursor
 
+from data_questionnaire_agent.model.application_schema import QuestionAnswer
 from data_questionnaire_agent.model.question_suggestion import (
     QuestionAndSuggestions,
     QuestionInfo,
     QuestionSuggestion,
 )
-from data_questionnaire_agent.model.application_schema import QuestionAnswer
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
 from data_questionnaire_agent.toml_support import get_prompts
 
@@ -29,7 +29,9 @@ ORDER BY PREFERRED_QUESTION_ORDER
     return [(row[0], row[1]) for row in res]
 
 
-async def select_outstanding_questions(language: str, session_id: str) -> list[QuestionAnswer]:
+async def select_outstanding_questions(
+    language: str, session_id: str
+) -> list[QuestionAnswer]:
     sql = """
 SELECT Q.ID, TRIM(Q.QUESTION)
 FROM PUBLIC.TB_QUESTION Q
@@ -44,13 +46,15 @@ WHERE Q.LANGUAGE_ID =
 				AND Q.ID = S.QUESTION_ID)
 ORDER BY Q.PREFERRED_QUESTION_ORDER;
 """
-    res = await select_from(sql, {
-        "language": language,
-        "session_id": session_id
-    })
+    res = await select_from(sql, {"language": language, "session_id": session_id})
     if res is None:
         return []
-    return [QuestionAnswer(id=r[0], question=r[1], answer="", possible_answers=[], clarification=[]) for r in res]
+    return [
+        QuestionAnswer(
+            id=r[0], question=r[1], answer="", possible_answers=[], clarification=[]
+        )
+        for r in res
+    ]
 
 
 async def select_question_and_suggestions(

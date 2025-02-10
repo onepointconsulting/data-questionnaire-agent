@@ -38,7 +38,7 @@ def generate_analyzed_ontology(ontology_data: Ontology) -> AnalyzedOntology:
 
 
 def extract_nodes(
-    relationships: List[Dict[str, str]]
+    relationships: List[Dict[str, str]],
 ) -> Tuple[Dict[str, int], Dict[int, str]]:
     node_set = set()
     for r in relationships:

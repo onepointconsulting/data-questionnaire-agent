@@ -2,6 +2,7 @@ import asyncio
 
 from data_questionnaire_agent.service.graphrag_service import graphrag_context
 
+
 # Test requires external server to be running
 def test_graphrag_context():
     result = asyncio.run(graphrag_context("What are the main topics?"))

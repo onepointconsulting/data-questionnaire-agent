@@ -1,5 +1,6 @@
 import os
 
+
 def create_db_conn_str() -> str:
     db_name = os.getenv("DB_NAME")
     assert db_name is not None
@@ -12,5 +13,5 @@ def create_db_conn_str() -> str:
     db_port = int(db_port)
     db_password = os.getenv("DB_PASSWORD")
     assert db_password is not None
-    
+
     return f"dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}"

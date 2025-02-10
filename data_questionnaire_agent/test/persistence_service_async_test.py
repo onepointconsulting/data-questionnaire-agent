@@ -41,11 +41,11 @@ from data_questionnaire_agent.service.persistence_service_async import (
 )
 from data_questionnaire_agent.service.persistence_service_questions_async import (
     select_initial_question,
+    select_outstanding_questions,
     select_question_and_suggestions,
     select_questions,
     select_suggestions,
     update_question,
-    select_outstanding_questions
 )
 
 if __name__ == "__main__":

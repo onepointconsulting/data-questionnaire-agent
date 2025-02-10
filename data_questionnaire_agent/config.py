@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI, OpenAI, OpenAIEmbeddings
 from tenacity import stop_after_attempt
 
-from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.config_support import create_db_conn_str
+from data_questionnaire_agent.log_init import logger
 
 load_dotenv()
 

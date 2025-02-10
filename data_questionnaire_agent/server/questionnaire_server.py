@@ -366,7 +366,10 @@ async def handle_secondary_question(
             confidence_rating, question_answers = await asyncio.gather(
                 calculate_confidence_rating(questionnaire, language),
                 process_secondary_questions(
-                    questionnaire, cfg.questions_per_batch, session_properties, session_id
+                    questionnaire,
+                    cfg.questions_per_batch,
+                    session_properties,
+                    session_id,
                 ),
             )
             total_cost = cb.total_cost
@@ -437,13 +440,15 @@ async def append_other_suggestions(server_messages, questionnaire_messages):
             ].suggestions = await select_questionnaire_status_suggestions(message.id)
 
 
-async def persist_question(session_id: str, question: str, question_id: int | None, total_cost: int = 0):
+async def persist_question(
+    session_id: str, question: str, question_id: int | None, total_cost: int = 0
+):
     qs = QuestionnaireStatus(
         session_id=session_id,
         question=question,
         final_report=False,
         total_cost=total_cost,
-        question_id=question_id
+        question_id=question_id,
     )
     qs_res = await insert_questionnaire_status(qs)
     return qs, qs_res
@@ -503,7 +508,7 @@ async def send_error(sid: str, session_id: str, error_message: str):
             session_id=session_id,
             clarification="",
             suggestions=[],
-            question_id=None
+            question_id=None,
         ).json(),
         room=sid,
     )

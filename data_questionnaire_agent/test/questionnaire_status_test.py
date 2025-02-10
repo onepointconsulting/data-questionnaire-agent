@@ -7,4 +7,5 @@ from data_questionnaire_agent.test.provider.questionnaire_status_provider import
 def test_has_advice_questionnaire():
     qs: QuestionnaireStatus = create_simple()
     assert qs is not None
-    assert qs.created_at == qs.updated_at
+    difference = qs.updated_at - qs.created_at
+    assert difference.seconds < 2

@@ -82,7 +82,7 @@ ORDER BY ID ASC""",
                 final_report=final_report,
                 created_at=r[CREATED_AT],
                 updated_at=r[UPDATED_AT],
-                question_id=r[QUESTION_ID]
+                question_id=r[QUESTION_ID],
             )
         )
     return final_res
@@ -155,7 +155,9 @@ FROM TB_QUESTIONNAIRE_STATUS S
 INNER JOIN PUBLIC.TB_SESSION_CONFIGURATION C ON S.SESSION_ID = C.SESSION_ID
 AND C.CONFIG_KEY = 'session-language'
 WHERE S.SESSION_ID = %(session_id)s {include_last_sql} ORDER BY S.ID"""
-    res = await select_from(sql, {
+    res = await select_from(
+        sql,
+        {
             "session_id": session_id,
         },
     )
@@ -212,7 +214,7 @@ VALUES (%(session_id)s, %(question)s, %(final_report)s, %(total_cost)s, now(), n
                 "answer": questionnaire_status.answer,
                 "final_report": questionnaire_status.final_report,
                 "total_cost": questionnaire_status.total_cost,
-                "question_id": questionnaire_status.question_id
+                "question_id": questionnaire_status.question_id,
             },
         )
         created_row = await cur.fetchone()
@@ -669,7 +671,7 @@ ORDER BY SESSION_ID, ID ASC;
             updated_at=r[UPDATED_AT],
             total_cost=r[TOTAL_COST],
             clarification=r[CLARIFICATION],
-            question_id=r[QUESTION_ID]
+            question_id=r[QUESTION_ID],
         )
         for r in res
     ]

@@ -134,9 +134,11 @@ def prepare_secondary_question(
         "questions_answers": str(questionnaire),
         "answers": questionnaire.answers_str(),
         "questions_per_batch": questions_per_batch,
-        "questionnaire_topic": questionnaire.questions[0].answer
-        if len(questionnaire.questions) > 0
-        else "",
+        "questionnaire_topic": (
+            questionnaire.questions[0].answer
+            if len(questionnaire.questions) > 0
+            else ""
+        ),
     }
     if is_recreate:
         params["previous_question"] = questionnaire.questions[-1].question

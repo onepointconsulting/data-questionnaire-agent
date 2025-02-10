@@ -333,7 +333,10 @@ def prepare_send_email(
 
 
 async def aggregate_reports_main(
-    tokens: List[str], email_list: list[str], language: str = "en", final_report: bool = True
+    tokens: List[str],
+    email_list: list[str],
+    language: str = "en",
+    final_report: bool = True,
 ) -> Path:
     # Fetch statuses from the database
     logger.info("Report: Fetch statuses from the database")

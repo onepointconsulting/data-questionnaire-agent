@@ -18,7 +18,11 @@ async def create_connection(conninfo: str = db_cfg.db_conn_str) -> AsyncConnecti
 async def create_cursor(func: Callable, commit=False, conn_info: str = None) -> Any:
     # await asynch_pool.check()
     try:
-        conn = (await create_connection()) if conn_info is None else (await create_connection(conn_info))
+        conn = (
+            (await create_connection())
+            if conn_info is None
+            else (await create_connection(conn_info))
+        )
         # async with asynch_pool.connection() as conn:
         async with conn.cursor() as cur:
             return await func(cur)

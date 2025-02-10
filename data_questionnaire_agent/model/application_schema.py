@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List
 
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 
@@ -26,7 +26,9 @@ class QuestionAnswer:
 
     @staticmethod
     def question_answer_factory(question: str, answer: dict):
-        return QuestionAnswer(id=None, question=question, answer=answer, clarification="")
+        return QuestionAnswer(
+            id=None, question=question, answer=answer, clarification=""
+        )
 
     @staticmethod
     def question_factory(question: str):
@@ -46,9 +48,11 @@ class Questionnaire:
     def answers_str(self) -> str:
         return "\n\n".join(
             [
-                qa.answer["content"] or ""
-                if isinstance(qa.answer, dict)
-                else qa.answer or ""
+                (
+                    qa.answer["content"] or ""
+                    if isinstance(qa.answer, dict)
+                    else qa.answer or ""
+                )
                 for qa in self.questions
             ]
         )

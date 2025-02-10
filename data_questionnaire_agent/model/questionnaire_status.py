@@ -20,4 +20,7 @@ class QuestionnaireStatus(BaseModel):
     clarification: Union[str, None] = Field(
         default=None, description="The clarification or explanation of the question"
     )
-    question_id: int | None = Field(default=None, description="The question identifier in case a question is NOT generated")
+    question_id: int | None = Field(
+        default=None,
+        description="The question identifier in case a question is NOT generated",
+    )
