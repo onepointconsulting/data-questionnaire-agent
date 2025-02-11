@@ -643,7 +643,7 @@ WHERE SESSION_ID IN
 			WHERE C.CONFIG_KEY = 'session-client-id'
 				{f'AND C.CONFIG_VALUE = ANY(ARRAY[{",".join([f"'{t}'" for t in tokens])}])' if len(tokens) > 0 else ""}
 				AND S.FINAL_REPORT = %(final_report)s)
-AND ANSWER is not null
+AND (ANSWER is not null or FINAL_REPORT is true)
 ORDER BY SESSION_ID, ID ASC;
 """
     logger.info("select_questionnaires_by_tokens SQL: %s", sql)

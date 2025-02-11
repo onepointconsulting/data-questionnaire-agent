@@ -1,12 +1,13 @@
 import asyncio
 
-from consultant_info_generator.model import Consultant, Skill
-
 from data_questionnaire_agent.service.persistence_service_consultants_async import (
-    delete_skill,
-    upsert_skill,
-    save_consultant,
     delete_consultant,
+    delete_skill,
+    save_consultant,
+    upsert_skill,
+)
+from data_questionnaire_agent.test.provider.consultant_provider import (
+    create_simple_consultant,
 )
 
 if __name__ == "__main__":
@@ -19,17 +20,7 @@ if __name__ == "__main__":
         assert count == 1, "Delete count is expected to be 1"
 
     def test_save_consultant():
-        consultant = Consultant(
-            given_name="John",
-            surname="Doe",
-            email="john.doe@gmail.com",
-            cv="General blabla",
-            industry_name="IT",
-            geo_location="London",
-            linkedin_profile_url="john-doe",
-            experiences=[],
-            skills=[Skill(name="Data Science"), Skill(name="Enterprise Architecture")]
-        )
+        consultant = create_simple_consultant()
         asyncio.run(save_consultant(consultant))
         asyncio.run(delete_consultant(consultant))
 

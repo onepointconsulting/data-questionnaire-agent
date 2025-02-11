@@ -50,23 +50,49 @@ GEO_LOCATION=%(location)s, LINKEDIN_PROFILE_URL=%(linkedin_profile_url)s, UPDATE
         if rows is None or len(rows) == 0:
             return None
         consultant_id = rows[0]
-        sql = """
-DELETE FROM TB_CONSULTANT_SKILL WHERE CONSULTANT_ID = %(consultant_id)s
-"""
+
+        sql = """DELETE FROM TB_CONSULTANT_SKILL WHERE CONSULTANT_ID = %(consultant_id)s"""
         await cur.execute(sql, {"consultant_id": consultant_id})
+
         sql = """
 INSERT INTO TB_SKILL(SKILL_NAME) VALUES(%(skill)s)
 ON CONFLICT (SKILL_NAME) DO NOTHING
 """
         for skill in consultant.skills:
             await cur.execute(sql, {"skill": skill.name})
-        
+
         sql = """
 INSERT INTO TB_CONSULTANT_SKILL(CONSULTANT_ID, SKILL_ID) VALUES(%(consultant_id)s, (SELECT ID from TB_SKILL WHERE SKILL_NAME = %(skill_name)s))
 ON CONFLICT (CONSULTANT_ID, SKILL_ID) DO NOTHING
 """
         for skill in consultant.skills:
-            await cur.execute(sql, {"consultant_id": consultant_id, "skill_name": skill.name})
+            await cur.execute(
+                sql, {"consultant_id": consultant_id, "skill_name": skill.name}
+            )
+
+        company_sql = """
+INSERT INTO TB_COMPANY(COMPANY_NAME) VALUES(%(company_name)s)
+ON CONFLICT (COMPANY_NAME) DO NOTHING
+"""
+        experience_sql = """
+INSERT INTO TB_CONSULTANT_EXPERIENCE(CONSULTANT_ID, TITLE, LOCATION, START_DATE, END_DATE, COMPANY_ID)
+VALUES(%(consultant_id)s, %(title)s, %(location)s, %(start_date)s, %(end_date)s, (SELECT ID FROM TB_COMPANY WHERE COMPANY_NAME = %(company_name)s))
+"""
+        for experience in consultant.experiences:
+            if experience.company:
+                company_name = experience.company.name
+                await cur.execute(company_sql, {"company_name": company_name})
+                await cur.execute(
+                    experience_sql,
+                    {
+                        "consultant_id": consultant_id,
+                        "title": experience.title,
+                        "location": experience.location,
+                        "start_date": experience.start,
+                        "end_date": experience.end,
+                        "company_name": experience.company.name
+                    },
+                )
 
     return await create_cursor(process, True)
 
