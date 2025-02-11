@@ -84,21 +84,28 @@ WHERE ID = %(id)s
             {"id": id, "question": question},
         )
         updated_question_count = cur.rowcount
+        insert_suggestion_sql = """
+INSERT INTO PUBLIC.TB_QUESTION_SUGGESTIONS (ID, IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID, SVG_IMAGE)
+    SELECT (SELECT NEXTVAL('public.tb_question_suggestions_id_seq')), 
+            %(img_src)s, %(img_alt)s, %(title)s, %(main_text)s, %(question_id)s, %(svg_image)s
+            WHERE NOT EXISTS (SELECT ID FROM TB_QUESTION_SUGGESTIONS WHERE ID = %(id)s);
+"""
         update_suggestion_sql = """
 UPDATE PUBLIC.TB_QUESTION_SUGGESTIONS
-SET IMG_SRC = %(img_src)s,
-	IMG_ALT = %(img_alt)s,
-	TITLE = %(title)s,
-	MAIN_TEXT = %(main_text)s,
-	QUESTION_ID = %(question_id)s,
-	SVG_IMAGE = %(svg_image)s
-WHERE ID = %(id)s
+SET 
+    IMG_SRC = %(img_src)s,
+    IMG_ALT = %(img_alt)s,
+    TITLE = %(title)s,
+    MAIN_TEXT = %(main_text)s,
+    QUESTION_ID = %(question_id)s,
+    SVG_IMAGE = %(svg_image)s
+WHERE ID = %(id)s;
 """
         if len(suggestions) > 0:
             for suggestion in suggestions:
                 question_suggestion = QuestionSuggestion(**suggestion)
                 await cur.execute(
-                    update_suggestion_sql,
+                    insert_suggestion_sql,
                     {
                         "img_src": "",
                         "img_alt": "",
@@ -109,6 +116,19 @@ WHERE ID = %(id)s
                         "id": question_suggestion.id,
                     },
                 )
+                if cur.rowcount == 0:
+                    await cur.execute(
+                        update_suggestion_sql,
+                        {
+                            "img_src": "",
+                            "img_alt": "",
+                            "title": question_suggestion.title,
+                            "main_text": question_suggestion.main_text,
+                            "question_id": id,
+                            "svg_image": question_suggestion.svg_image,
+                            "id": question_suggestion.id,
+                        },
+                    )
         return updated_question_count
 
     return await create_cursor(process_update, True)

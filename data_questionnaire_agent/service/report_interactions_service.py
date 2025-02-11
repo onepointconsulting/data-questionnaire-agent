@@ -147,9 +147,7 @@ if __name__ == "__main__":
 
     def execute_regenerate_pdfs():
         df: pd.DataFrame = asyncio.run(create_usage_report(exclusion_ids))
-        session_ids = list(
-            df[df["final_report"]]["session_id"].to_dict().values()
-        )
+        session_ids = list(df[df["final_report"]]["session_id"].to_dict().values())
         paths = asyncio.run(regenerate_pdfs(session_ids))
         for path in paths:
             print(path)

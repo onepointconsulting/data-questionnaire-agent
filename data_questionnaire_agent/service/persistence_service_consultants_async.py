@@ -1,7 +1,7 @@
-from consultant_info_generator.model import Consultant
+from consultant_info_generator.model import Consultant, Experience, Skill, Company
 from psycopg import AsyncCursor
 
-from data_questionnaire_agent.service.query_support import create_cursor
+from data_questionnaire_agent.service.query_support import create_cursor, select_from
 
 
 async def __process_simple_operation(sql: str, skill: str) -> int:
@@ -90,7 +90,7 @@ VALUES(%(consultant_id)s, %(title)s, %(location)s, %(start_date)s, %(end_date)s,
                         "location": experience.location,
                         "start_date": experience.start,
                         "end_date": experience.end,
-                        "company_name": experience.company.name
+                        "company_name": experience.company.name,
                     },
                 )
 
@@ -106,3 +106,69 @@ DELETE FROM TB_CONSULTANT WHERE EMAIL=%(email)s
         return cur.rowcount
 
     return await create_cursor(process, True)
+
+
+async def read_consultants(offset: int = None, limit: int = None) -> list[Consultant]:
+    splitter = "@@"
+    offset_expression = f"OFFSET {offset}" if offset else ""
+    limit_expression = f"LIMIT {limit}" if limit else ""
+    consultant_sql = f"""
+select C.ID, C.GIVEN_NAME, C.SURNAME, C.EMAIL, C.CV, C.INDUSTRY_NAME, C.GEO_LOCATION, C.LINKEDIN_PROFILE_URL,
+string_agg(S.SKILL_NAME, '{splitter}') skills from TB_CONSULTANT C 
+INNER JOIN TB_CONSULTANT_SKILL CS ON C.ID = CS.CONSULTANT_ID
+INNER JOIN TB_SKILL S ON S.ID = CS.SKILL_ID
+GROUP BY C.ID, C.GIVEN_NAME, C.SURNAME, C.EMAIL, C.CV, C.INDUSTRY_NAME, C.GEO_LOCATION, C.LINKEDIN_PROFILE_URL
+{offset_expression} {limit_expression}
+"""
+    experience_sql = """
+SELECT TITLE, LOCATION, START_DATE, END_DATE, CO.COMPANY_NAME FROM TB_CONSULTANT_EXPERIENCE E
+INNER JOIN TB_CONSULTANT C ON C.ID = E.CONSULTANT_ID
+INNER JOIN TB_COMPANY CO ON CO.ID = E.COMPANY_ID
+WHERE C.ID = %(consultant_id)s
+"""
+    rows = await select_from(consultant_sql, {})
+    consultant_id = 0
+    consultant_given_name = 1
+    consultant_surname = 2
+    consultant_email = 3
+    consultant_cv = 4
+    consultant_industry_name = 5
+    consultant_geo_location = 6
+    consultant_linkedin_profile_url = 7
+    consultant_skills = 8
+    consultants = []
+
+    experience_title = 0
+    experience_location = 1
+    experience_start_date = 2
+    experience_end_date = 3
+    experience_company = 4
+    for r in rows:
+        id = r[consultant_id]
+        skills_str = r[consultant_skills]
+        skills = [Skill(name=s) for s in skills_str.split(splitter)]
+        experience_rows = await select_from(experience_sql, {"consultant_id": id})
+        experiences = [
+            Experience(
+                title=e[experience_title],
+                location=e[experience_location],
+                start=e[experience_start_date],
+                end=e[experience_end_date],
+                company=Company(name=e[experience_company])
+            )
+            for e in experience_rows
+        ]
+        consultants.append(
+            Consultant(
+                given_name=r[consultant_given_name],
+                surname=r[consultant_surname],
+                email=r[consultant_email],
+                cv=r[consultant_cv],
+                industry_name=r[consultant_industry_name],
+                geo_location=r[consultant_geo_location],
+                linkedin_profile_url=r[consultant_linkedin_profile_url],
+                experiences=experiences,
+                skills=skills,
+            )
+        )
+    return consultants

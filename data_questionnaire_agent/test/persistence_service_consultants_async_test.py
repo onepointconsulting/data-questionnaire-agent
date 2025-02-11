@@ -3,6 +3,7 @@ import asyncio
 from data_questionnaire_agent.service.persistence_service_consultants_async import (
     delete_consultant,
     delete_skill,
+    read_consultants,
     save_consultant,
     upsert_skill,
 )
@@ -19,10 +20,12 @@ if __name__ == "__main__":
         count = asyncio.run(delete_skill(skill))
         assert count == 1, "Delete count is expected to be 1"
 
-    def test_save_consultant():
+    async def test_save_consultant():
         consultant = create_simple_consultant()
-        asyncio.run(save_consultant(consultant))
-        asyncio.run(delete_consultant(consultant))
+        await save_consultant(consultant)
+        consultants = await read_consultants()
+        assert len(consultants) > 0, "There should be at least one consultant"
+        await delete_consultant(consultant)
 
     # test_upsert_skill()
-    test_save_consultant()
+    asyncio.run(test_save_consultant())
