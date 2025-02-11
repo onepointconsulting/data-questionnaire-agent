@@ -26,13 +26,13 @@ DELETE FROM TB_SKILL WHERE SKILL_NAME = %(skill)s
     return await __process_simple_operation(sql, skill)
 
 
-async def save_consultant(consultant: Consultant) -> int:
+async def save_consultant(consultant: Consultant) -> int | None:
     async def process(cur: AsyncCursor):
         sql = """
 INSERT INTO TB_CONSULTANT(GIVEN_NAME, SURNAME, EMAIL, CV, INDUSTRY_NAME, GEO_LOCATION, LINKEDIN_PROFILE_URL)
 VALUES(%(given_name)s, %(surname)s, %(email)s, %(cv)s, %(industry_name)s, %(location)s, %(linkedin_profile_url)s)
 ON CONFLICT (EMAIL) DO UPDATE SET GIVEN_NAME=%(given_name)s, SURNAME=%(surname)s, EMAIL=%(email)s, CV=%(cv)s, INDUSTRY_NAME=%(industry_name)s, 
-GEO_LOCATION=%(location)s, LINKEDIN_PROFILE_URL=%(linkedin_profile_url)s, UPDATED_AT=CURRENT_TIMESTAMP;
+GEO_LOCATION=%(location)s, LINKEDIN_PROFILE_URL=%(linkedin_profile_url)s, UPDATED_AT=CURRENT_TIMESTAMP RETURNING ID;
 """
         await cur.execute(
             sql,
@@ -46,7 +46,27 @@ GEO_LOCATION=%(location)s, LINKEDIN_PROFILE_URL=%(linkedin_profile_url)s, UPDATE
                 "linkedin_profile_url": consultant.linkedin_profile_url,
             },
         )
-        return cur.rowcount
+        rows = await cur.fetchone()
+        if rows is None or len(rows) == 0:
+            return None
+        consultant_id = rows[0]
+        sql = """
+DELETE FROM TB_CONSULTANT_SKILL WHERE CONSULTANT_ID = %(consultant_id)s
+"""
+        await cur.execute(sql, {"consultant_id": consultant_id})
+        sql = """
+INSERT INTO TB_SKILL(SKILL_NAME) VALUES(%(skill)s)
+ON CONFLICT (SKILL_NAME) DO NOTHING
+"""
+        for skill in consultant.skills:
+            await cur.execute(sql, {"skill": skill.name})
+        
+        sql = """
+INSERT INTO TB_CONSULTANT_SKILL(CONSULTANT_ID, SKILL_ID) VALUES(%(consultant_id)s, (SELECT ID from TB_SKILL WHERE SKILL_NAME = %(skill_name)s))
+ON CONFLICT (CONSULTANT_ID, SKILL_ID) DO NOTHING
+"""
+        for skill in consultant.skills:
+            await cur.execute(sql, {"consultant_id": consultant_id, "skill_name": skill.name})
 
     return await create_cursor(process, True)
 

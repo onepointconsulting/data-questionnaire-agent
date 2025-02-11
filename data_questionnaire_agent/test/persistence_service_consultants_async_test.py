@@ -1,6 +1,6 @@
 import asyncio
 
-from consultant_info_generator.model import Consultant
+from consultant_info_generator.model import Consultant, Skill
 
 from data_questionnaire_agent.service.persistence_service_consultants_async import (
     delete_skill,
@@ -28,7 +28,7 @@ if __name__ == "__main__":
             geo_location="London",
             linkedin_profile_url="john-doe",
             experiences=[],
-            skills=[]
+            skills=[Skill(name="Data Science"), Skill(name="Enterprise Architecture")]
         )
         asyncio.run(save_consultant(consultant))
         asyncio.run(delete_consultant(consultant))
