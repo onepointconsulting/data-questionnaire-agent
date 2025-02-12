@@ -12,6 +12,15 @@ class AnalystRating(StrEnum):
     unsuitable = "unsuitable"
 
 
+SCORES = {
+    AnalystRating.very_suitable: 5,
+    AnalystRating.suitable: 4,
+    AnalystRating.moderately_suitable: 3,
+    AnalystRating.hardly_suitable: 2,
+    AnalystRating.unsuitable: 1,
+}
+
+
 class ConsultantRating(BaseModel):
     """Represents the degree to which a consultant with a specific profile can help a customer that answered a questionnaire."""
 
@@ -29,6 +38,15 @@ class ConsultantRating(BaseModel):
     rating: AnalystRating = Field(
         ...,
         description="The rating of the consulting capabilities of the consultant to help the customer",
+    )
+
+
+class ScoredConsultantRating(ConsultantRating):
+    """Rrepresents a scored consultant rating."""
+
+    score: int = Field(
+        ...,
+        description="The score applied to this consultant for the current customer.",
     )
 
 

@@ -8,11 +8,15 @@ from data_questionnaire_agent.server.questionnaire_server import (
     app,
     routes,
 )
-from data_questionnaire_agent.server.questionnaire_server_configuration import (
+from data_questionnaire_agent.server.questionnaire_server_backend import (
     routes as config_routes,
+)
+from data_questionnaire_agent.server.questionnaire_server_consultants import (
+    routes as consultant_routes,
 )
 
 assert config_routes == routes
+assert consultant_routes == routes
 
 FILE_INDEX = "index.html"
 PATH_INDEX = web_server_cfg.ui_folder / FILE_INDEX

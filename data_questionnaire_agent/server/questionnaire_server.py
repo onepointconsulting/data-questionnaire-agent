@@ -38,6 +38,8 @@ from data_questionnaire_agent.model.session_configuration import (
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
 from data_questionnaire_agent.server.server_support import (
     CORS_HEADERS,
+    extract_language,
+    extract_session,
     handle_error,
     routes,
 )
@@ -612,7 +614,8 @@ async def generate_jwt_token(request: web.Request) -> web.Response:
                 return web.json_response(token.dict(), headers=CORS_HEADERS)
             case _:
                 raise web.HTTPBadRequest(
-                    text="Please provide name and email parameters in the JSON body"
+                    text="Please provide name and email parameters in the JSON body",
+                    headers=CORS_HEADERS,
                 )
 
     return await handle_error(process, request=request)
@@ -655,7 +658,8 @@ async def generate_token_batch_post(request: web.Request) -> web.Response:
                 )
             case _:
                 raise web.HTTPBadRequest(
-                    text="Please provide name, email and time_delta_minutes parameters in the JSON body"
+                    text="Please provide name, email and time_delta_minutes parameters in the JSON body",
+                    headers=CORS_HEADERS,
                 )
 
     return await handle_error(process, request=request)
@@ -671,12 +675,14 @@ async def validate_jwt_token(request: web.Request) -> web.Response:
                     decoded = await decode_token(token)
                 except Exception:
                     raise web.HTTPBadRequest(
-                        text="The token does not seem to be valid. Please send another valid token."
+                        text="The token does not seem to be valid. Please send another valid token.",
+                        headers=CORS_HEADERS,
                     )
                 return web.json_response(decoded, headers=CORS_HEADERS)
             case _:
                 raise web.HTTPBadRequest(
-                    text="Please provide the token in the JSON body"
+                    text="Please provide the token in the JSON body",
+                    headers=CORS_HEADERS,
                 )
     except json.JSONDecodeError as e:
         raise web.HTTPBadRequest(
@@ -719,7 +725,8 @@ async def generate_aggregated_report(request: web.Request) -> web.Response:
                 )
             case _:
                 raise web.HTTPBadRequest(
-                    text="Please provide the token in the JSON body"
+                    text="Please provide the token in the JSON body",
+                    headers=CORS_HEADERS,
                 )
 
     return await handle_error(process, request=request)
@@ -746,10 +753,6 @@ async def find_confidence_rating(
     return confidence_rating
 
 
-def extract_language(request: web.Request):
-    return request.rel_url.query.get("language", "en")
-
-
 def extract_step(request: web.Request) -> int:
     unknown_step = "-1"
     step_str = request.rel_url.query.get("step", unknown_step)
@@ -757,14 +760,6 @@ def extract_step(request: web.Request) -> int:
         return int(step_str)
     except ValueError as _:
         return int(unknown_step)
-
-
-def extract_session(request: web.Request):
-    session_id = request.match_info.get("session_id", None)
-    logger.info("PDF session_id: %s", session_id)
-    if session_id is None:
-        raise web.HTTPNotFound(text="No session id specified")
-    return session_id
 
 
 async def query_questionnaire_advices(

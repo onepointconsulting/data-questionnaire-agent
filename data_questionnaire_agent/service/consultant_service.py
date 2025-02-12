@@ -1,3 +1,4 @@
+import json
 from typing import TypedDict
 
 import jinja2
@@ -7,8 +8,15 @@ from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
-from data_questionnaire_agent.model.consultant_rating import ConsultantRatings
+from data_questionnaire_agent.model.consultant_rating import (
+    SCORES,
+    ConsultantRatings,
+    ScoredConsultantRating,
+)
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.service.persistence_service_async import (
+    select_questionnaire_statuses,
+)
 from data_questionnaire_agent.service.persistence_service_consultants_async import (
     read_consultants,
 )
@@ -65,3 +73,32 @@ async def prepare_consultant_call(
         "conditional_advice": str(conditional_advice),
         "cvs": await convert_all_consultants(),
     }
+
+
+async def calculate_consultant_ratings_for(
+    session_id, language: str = "en"
+) -> ConsultantRatings | None:
+    questionnaire_statuses = await select_questionnaire_statuses(session_id)
+    if not questionnaire_statuses:
+        return None
+    final_report_list = [qs for qs in questionnaire_statuses if qs.final_report]
+    if not final_report_list:
+        return None
+    advice_dict = json.loads(final_report_list[0].question)
+    advice = ConditionalAdvice.parse_obj(advice_dict)
+    prompt_data = await prepare_consultant_call(
+        Questionnaire(questions=questionnaire_statuses), advice
+    )
+    runnable_sequence = create_structured_consultant_call(language)
+    consultant_ratings: ConsultantRatings = await runnable_sequence.ainvoke(prompt_data)
+    consultant_ratings = sorted([
+        ScoredConsultantRating(
+            analyst_name=cr.analyst_name,
+            analyst_linkedin_url=cr.analyst_linkedin_url,
+            reasoning=cr.reasoning,
+            rating=cr.rating,
+            score=SCORES[cr.rating],
+        )
+        for cr in consultant_ratings.consultant_ratings
+    ], key=lambda cr: cr.score, reverse=True)
+    return ConsultantRatings(consultant_ratings=consultant_ratings)

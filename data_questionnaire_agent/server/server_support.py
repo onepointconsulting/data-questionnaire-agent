@@ -17,3 +17,15 @@ async def handle_error(fun: Awaitable, **kwargs) -> any:
         raise web.HTTPBadRequest(
             text="Please make sure the JSON body is available and well formatted."
         )
+
+
+def extract_session(request: web.Request):
+    session_id = request.match_info.get("session_id", None)
+    logger.info("PDF session_id: %s", session_id)
+    if session_id is None:
+        raise web.HTTPNotFound(text="No session id specified")
+    return session_id
+
+
+def extract_language(request: web.Request):
+    return request.rel_url.query.get("language", "en")
