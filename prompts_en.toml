@@ -297,3 +297,35 @@ Category: Positive outcomes
 === Questionnaire End ===
 
 """
+
+[consultants]
+    [consultants.evaluation]
+        system_message = "You are an analyst that is specialized in rating consultants based on a questionnaire with a customer and a set of analyst CVs."
+        human_message = """
+Based on the content of a customer questionnaire below starting from === Questionnaire === and ending at === Questionnaire End === , initial advice given to a customer that starts from === Advice Section Start === and ends with === Advice Section End === and a list of CVs starting from === CVs Start === and ending with === CVs End ===, please rate each analyst in terms of their consulting capabilities to help the customer.
+
+There are 5 categories to rate each analyst that reflect the capability of the analyst to help the interviewed customer:
+
+- sehr geeignet
+- geeignet
+- mäßig geeignet
+- kaum geeignet
+- ungeeignet
+
+The questionnaire's questions were answered by the customer and asked by a large language model. The customer should be evaluated based on the answers rather than on the questions.
+
+=== Questionnaire ===
+{questions_answers}
+=== Questionnaire End ===
+
+=== Advice Section Start ===
+{conditional_advice}
+=== Advice Section End ===
+
+=== CVs Start ===
+{cvs}
+=== CVs End ===
+
+At the end of this activity, you should have rated the anaylists with one of the five categories, reflecting the degree to which they can help the interviewed customer based on their CV, professional experience and also skills.
+You can also express your degree of confidence in your verdict and also your reasoning that led you to assign a category to a consultant.
+"""

@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from typing import Union
 
 from pydantic.v1 import BaseModel, Field
@@ -6,7 +6,7 @@ from pydantic.v1 import BaseModel, Field
 from data_questionnaire_agent.translation import t
 
 
-class ConfidenceDegree(str, Enum):
+class ConfidenceDegree(StrEnum):
     outstanding = "outstanding"
     high = "high"
     medium = "medium"

@@ -103,3 +103,40 @@ def create_questionnaire_2_questions__refugees_fa() -> Questionnaire:
         "پاسپورت خود را گم کرده‌ام.",
     )
     return Questionnaire(questions=[question_answer, question_answer_2])
+
+
+def create_questionnaire_7_questions() -> Questionnaire:
+    qa_list = [
+        {
+            "q": "Which area of your data ecosystem are you most concerned about?",
+            "a": "Resistance to change - Employees need to adapt to new ways of operating to make data-driven transformation work.",
+        },
+        {
+            "q": "What specific challenges are your employees facing when adapting to new data-driven processes?",
+            "a": "There is a lack of motivation to learn and adapt to new data processes.",
+        },
+        {
+            "q": "What strategies have you tried so far to increase employee motivation for learning and adapting to new data processes?",
+            "a": "We've tried peer mentoring programmes to encourage knowledge sharing, but participation is inconsistent.",
+        },
+        {
+            "q": "What specific factors do you think are contributing to the lack of motivation among employees to engage with new data processes?",
+            "a": "There is a general resistance to change within the organisation's culture.",
+        },
+        {
+            "q": "What measures have you considered to address the cultural resistance to change within your organisation, particularly in relation to data-driven processes?",
+            "a": "We have ran some gamification on data population, and highlighted how the benefits tie back to organisational goals.",
+        },
+        {
+            "q": "What kind of support or resources do you think would help your employees overcome their resistance to change and engage more with new data-driven processes?",
+            "a": "Introducing incentives for employees who actively participate in learning new data processes could be beneficial.",
+        },
+        {
+            "q": "What are the main reasons your employees resist adapting to new data-driven processes despite the potential benefits?",
+            "a": "There is a lack of clear communication about the benefits and goals of data-driven transformation.",
+        },
+    ]
+    questions = [
+        QuestionAnswer.question_answer_factory(qa["q"], qa["a"]) for qa in qa_list
+    ]
+    return Questionnaire(questions=questions)

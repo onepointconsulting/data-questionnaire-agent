@@ -3,6 +3,7 @@ import asyncio
 import click
 from consultant_info_generator.consultant_info_tools import extract_consultant
 
+from data_questionnaire_agent.bootstrap import db_cfg
 from data_questionnaire_agent.service.persistence_service_consultants_async import (
     save_consultant,
 )
@@ -23,4 +24,5 @@ def save_consultants(linkedin_id: list[str]):
 
 
 if __name__ == "__main__":
+    print(db_cfg.db_conn_str)
     save_consultants()

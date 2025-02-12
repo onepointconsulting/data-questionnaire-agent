@@ -1,4 +1,4 @@
-from consultant_info_generator.model import Consultant, Experience, Skill, Company
+from consultant_info_generator.model import Company, Consultant, Experience, Skill
 from psycopg import AsyncCursor
 
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
@@ -154,7 +154,7 @@ WHERE C.ID = %(consultant_id)s
                 location=e[experience_location],
                 start=e[experience_start_date],
                 end=e[experience_end_date],
-                company=Company(name=e[experience_company])
+                company=Company(name=e[experience_company]),
             )
             for e in experience_rows
         ]

@@ -692,7 +692,7 @@ markers = {main = "platform_system == \"Windows\"", dev = "platform_system == \"
 
 [[package]]
 name = "consultant-info-generator"
-version = "0.1.2"
+version = "0.1.3"
 description = ""
 optional = false
 python-versions = ">=3.13,<4"
@@ -708,7 +708,7 @@ pydantic = "2.10.6"
 type = "git"
 url = "https://github.com/OnepointConsultingLtd/consultant_info_generator.git"
 reference = "HEAD"
-resolved_reference = "82d43da43ac726102ed46a782012151ab6f0fdb1"
+resolved_reference = "b27c1438c9036e238af4f703d524b4d65681d064"
 
 [[package]]
 name = "dataclasses-json"

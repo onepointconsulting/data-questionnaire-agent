@@ -109,3 +109,32 @@ def create_advice_with_questionnaire() -> Tuple[ConditionalAdvice, Questionnaire
         ]
     )
     return conditional_advice, questionnaire
+
+
+def create_full_advice1() -> ConditionalAdvice:
+    advice_dict = {
+        "has_advice": True,
+        "advices": [
+            "**Implement a Comprehensive Communication Strategy:** To address the cultural resistance to change, it is vital to establish a clear and comprehensive communication strategy that articulates the benefits and goals of the data-driven transformation. This should include regular updates, success stories, and clear demonstrations of how data initiatives align with organisational objectives.",
+            "**Introduce Targeted Training and Workshops:** Given the lack of motivation and resistance to learning new data processes, consider introducing targeted training programmes and workshops. These should be designed to address specific skills gaps and be interactive to encourage engagement. Training can be supplemented with resources from the **Data Quality Training** entity to enhance effectiveness.",
+            "**Utilise Gamification and Incentives:** Since gamification has already been attempted, consider enhancing this approach by integrating more structured incentive programmes. Recognising and rewarding employees who actively participate in learning and adapting to new data processes can foster a more positive attitude towards change.",
+            "**Establish a Feedback Mechanism:** Implement a system where employees can provide feedback on the data processes and the challenges they face. This feedback loop can help in identifying specific areas of resistance and allow the organisation to address them promptly, thereby improving the overall engagement with data-driven initiatives.",
+            "**Leverage Peer Mentoring Effectively:** To tackle the inconsistency in peer mentoring participation, formalise the mentoring programme with clear objectives, regular meetings, and defined outcomes. This structure can help in maintaining participation levels and ensure that knowledge sharing is effective.",
+        ],
+        "what_you_should_avoid": [
+            "**Avoid One-Size-Fits-All Training:** Customise training sessions to meet the diverse needs of different departments and roles. Generic training may not address specific challenges faced by employees, leading to disengagement.",
+            "**Do Not Overlook Employee Feedback:** Ignoring employee feedback can exacerbate resistance. Ensure that there is a channel for employees to voice their concerns and suggestions regarding new data processes.",
+            "**Avoid Delayed Communication:** Ensure timely and continuous communication regarding changes and benefits of new data processes. Delayed communication can lead to misinformation and increased resistance.",
+        ],
+        "positive_outcomes": [
+            "**Increased Employee Engagement:** By implementing these strategies, employees are more likely to engage with new data processes, reducing resistance and fostering a culture of continuous learning.",
+            "**Improved Data Utilisation:** With better training and communication, employees will be more adept at utilising data effectively, leading to enhanced decision-making and operational efficiency.",
+            "**Enhanced Organisational Agility:** As resistance to change decreases, the organisation will become more agile, capable of adapting quickly to new data-driven opportunities and challenges.",
+        ],
+        "confidence": {
+            "id": None,
+            "reasoning": "The customer's main problem is identified as resistance to change, specifically employees' lack of motivation to learn and adapt to new data processes. There is detailed information about the problem, including the cultural resistance to change and lack of clear communication about the benefits and goals of data-driven transformation. The causes behind the problem are well understood. The customer has tried strategies like peer mentoring and gamification, and is considering incentives, which gives some insight into their data governance strategies. However, there is no information about the technological landscape used by the customer, which is a significant gap in understanding the full context. Therefore, while the understanding of the problem and its causes is solid, the lack of technological background information prevents a higher confidence rating.",
+            "rating": "high",
+        },
+    }
+    return ConditionalAdvice.parse_obj(advice_dict)

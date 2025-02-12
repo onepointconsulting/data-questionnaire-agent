@@ -94,8 +94,7 @@ async def update_questions(request: web.Request) -> web.Response:
                 {
                     "id": int(id),
                     "question": str(question),
-                    "suggestions": list(suggestions),
-                } as item,
+                },
                 *_,
             ]:
                 rowcount = 0

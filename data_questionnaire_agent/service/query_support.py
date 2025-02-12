@@ -41,8 +41,8 @@ async def use_connection(func: Coroutine, commit=True) -> any:
     try:
         conn = await create_connection()
         return await func(conn)
-    except:
-        logger.exception("Could not create database connection.")
+    except Exception as e:
+        logger.exception(f"Could not create database connection: {e}")
     finally:
         if conn is not None:
             if commit:

@@ -261,3 +261,35 @@ Kategorie: Positive Ergebnisse
 === Fragebogen Ende ===
 
 """
+
+[Berater]
+    [Berater.Bewertung]
+        system_message = "Sie sind ein Analyst, der sich auf die Bewertung von Beratern auf der Grundlage eines Fragebogens mit einem Kunden und einer Reihe von Analysten-Lebensläufen spezialisiert hat."
+        human_message = """
+Basierend auf dem Inhalt eines Kundenfragebogens, der mit === Questionnaire === beginnt und mit === Questionnaire End === endet, einer ersten Beratung für einen Kunden, die mit === Advice Section Start === beginnt und mit === Advice Section End === endet, und einer Liste von Lebensläufen, die mit === CVs Start === beginnt und mit === CVs End === endet, bewerten Sie bitte jeden Analysten im Hinblick auf seine Beratungsfähigkeiten, um dem Kunden zu helfen.
+
+Es gibt 5 Kategorien zur Bewertung jedes Analysten, die die Fähigkeit des Analysten widerspiegeln, dem befragten Kunden zu helfen:
+
+- Exzellent
+- Gut
+- Akzeptabel
+- Niedrig
+- Schlecht
+
+Die Fragen des Fragebogens wurden vom Kunden beantwortet und von einem großen Sprachmodell gestellt. Der Kunde sollte anhand der Antworten und nicht anhand der Fragen bewertet werden.
+
+=== Fragebogen ===
+{questions_answers}
+=== Ende des Fragebogens ===
+
+=== Beginn des Beratungsbereichs ===
+{conditional_advice}
+=== Ende des Ratgeberabschnitts ===
+
+=== Lebensläufe Start ===
+{Lebensläufe}
+=== CVs Ende ===
+
+Am Ende dieser Aktivität sollten Sie die Analysten in einer der fünf Kategorien bewertet haben, die den Grad widerspiegeln, in dem sie dem befragten Kunden basierend auf ihrem Lebenslauf, ihrer Berufserfahrung und auch ihren Fähigkeiten helfen können.
+Sie können auch Ihr Vertrauen in Ihr Urteil und Ihre Argumentation zum Ausdruck bringen, die Sie dazu veranlasst hat, einem Berater eine Kategorie zuzuweisen.
+"""

@@ -63,7 +63,6 @@ ORDER BY ID ASC""",
     FINAL_REPORT = 4
     CREATED_AT = 5
     UPDATED_AT = 6
-    LANGUAGE = 7
     CLARIFICATION = 8
     QUESTION_ID = 9
     final_res = []
