@@ -306,11 +306,11 @@ Based on the content of a customer questionnaire below starting from === Questio
 
 There are 5 categories to rate each analyst that reflect the capability of the analyst to help the interviewed customer:
 
-- sehr geeignet
-- geeignet
-- mäßig geeignet
-- kaum geeignet
-- ungeeignet
+- very suitable
+- suitable
+- moderately suitable
+- hardly suitable
+- unsuitable
 
 The questionnaire's questions were answered by the customer and asked by a large language model. The customer should be evaluated based on the answers rather than on the questions.
 

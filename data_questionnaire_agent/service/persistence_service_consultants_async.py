@@ -1,6 +1,11 @@
 from consultant_info_generator.model import Company, Consultant, Experience, Skill
 from psycopg import AsyncCursor
 
+from data_questionnaire_agent.model.consultant_rating import (
+    ConsultantRating,
+    ConsultantRatings,
+    SCORES
+)
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
 
 
@@ -172,3 +177,64 @@ WHERE C.ID = %(consultant_id)s
             )
         )
     return consultants
+
+
+async def save_session_consultant_ratings(
+    session_id: str, consultant_ratings: ConsultantRatings
+) -> int:
+    async def process(cur: AsyncCursor):
+        sql = """
+INSERT INTO TB_SESSION_CONSULTANT_RATING(CONSULTANT_ID, SESSION_ID, REASONING, RATING, RATING_NUMBER, CREATED_AT)
+VALUES((SELECT ID FROM TB_CONSULTANT WHERE LINKEDIN_PROFILE_URL = %(linkedin_profile_url)s), %(session_id)s, %(reasoning)s, %(rating)s, %(rating_number)s, CURRENT_TIMESTAMP)
+"""
+        counter = 0
+        for cr in consultant_ratings.consultant_ratings:
+            await cur.execute(
+                sql,
+                {
+                    "linkedin_profile_url": cr.analyst_linkedin_url,
+                    "session_id": session_id,
+                    "rating": cr.rating,
+                    "reasoning": cr.reasoning,
+                    "rating_number": SCORES[cr.rating]
+                },
+            )
+            counter += cur.rowcount
+        return counter
+
+    return await create_cursor(process, True)
+
+
+async def delete_session_consultant_ratings(session_id: str) -> int:
+    async def process(cur: AsyncCursor):
+        sql = """
+DELETE FROM TB_SESSION_CONSULTANT_RATING
+WHERE SESSION_ID = %(session_id)s
+"""
+        await cur.execute(sql, {"session_id": session_id})
+        return cur.rowcount
+
+    return await create_cursor(process, True)
+
+
+async def read_session_consultant_ratings(session_id: str, limit: int = 5) -> ConsultantRatings:
+    sql = """
+SELECT C.GIVEN_NAME, C.SURNAME, C.LINKEDIN_PROFILE_URL, SC.REASONING, SC.RATING FROM TB_SESSION_CONSULTANT_RATING SC INNER JOIN TB_CONSULTANT C ON C.ID = SC.CONSULTANT_ID
+WHERE SC.SESSION_ID = %(session_id)s ORDER BY SC.RATING_NUMBER DESC LIMIT %(limit)s
+"""
+    rows = await select_from(sql, {"session_id": session_id, "limit": limit})
+    pos_given_name = 0
+    pos_surname = 1
+    pos_linkedin_profile_url = 2
+    pos_reasoning = 3
+    pos_rating = 4
+    consultant_ratings = [
+        ConsultantRating(
+            analyst_name=f"{row[pos_given_name]} {row[pos_surname]}",
+            analyst_linkedin_url=row[pos_linkedin_profile_url],
+            reasoning=row[pos_reasoning],
+            rating=row[pos_rating],
+        )
+        for row in rows
+    ]
+    return ConsultantRatings(consultant_ratings=consultant_ratings)

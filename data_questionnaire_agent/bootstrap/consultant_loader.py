@@ -17,6 +17,7 @@ def save_consultants(linkedin_id: list[str]):
     for id in linkedin_id:
         try:
             consultant = extract_consultant(id)
+            click.echo(f"Processed {id}")
             asyncio.run(save_consultant(consultant))
         except Exception as e:
             click.echo(f"Failed to retrieve {id}", err=True)
