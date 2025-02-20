@@ -10,7 +10,7 @@ from tenacity import stop_after_attempt
 from data_questionnaire_agent.config_support import create_db_conn_str
 from data_questionnaire_agent.log_init import logger
 
-load_dotenv()
+load_dotenv('.env', verbose=True)
 
 
 class GraphRagMode(StrEnum):
@@ -151,7 +151,8 @@ mail_config = MailConfig()
 class WebsocketConfig:
     websocket_server = os.getenv("WEBSOCKET_SERVER", "0.0.0.0")
     websocket_port = int(os.getenv("WEBSOCKET_PORT", 8080))
-    websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
+    websocket_cors_allowed_origins = os.getenv(
+        "WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
 
 
 websocket_cfg = WebsocketConfig()
@@ -162,7 +163,8 @@ class WebServerConfig:
     if not ui_folder.exists():
         ui_folder.mkdir(parents=True, exist_ok=True)
     images_folder = Path(os.getenv("IMAGES_FOLDER", "./public/images"))
-    assert images_folder.exists(), f"{images_folder} does not exist. Please create it."
+    assert images_folder.exists(
+    ), f"{images_folder} does not exist. Please create it."
 
 
 web_server_cfg = WebServerConfig()

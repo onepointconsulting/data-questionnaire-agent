@@ -77,30 +77,61 @@ async def update_question(id: int, question: str, suggestions: list[dict]) -> in
         updated_question_count = 0
         await cur.execute(
             """
-UPDATE TB_QUESTION
-SET QUESTION = %(question)s
-WHERE ID = %(id)s
-""",
+            UPDATE TB_QUESTION
+            SET QUESTION = %(question)s
+            WHERE ID = %(id)s
+            """,
             {"id": id, "question": question},
         )
+
         updated_question_count = cur.rowcount
+
         insert_suggestion_sql = """
-INSERT INTO PUBLIC.TB_QUESTION_SUGGESTIONS (ID, IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID, SVG_IMAGE)
-    SELECT (SELECT NEXTVAL('public.tb_question_suggestions_id_seq')), 
-            %(img_src)s, %(img_alt)s, %(title)s, %(main_text)s, %(question_id)s, %(svg_image)s
-            WHERE NOT EXISTS (SELECT ID FROM TB_QUESTION_SUGGESTIONS WHERE ID = %(id)s);
-"""
+        INSERT INTO PUBLIC.TB_QUESTION_SUGGESTIONS (ID, IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID, SVG_IMAGE)
+        SELECT (SELECT NEXTVAL('public.tb_question_suggestions_id_seq')), 
+        %(img_src)s, %(img_alt)s, %(title)s, %(main_text)s, %(question_id)s, %(svg_image)s
+        WHERE NOT EXISTS (SELECT ID FROM TB_QUESTION_SUGGESTIONS WHERE ID = %(id)s);
+        """
+
+     # First get al the question suggestion IDs.
+        get_existing_suggestion_ids_sql = """
+        SELECT S.id FROM public.tb_question_suggestions S
+        INNER JOIN public.tb_question Q ON Q.id = S.question_id
+        WHERE Q.id = %(id)s;
+        """
+
+        await cur.execute(get_existing_suggestion_ids_sql, {"id": id})
+        rows = await cur.fetchall()
+        print("rows: ", rows)
+
+        # And then we need to loop through the suggestions and extract the IDs
+        existing_suggestion_ids = {row[0] for row in rows}
+        print(f"Existing suggestion IDs: {existing_suggestion_ids}")
+
+        incoming_suggestion_ids = {suggestion["id"]
+                                   for suggestion in suggestions}
+        print("incoming_suggestion_ids: ", incoming_suggestion_ids)
+
+        ids_to_delete = existing_suggestion_ids - incoming_suggestion_ids
+        print(f"IDs to delete: {ids_to_delete}")
+
+        if ids_to_delete:
+            await cur.execute(
+                "DELETE FROM public.tb_question_suggestions WHERE id = ANY(%(ids)s)",
+                {"ids": list(ids_to_delete)}
+            )
+
         update_suggestion_sql = """
-UPDATE PUBLIC.TB_QUESTION_SUGGESTIONS
-SET 
-    IMG_SRC = %(img_src)s,
-    IMG_ALT = %(img_alt)s,
-    TITLE = %(title)s,
-    MAIN_TEXT = %(main_text)s,
-    QUESTION_ID = %(question_id)s,
-    SVG_IMAGE = %(svg_image)s
-WHERE ID = %(id)s;
-"""
+        UPDATE PUBLIC.TB_QUESTION_SUGGESTIONS
+        SET 
+        IMG_SRC = %(img_src)s,
+        IMG_ALT = %(img_alt)s,
+        TITLE = %(title)s,
+        MAIN_TEXT = %(main_text)s,
+        QUESTION_ID = %(question_id)s,
+        SVG_IMAGE = %(svg_image)s
+        WHERE ID = %(id)s;
+        """
         if len(suggestions) > 0:
             for suggestion in suggestions:
                 question_suggestion = QuestionSuggestion(**suggestion)
