@@ -93,7 +93,7 @@ async def update_question(id: int, question: str, suggestions: list[dict]) -> in
         WHERE NOT EXISTS (SELECT ID FROM TB_QUESTION_SUGGESTIONS WHERE ID = %(id)s);
         """
 
-     # First get al the question suggestion IDs.
+        # First get al the question suggestion IDs.
         get_existing_suggestion_ids_sql = """
         SELECT S.id FROM public.tb_question_suggestions S
         INNER JOIN public.tb_question Q ON Q.id = S.question_id

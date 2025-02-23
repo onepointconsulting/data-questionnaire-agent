@@ -89,13 +89,13 @@ The server fails if there are no documents in this folder.
 
 You will have to have a `.env` file. To get you started you can copy the `.env.local` to `.env` and then change the configuration parameters accordingly.
 
-You will need to have an OpenAI API key.
+You will need to have an OpenAI API key and a Gemini key.
 
 ### Running the main application
 
-Make the Postgres DB is available.
+Make sure the Postgres DB is available.
 
-```
+```bash
 python ./data_questionnaire_agent/server/questionnaire_server_main.py
 ```
 
