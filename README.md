@@ -19,7 +19,7 @@ We suggest to use [Conda](https://docs.conda.io/en/latest/) to manage the virtua
 ```
 conda activate base
 conda remove -n data_wellness_agent --all
-conda create -n data_wellness_agent python=3.13
+conda create -n data_wellness_agent python=3.13.1
 conda activate data_wellness_agent
 pip install poetry
 ```

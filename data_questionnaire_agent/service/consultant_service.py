@@ -1,4 +1,5 @@
 import json
+import asyncio
 from typing import TypedDict
 
 import jinja2
@@ -12,6 +13,7 @@ from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.consultant_rating import (
     SCORES,
+    ConsultantRating,
     ConsultantRatings,
     ScoredConsultantRating,
 )
@@ -30,6 +32,9 @@ from data_questionnaire_agent.service.prompt_support import (
 from data_questionnaire_agent.toml_support import get_prompts
 
 
+CONSULTANT_BATCH_SIZE = 10
+
+
 class ConsultantCallData(TypedDict):
     questions_answers: str
     conditional_advice: str
@@ -46,8 +51,10 @@ def convert_to_markdown(consultants: list[Consultant], language: str = "en") -> 
     return template.render(context)
 
 
-async def convert_all_consultants() -> str:
-    consultants = await read_consultants()
+async def convert_all_consultants(offset: int = None, limit: int = None) -> str:
+    consultants = await read_consultants(offset, limit)
+    if len(consultants) == 0:
+        return ""
     return convert_to_markdown(consultants)
 
 
@@ -71,11 +78,12 @@ def create_structured_consultant_call(language: str) -> RunnableSequence:
 async def prepare_consultant_call(
     questions_answers: Questionnaire,
     conditional_advice: ConditionalAdvice,
+    cvs: str
 ) -> ConsultantCallData:
     return {
         "questions_answers": str(questions_answers),
         "conditional_advice": str(conditional_advice),
-        "cvs": await convert_all_consultants(),
+        "cvs": cvs,
     }
 
 
@@ -94,25 +102,46 @@ async def calculate_consultant_ratings_for(
         return None
     advice_dict = json.loads(final_report_list[0].question)
     advice = ConditionalAdvice.parse_obj(advice_dict)
-    prompt_data = await prepare_consultant_call(
-        Questionnaire(questions=questionnaire_statuses), advice
-    )
-    runnable_sequence = create_structured_consultant_call(language)
-    consultant_ratings: ConsultantRatings = await runnable_sequence.ainvoke(prompt_data)
-    consultant_ratings = sorted(
-        [
-            ScoredConsultantRating(
-                analyst_name=cr.analyst_name,
-                analyst_linkedin_url=cr.analyst_linkedin_url,
-                reasoning=cr.reasoning,
-                rating=cr.rating,
-                score=SCORES[cr.rating],
-            )
-            for cr in consultant_ratings.consultant_ratings
-        ],
-        key=lambda cr: cr.score,
-        reverse=True,
-    )
+
+    consultant_cvs = []
+    start = 0
+    while True:
+        cvs = await convert_all_consultants(start, start + CONSULTANT_BATCH_SIZE)
+        if cvs == "":
+            break
+        consultant_cvs.append(cvs)
+        start += CONSULTANT_BATCH_SIZE
+
+    consultant_ratings: list[ConsultantRating] = []
+    invocations = []
+    for cvs in consultant_cvs:
+        prompt_data = await prepare_consultant_call(
+            Questionnaire(questions=questionnaire_statuses), advice, cvs
+        )
+        runnable_sequence = create_structured_consultant_call(language)
+        invocations.append(runnable_sequence.ainvoke(prompt_data))
+
+    try:
+        crs: list[ConsultantRatings] = await asyncio.gather(*invocations)
+        for cr in crs:
+            consultant_ratings.extend(cr.consultant_ratings)
+
+        consultant_ratings = sorted(
+            [
+                ScoredConsultantRating(
+                    analyst_name=cr.analyst_name,
+                    analyst_linkedin_url=cr.analyst_linkedin_url,
+                    reasoning=cr.reasoning,
+                    rating=cr.rating,
+                    score=SCORES[cr.rating],
+                )
+                for cr in consultant_ratings
+            ],
+            key=lambda cr: cr.score,
+            reverse=True,
+        )
+    except Exception as e:
+        logger.exception(e)
     try:
         # Try to cache results
         await save_session_consultant_ratings(session_id, ConsultantRatings(consultant_ratings=consultant_ratings))
