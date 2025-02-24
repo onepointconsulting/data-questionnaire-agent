@@ -32,7 +32,10 @@ class ConsultantRating(BaseModel):
 
     reasoning: str = Field(
         ...,
-        description="The models's reasoning behind the analyst rating. Why is this analyst suitable or not to support the client which answered the questionnnaire.",
+        description="""The models's reasoning behind the analyst rating. 
+        Why is this analyst suitable or not to support the client which answered the questionnnaire.
+        You can use markdown to highlight the main keywords in the reasoning.
+""",
     )
 
     rating: AnalystRating = Field(
