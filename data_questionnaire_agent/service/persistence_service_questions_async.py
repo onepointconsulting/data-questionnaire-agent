@@ -75,7 +75,7 @@ async def select_question_and_suggestions(
 
 async def update_question(id: int, question: str, suggestions: list[dict]) -> int:
     async def delete_suggestions_process(cur: AsyncCursor, id: int):
-        # First get al the question suggestion IDs.
+        # First get all the question suggestion IDs.
         get_existing_suggestion_ids_sql = """
         SELECT S.id FROM public.tb_question_suggestions S
         INNER JOIN public.tb_question Q ON Q.id = S.question_id
