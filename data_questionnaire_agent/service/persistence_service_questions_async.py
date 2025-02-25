@@ -88,18 +88,19 @@ async def update_question(id: int, question: str, suggestions: list[dict]) -> in
         # And then we need to loop through the suggestions and extract the IDs
         existing_suggestion_ids = {row[0] for row in rows}
 
-        incoming_suggestion_ids = {suggestion["id"]
-                                   for suggestion in suggestions}
+        incoming_suggestion_ids = {suggestion["id"] for suggestion in suggestions}
 
         ids_to_delete = existing_suggestion_ids - incoming_suggestion_ids
 
         if ids_to_delete:
             await cur.execute(
                 "DELETE FROM public.tb_question_suggestions WHERE id = ANY(%(ids)s)",
-                {"ids": list(ids_to_delete)}
+                {"ids": list(ids_to_delete)},
             )
 
-    async def insert_and_update_suggestions_process(cur: AsyncCursor, suggestions: list[dict], id: int):
+    async def insert_and_update_suggestions_process(
+        cur: AsyncCursor, suggestions: list[dict], id: int
+    ):
         insert_suggestion_sql = """
         INSERT INTO PUBLIC.TB_QUESTION_SUGGESTIONS (ID, IMG_SRC, IMG_ALT, TITLE, MAIN_TEXT, QUESTION_ID, SVG_IMAGE)
         SELECT (SELECT NEXTVAL('public.tb_question_suggestions_id_seq')), 
@@ -166,6 +167,65 @@ async def update_question(id: int, question: str, suggestions: list[dict]) -> in
         return updated_question_count
 
     return await create_cursor(process_update, True)
+
+
+async def insert_question(
+    question: str, language_code: str, suggestions: list[dict]
+) -> int | None:
+    async def process_create(cur: AsyncCursor):
+        await cur.execute(
+            """
+            INSERT INTO TB_QUESTION(QUESTION, LANGUAGE_ID)
+            VALUES(%(question)s, (SELECT ID FROM TB_LANGUAGE WHERE LANGUAGE_CODE = %(language_code)s))
+            RETURNING ID
+            """,
+            {"question": question, "language_code": language_code},
+        )
+        rows = await cur.fetchone()
+        if len(rows) == 0:
+            return None
+        new_id = rows[0]
+        for suggestion in suggestions:
+            await cur.execute(
+                """
+                INSERT INTO TB_QUESTION_SUGGESTIONS(img_src, img_alt, title, main_text, question_id, svg_image)
+                VALUES(%(img_src)s, %(img_alt)s, %(title)s, %(main_text)s, %(question_id)s, %(svg_image)s)
+                RETURNING ID
+                """,
+                {
+                    "img_src": suggestion["img_src"],
+                    "img_alt": suggestion["img_alt"],
+                    "title": suggestion["title"],
+                    "main_text": suggestion["main_text"],
+                    "question_id": new_id,
+                    "svg_image": suggestion["svg_image"],
+                },
+            )
+            assert cur.rowcount > 0, "Failed to insert suggestion"
+        return new_id
+
+    return await create_cursor(process_create, True)
+
+
+async def delete_question(id: int) -> int:
+    async def process_delete(cur: AsyncCursor):
+        await cur.execute(
+            """
+            DELETE FROM TB_QUESTION_SUGGESTIONS
+            WHERE QUESTION_ID = (%(id)s)
+            """,
+            {"id": id},
+        )
+        await cur.execute(
+            """
+            DELETE FROM TB_QUESTION
+            WHERE ID = (%(id)s)
+            """,
+            {"id": id},
+        )
+        return cur.rowcount
+
+    return await create_cursor(process_delete, True)
 
 
 async def select_suggestions(question: str) -> list[QuestionSuggestion]:

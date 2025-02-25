@@ -1,15 +1,14 @@
-import json
 import asyncio
+import json
 from typing import TypedDict
 
 import jinja2
 from consultant_info_generator.model import Consultant
-
-from data_questionnaire_agent.log_init import logger
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.consultant_rating import (
     SCORES,
@@ -23,14 +22,13 @@ from data_questionnaire_agent.service.persistence_service_async import (
 )
 from data_questionnaire_agent.service.persistence_service_consultants_async import (
     read_consultants,
+    read_session_consultant_ratings,
     save_session_consultant_ratings,
-    read_session_consultant_ratings
 )
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
-
 
 CONSULTANT_BATCH_SIZE = 10
 
@@ -76,9 +74,7 @@ def create_structured_consultant_call(language: str) -> RunnableSequence:
 
 
 async def prepare_consultant_call(
-    questions_answers: Questionnaire,
-    conditional_advice: ConditionalAdvice,
-    cvs: str
+    questions_answers: Questionnaire, conditional_advice: ConditionalAdvice, cvs: str
 ) -> ConsultantCallData:
     return {
         "questions_answers": str(questions_answers),
@@ -91,7 +87,10 @@ async def calculate_consultant_ratings_for(
     session_id, language: str = "en"
 ) -> ConsultantRatings | None:
     cached_consultant_ratings = await read_session_consultant_ratings(session_id)
-    if cached_consultant_ratings and len(cached_consultant_ratings.consultant_ratings) > 0:
+    if (
+        cached_consultant_ratings
+        and len(cached_consultant_ratings.consultant_ratings) > 0
+    ):
         # Return cached
         return cached_consultant_ratings
     questionnaire_statuses = await select_questionnaire_statuses(session_id)
@@ -144,7 +143,9 @@ async def calculate_consultant_ratings_for(
         logger.exception(e)
     try:
         # Try to cache results
-        await save_session_consultant_ratings(session_id, ConsultantRatings(consultant_ratings=consultant_ratings))
+        await save_session_consultant_ratings(
+            session_id, ConsultantRatings(consultant_ratings=consultant_ratings)
+        )
     except Exception as e:
         logger.error(f"Failed to save consultant ratings: {e}")
     return ConsultantRatings(consultant_ratings=consultant_ratings)

@@ -1,7 +1,12 @@
 import datetime
 
 from consultant_info_generator.model import Company, Consultant, Experience, Skill
-from data_questionnaire_agent.model.consultant_rating import ConsultantRatings, ConsultantRating, AnalystRating
+
+from data_questionnaire_agent.model.consultant_rating import (
+    AnalystRating,
+    ConsultantRating,
+    ConsultantRatings,
+)
 
 
 def create_simple_consultant() -> Consultant:
@@ -32,6 +37,6 @@ def create_consultant_rating() -> ConsultantRatings:
         analyst_name="Alexander Polev",
         analyst_linkedin_url="https://www.linkedin.com/in/alexander-polev-cto",
         reasoning="Alexander Polev is an excellent choice, because of this and that.",
-        rating=AnalystRating.suitable
+        rating=AnalystRating.suitable,
     )
     return ConsultantRatings(consultant_ratings=[consultant_rating])

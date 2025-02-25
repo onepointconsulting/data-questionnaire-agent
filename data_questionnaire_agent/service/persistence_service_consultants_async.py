@@ -2,9 +2,9 @@ from consultant_info_generator.model import Company, Consultant, Experience, Ski
 from psycopg import AsyncCursor
 
 from data_questionnaire_agent.model.consultant_rating import (
+    SCORES,
     ConsultantRating,
     ConsultantRatings,
-    SCORES
 )
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
 
@@ -196,7 +196,7 @@ VALUES((SELECT ID FROM TB_CONSULTANT WHERE LINKEDIN_PROFILE_URL = %(linkedin_pro
                     "session_id": session_id,
                     "rating": cr.rating,
                     "reasoning": cr.reasoning,
-                    "rating_number": SCORES[cr.rating]
+                    "rating_number": SCORES[cr.rating],
                 },
             )
             counter += cur.rowcount
@@ -217,7 +217,9 @@ WHERE SESSION_ID = %(session_id)s
     return await create_cursor(process, True)
 
 
-async def read_session_consultant_ratings(session_id: str, limit: int = 5) -> ConsultantRatings:
+async def read_session_consultant_ratings(
+    session_id: str, limit: int = 5
+) -> ConsultantRatings:
     sql = """
 SELECT C.GIVEN_NAME, C.SURNAME, C.LINKEDIN_PROFILE_URL, SC.REASONING, SC.RATING FROM TB_SESSION_CONSULTANT_RATING SC INNER JOIN TB_CONSULTANT C ON C.ID = SC.CONSULTANT_ID
 WHERE SC.SESSION_ID = %(session_id)s ORDER BY SC.RATING_NUMBER DESC LIMIT %(limit)s

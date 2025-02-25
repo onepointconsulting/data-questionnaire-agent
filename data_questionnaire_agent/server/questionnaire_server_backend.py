@@ -18,6 +18,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
 from data_questionnaire_agent.service.persistence_service_questions_async import (
     select_question_and_suggestions,
     update_question,
+    insert_question
 )
 
 SUPPORTED_LANGUAGES = ["en", "de"]
@@ -113,6 +114,37 @@ async def update_questions(request: web.Request) -> web.Response:
             case _:
                 return send_rest_error(
                     """Wrong JSON format: Expected list with objects with'id' and 'question' keys in JSON.""",
+                    400,
+                )
+
+    return await handle_error(process, request=request)
+
+
+@routes.options("/protected/questions/create")
+async def create_question_options(_: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+
+
+@routes.post("/protected/questions/create")
+async def create_question(request: web.Request) -> web.Response:
+    async def process(request: web.Request):
+        json_content = await request.json()
+        match json_content:
+            case {"question": str(question), "suggestions": list(suggestions), "language_code": str(language_code)}:
+                # save the suggestions and question to the database.
+                id = await insert_question(question, language_code, suggestions)
+                if id is None:
+                    return send_rest_error(
+                        """Failed to insert question in database.""",
+                        500,
+                    )
+                return web.json_response(
+                    {"id": id, "question": question, "suggestions": suggestions},
+                    headers=CORS_HEADERS,
+                )
+            case _:
+                return send_rest_error(
+                    """Wrong JSON format: expected list with objects and 'question' and 'suggestions' keys in JSON.""",
                     400,
                 )
 
