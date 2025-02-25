@@ -16,9 +16,9 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_global_configuration,
 )
 from data_questionnaire_agent.service.persistence_service_questions_async import (
+    insert_question,
     select_question_and_suggestions,
     update_question,
-    insert_question
 )
 
 SUPPORTED_LANGUAGES = ["en", "de"]
@@ -130,7 +130,11 @@ async def create_question(request: web.Request) -> web.Response:
     async def process(request: web.Request):
         json_content = await request.json()
         match json_content:
-            case {"question": str(question), "suggestions": list(suggestions), "language_code": str(language_code)}:
+            case {
+                "question": str(question),
+                "suggestions": list(suggestions),
+                "language_code": str(language_code),
+            }:
                 # save the suggestions and question to the database.
                 id = await insert_question(question, language_code, suggestions)
                 if id is None:
