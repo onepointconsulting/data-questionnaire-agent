@@ -19,6 +19,7 @@ from data_questionnaire_agent.service.persistence_service_questions_async import
     insert_question,
     select_question_and_suggestions,
     update_question,
+    delete_question
 )
 
 SUPPORTED_LANGUAGES = ["en", "de"]
@@ -32,10 +33,16 @@ async def global_configuration(request: web.Request) -> web.Response:
 
     return await handle_error(process, request=request)
 
+# Reuse the cors response.
+
+
+def generate_cors_response(message: str = "Accept all hosts") -> web.Response:
+    return web.json_response({"message": message}, headers=CORS_HEADERS)
+
 
 @routes.options("/protected/update_global_configuration")
 async def update_global_configuration_options(_: web.Request) -> web.Response:
-    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+    return generate_cors_response()
 
 
 @routes.post("/protected/update_global_configuration")
@@ -83,7 +90,7 @@ async def read_questions(request: web.Request) -> web.Response:
 
 @routes.options("/protected/questions/update")
 async def update_questions_options(_: web.Request) -> web.Response:
-    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+    return generate_cors_response()
 
 
 @routes.post("/protected/questions/update")
@@ -122,7 +129,7 @@ async def update_questions(request: web.Request) -> web.Response:
 
 @routes.options("/protected/questions/create")
 async def create_question_options(_: web.Request) -> web.Response:
-    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+    return generate_cors_response()
 
 
 @routes.post("/protected/questions/create")
@@ -149,6 +156,30 @@ async def create_question(request: web.Request) -> web.Response:
             case _:
                 return send_rest_error(
                     """Wrong JSON format: expected list with objects and 'question' and 'suggestions' keys in JSON.""",
+                    400,
+                )
+
+    return await handle_error(process, request=request)
+
+# Delete question endpoint delete_question
+
+
+@routes.options("/protected/questions/delete")
+async def delete_question_options(_: web.Request) -> web.Response:
+    return generate_cors_response()
+
+
+@routes.delete("/protected/questions/delete")
+async def delete_question_process(request: web.Request) -> web.Response:
+    async def process(request: web.Request):
+        json_content = await request.json()
+        match json_content:
+            case {"id": int(id)}:
+                count = await delete_question(id)
+                return web.json_response({"deleted": count}, headers=CORS_HEADERS)
+            case _:
+                return send_rest_error(
+                    """Wrong JSON format: Expected 'id' key in JSON.""",
                     400,
                 )
 
