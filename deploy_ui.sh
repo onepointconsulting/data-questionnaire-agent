@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Change the root folder as needed.
 # The purpose of this script is to deploy the ui and configure it automatically.

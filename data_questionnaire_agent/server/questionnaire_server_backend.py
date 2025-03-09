@@ -16,10 +16,10 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_global_configuration,
 )
 from data_questionnaire_agent.service.persistence_service_questions_async import (
+    delete_question,
     insert_question,
     select_question_and_suggestions,
     update_question,
-    delete_question
 )
 
 SUPPORTED_LANGUAGES = ["en", "de"]
@@ -32,6 +32,7 @@ async def global_configuration(request: web.Request) -> web.Response:
         return web.json_response(global_configuration.dict(), headers=CORS_HEADERS)
 
     return await handle_error(process, request=request)
+
 
 # Reuse the cors response.
 
@@ -102,16 +103,28 @@ async def update_questions(request: web.Request) -> web.Response:
                 {
                     "id": int(id),
                     "question": str(question),
+                    "language": str(language_code),
                 },
                 *_,
             ]:
                 rowcount = 0
                 for entry in json_content:
                     match entry:
-                        case {"id": id, "question": question}:
-                            rowcount += await update_question(
-                                id, question, entry["suggestions"]
-                            )
+                        case {
+                            "id": id,
+                            "question": question,
+                            "suggestions": list(suggestions),
+                        }:
+                            if id > 0:
+                                rowcount += await update_question(
+                                    id, question, suggestions
+                                )
+                            else:
+                                id = await insert_question(
+                                    question, language_code, suggestions
+                                )
+                                if id > rowcount:
+                                    rowcount += 1
                         case _:
                             return send_rest_error(
                                 """Wrong JSON format: Expected 'id' and 'question' keys in JSON.""",
@@ -160,6 +173,7 @@ async def create_question(request: web.Request) -> web.Response:
                 )
 
     return await handle_error(process, request=request)
+
 
 # Delete question endpoint delete_question
 

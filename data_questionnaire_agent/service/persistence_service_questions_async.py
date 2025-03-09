@@ -50,12 +50,21 @@ async def select_outstanding_questions(
     res = await select_from(sql, {"language": language, "session_id": session_id})
     if res is None:
         return []
-    return [
-        QuestionAnswer(
-            id=r[0], question=r[1], answer="", possible_answers=[], clarification=[]
+    question_answers = []
+    for r in res:
+        id = r[0]
+        question = r[1]
+        possible_answers = await select_suggestions_string(id)
+        questionanswer = QuestionAnswer(
+            id=id,
+            question=question,
+            answer="",
+            possible_answers=[],
+            clarification=[],
         )
-        for r in res
-    ]
+        questionanswer.possible_answers.extend(possible_answers)
+        question_answers.append(questionanswer)
+    return question_answers
 
 
 async def select_question_and_suggestions(
@@ -255,3 +264,15 @@ ORDER BY S.ID""",
         )
         for r in res
     ]
+
+
+async def select_suggestions_string(id: int) -> list[QuestionSuggestion]:
+    res = await select_from(
+        """SELECT main_text FROM TB_QUESTION_SUGGESTIONS S 
+wHERE S.question_id = %(id)s
+ORDER BY S.ID""",
+        {
+            "id": id,
+        },
+    )
+    return [r[0] for r in res]
