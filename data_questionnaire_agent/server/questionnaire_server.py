@@ -412,10 +412,19 @@ async def save_confidence_rating(
     questionnaire: Questionnaire,
 ):
     if confidence_rating is not None:
+        step = len(questionnaire.questions)
+
+        # Prevent the confidence rating from decreasing
+        previous_confidence_rating = None
+        if step is not None and step > 2:
+            previous_confidence_rating = await select_confidence(session_id, step - 1)
+            if previous_confidence_rating is not None and previous_confidence_rating is not None:
+                if previous_confidence_rating > confidence_rating:
+                    confidence_rating = previous_confidence_rating
+        
         # Save the confidence
         if conditional_advice:
             conditional_advice.confidence = confidence_rating
-        step = len(questionnaire.questions)
         await save_confidence(session_id, step, confidence_rating)
 
 
