@@ -34,6 +34,7 @@ pandas = "^2.2.3"
 xlsxwriter = "^3.2.0"
 openpyxl = "^3.1.5"
 consultant-info-generator = {git = "https://github.com/OnepointConsultingLtd/consultant_info_generator.git"}
+langchain-google-genai = "^2.1.1"
 
 [tool.poetry.scripts]
 build-ui = "data_questionnaire_agent.build:ui"

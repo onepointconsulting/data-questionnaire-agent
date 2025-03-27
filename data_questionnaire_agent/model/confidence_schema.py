@@ -1,12 +1,12 @@
-from enum import StrEnum
+from enum import Enum
 from typing import Union
 
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from data_questionnaire_agent.translation import t
 
 
-class ConfidenceDegree(StrEnum):
+class ConfidenceDegree(str, Enum):
     outstanding = "outstanding"
     high = "high"
     medium = "medium"
@@ -25,6 +25,9 @@ CONFIDENCE_DEGREE_DICT = {
 
 class ConfidenceRating(BaseModel):
     """Represents a rating of how confident the model is to give advice to a customer based on a questionnaire"""
+
+    class Config:
+        use_enum_values = True
 
     id: Union[int, None] = Field(
         default=None, description="The identifier of this session configuration"
@@ -83,3 +86,10 @@ class ConfidenceRating(BaseModel):
 """
 
     
+if __name__ == "__main__":
+    import asyncio
+
+    rating = ConfidenceRating(
+        id=1, reasoning="The model is very confident", rating=ConfidenceDegree.outstanding
+    )
+    print(rating.schema_json(indent=2))

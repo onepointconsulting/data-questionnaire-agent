@@ -34,7 +34,9 @@ The user answer provided by the customer starts with ==== ANSWER ==== and ends w
 please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, governance and quality issues. Make sure that you ask the user about his painpoints or questions which help to understand the user's problems better and to gather more information - and not how to solve his own problems. Your purpose is to gather information to help a customer solve data integration, gouvernance and quality issues.
 
 Also provide some possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
-Make sure that the possible answers are explicit and are able to be understood on their own. Please do not use possible answers like 'Both', 'Like the previous possible answer'.
+Make sure that the possible answers are explicit and are able to be understood on their own. Please do not use possible answers like 'Both', 'Like the previous possible answer'. Also do not use possible answers that are too vague like 'Other, please specify:'
+
+Please do not generate more than 10 possible answers for each question.
 
 Main questionnaire topic: {questionnaire_topic}
 The questions should explore topics related to the main topic "{questionnaire_topic}".

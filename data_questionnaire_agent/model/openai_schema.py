@@ -2,8 +2,7 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field
-from pydantic.v1 import BaseModel as PydanticV1BaseModel
-from pydantic.v1 import Field as FieldV1
+from pydantic import BaseModel as PydanticV1BaseModel
 
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.translation import t
@@ -62,23 +61,23 @@ class ResponseTags(BaseModel):
 class ConditionalAdvice(PydanticV1BaseModel):
     """If there is enough information to give advice then advice will be available here."""
 
-    has_advice: bool = FieldV1(
+    has_advice: bool = Field(
         ...,
         description="Whether there is advice here or not",
     )
-    advices: Optional[List[str]] = FieldV1(
+    advices: Optional[List[str]] = Field(
         ...,
         description="In case there is enough information to give advice, this list will contain advice to give to the user",
     )
-    what_you_should_avoid: Optional[List[str]] = FieldV1(
+    what_you_should_avoid: Optional[List[str]] = Field(
         default=[],
         description="A list of advice about what you should not do and avoid.",
     )
-    positive_outcomes: Optional[List[str]] = FieldV1(
+    positive_outcomes: Optional[List[str]] = Field(
         default=[],
         description="A list of potential positive outcomes in case the user follows the advice.",
     )
-    confidence: Optional[ConfidenceRating] = FieldV1(
+    confidence: Optional[ConfidenceRating] = Field(
         default=None, description="The confidence rating at the time of the report."
     )
 

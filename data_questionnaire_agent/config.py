@@ -5,6 +5,7 @@ from pathlib import Path
 import tenacity
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI, OpenAI, OpenAIEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
 from tenacity import stop_after_attempt
 
 from data_questionnaire_agent.config_support import create_db_conn_str
@@ -19,6 +20,11 @@ class GraphRagMode(StrEnum):
     ALL = "all"
 
 
+class ModelType(StrEnum):
+    OPENAI = "openai"
+    GEMINI = "gemini"
+
+
 def create_if_not_exists(folder):
     if not folder.exists():
         folder.mkdir(parents=True, exist_ok=True)
@@ -26,27 +32,44 @@ def create_if_not_exists(folder):
 
 
 class Config:
-    model = os.getenv("OPENAI_MODEL")
     request_timeout = int(os.getenv("REQUEST_TIMEOUT"))
     has_langchain_cache = os.getenv("LANGCHAIN_CACHE") == "true"
     streaming = os.getenv("CHATGPT_STREAMING") == "true"
-    temperature = float(os.getenv("OPENAI_API_TEMPERATURE", 0.0))
-    llm = ChatOpenAI(
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
-        model=model,
-        temperature=temperature,
-        request_timeout=request_timeout,
-        cache=has_langchain_cache,
-        streaming=streaming,
-    )
+    temperature = float(os.getenv("TEMPERATURE", 0.0))
+
+    model_type = ModelType(os.getenv("MODEL_TYPE"))
+    match model_type:
+        case ModelType.OPENAI:
+            model = os.getenv("OPENAI_MODEL")
+            llm = ChatOpenAI(
+                openai_api_key=os.getenv("OPENAI_API_KEY"),
+                model=model,
+                temperature=temperature,
+                request_timeout=request_timeout,
+                cache=has_langchain_cache,
+                streaming=streaming,
+            )
+        case ModelType.GEMINI:
+            model = os.getenv("GEMINI_MODEL")
+            llm = ChatGoogleGenerativeAI(
+                google_api_key=os.getenv("GEMINI_API_KEY"),
+                model=model,
+                temperature=temperature,
+                max_tokens=None,
+                timeout=None,
+                max_retries=2,
+                # other params...
+            )
+
     llm_stream = ChatOpenAI(
         openai_api_key=os.getenv("OPENAI_API_KEY"),
-        model=model,
+        model=os.getenv("OPENAI_MODEL"),
         temperature=temperature,
         request_timeout=request_timeout,
         cache=has_langchain_cache,
         streaming=True,
     )
+
     logger.info(f"Using model {model}")
 
     image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))
