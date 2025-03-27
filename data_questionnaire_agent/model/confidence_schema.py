@@ -14,6 +14,15 @@ class ConfidenceDegree(StrEnum):
     low = "low"
 
 
+CONFIDENCE_DEGREE_DICT = {
+    ConfidenceDegree.outstanding: 5,
+    ConfidenceDegree.high: 4,
+    ConfidenceDegree.medium: 3,
+    ConfidenceDegree.mediocre: 2,
+    ConfidenceDegree.low: 1,
+}
+
+
 class ConfidenceRating(BaseModel):
     """Represents a rating of how confident the model is to give advice to a customer based on a questionnaire"""
 
@@ -29,6 +38,29 @@ class ConfidenceRating(BaseModel):
         ...,
         description="The confidence rating of the model to give advice to a customer based on a questionnaire",
     )
+
+    def _value(self) -> int:
+        return CONFIDENCE_DEGREE_DICT[self.rating]
+
+    def __lt__(self, other):
+        if isinstance(other, ConfidenceRating):
+            return self._value() < other._value()
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, ConfidenceRating):
+            return self._value() <= other._value()
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, ConfidenceRating):
+            return self._value() > other._value()
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, ConfidenceRating):
+            return self._value() >= other._value()
+        return NotImplemented
 
     def to_markdown(self, locale: str = "en") -> str:
         return f"""
@@ -49,3 +81,5 @@ class ConfidenceRating(BaseModel):
 
 <p>{self.reasoning}</p>
 """
+
+    
