@@ -130,6 +130,9 @@ class Config:
     assert graphrag_project is not None, "GraphRAG project is required."
     graphrag_read_timeout = float(os.getenv("GRAPHRAG_READ_TIMEOUT", "20"))
 
+    prompts_prefix = os.getenv("PROMPTS_PREFIX", "prompts")
+    assert prompts_prefix is not None, "Prompts prefix is not set."
+
 
 cfg = Config()
 

@@ -21,6 +21,7 @@ from data_questionnaire_agent.service.question_generation_service import (
     create_structured_question_call,
     prepare_secondary_question,
 )
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 
 
 async def process_secondary_questions(
@@ -28,10 +29,11 @@ async def process_secondary_questions(
     question_per_batch: int,
     session_properties: SessionProperties,
     session_id: str,
+    confidence_rating: ConfidenceRating | None
 ) -> List[QuestionAnswer]:
     knowledge_base = await fetch_context(questionnaire)
     secondary_question_input = prepare_secondary_question(
-        questionnaire, knowledge_base, question_per_batch
+        questionnaire, knowledge_base, question_per_batch, confidence_rating=confidence_rating
     )
     retries = 3
     while retries > 0:

@@ -25,11 +25,9 @@ class ConsultantRating(BaseModel):
     """Represents the degree to which a consultant with a specific profile can help a customer that answered a questionnaire."""
 
     analyst_name: str = Field(..., description="The analyst's name.")
-
     analyst_linkedin_url: Optional[str] = Field(
         ..., description="The optional analyst LinkedIN URL"
     )
-
     reasoning: str = Field(
         ...,
         description="""The models's reasoning behind the analyst rating. 
@@ -37,10 +35,17 @@ class ConsultantRating(BaseModel):
         You can use markdown to highlight the main keywords in the reasoning.
 """,
     )
-
     rating: AnalystRating = Field(
         ...,
         description="The rating of the consulting capabilities of the consultant to help the customer",
+    )
+    linkedin_photo_200: str | None = Field(
+        default=None,
+        description="The URL of the LinkedIn photo of the consultant with 200px width.",
+    )
+    linkedin_photo_400: str | None = Field(
+        default=None,
+        description="The URL of the LinkedIn photo of the consultant with 400px width.",
     )
 
 

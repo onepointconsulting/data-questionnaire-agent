@@ -27,7 +27,7 @@ def read_prompts_toml(language: str = DEFAULT_LANGUAGE) -> dict:
         language = DEFAULT_LANGUAGE
 
     logger.warn(f"Reading prompts from prompts_{language}.toml")
-    return read_toml(cfg.project_root / f"prompts_{language}.toml")
+    return read_toml(cfg.project_root / f"{cfg.prompts_prefix}_{language}.toml")
 
 
 prompts_language = {}

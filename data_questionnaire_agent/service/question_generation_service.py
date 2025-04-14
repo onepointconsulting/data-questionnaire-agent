@@ -18,6 +18,7 @@ from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 
 
 def divergent_prompt_transformer(prompt: str, language: str = "en") -> str:
@@ -63,6 +64,7 @@ def prompt_factory_secondary_questions(
             "questions_answers",
             "answers",
             "questions_per_batch",
+            "confidence_report"
         ],
         prompts,
         prompt_transformer,
@@ -128,7 +130,11 @@ def prepare_secondary_question(
     knowledge_base: str,
     questions_per_batch: int = cfg.questions_per_batch,
     is_recreate: bool = False,
+    confidence_rating: ConfidenceRating | None = None
 ) -> dict:
+    confidence_report = "No confidence report available."
+    if confidence_rating is not None:
+        confidence_report = confidence_rating.reasoning
     params = {
         "knowledge_base": knowledge_base,
         "questions_answers": str(questionnaire),
@@ -139,6 +145,7 @@ def prepare_secondary_question(
             if len(questionnaire.questions) > 0
             else ""
         ),
+        "confidence_report": confidence_report,
     }
     if is_recreate:
         params["previous_question"] = questionnaire.questions[-1].question

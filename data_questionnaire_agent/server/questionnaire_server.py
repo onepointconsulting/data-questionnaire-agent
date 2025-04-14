@@ -234,8 +234,9 @@ async def regenerate_question(sid: str, session_id: str):
             )
             questionnaire = await select_questionnaire(session_id)
             knowledge_base = await fetch_context(questionnaire)
+            confidence_rating = await calculate_confidence_rating(questionnaire, session_properties.session_language)
             input = prepare_secondary_question(
-                questionnaire, knowledge_base, questions_per_batch=1, is_recreate=True
+                questionnaire, knowledge_base, questions_per_batch=1, is_recreate=True, confidence_rating=confidence_rating
             )
             res: ResponseQuestions = await runnable.ainvoke(input)
             # replace latest question in the database.
@@ -365,22 +366,21 @@ async def handle_secondary_question(
     if len(question_answers) == 0:
         # Generate questions using AI
         with get_openai_callback() as cb:
-            confidence_rating, question_answers = await asyncio.gather(
-                calculate_confidence_rating(questionnaire, language),
-                process_secondary_questions(
-                    questionnaire,
-                    cfg.questions_per_batch,
-                    session_properties,
-                    session_id,
-                ),
-            )
+            confidence_rating = await calculate_confidence_rating(questionnaire, language)
+            question_answers = await process_secondary_questions(
+                questionnaire,
+                cfg.questions_per_batch,
+                session_properties,
+                session_id,
+                confidence_rating
+            ),
             total_cost = cb.total_cost
     else:
         confidence_rating = await calculate_confidence_rating(questionnaire, language)
     if len(question_answers) == 0:
         await send_error(sid, session_id, t("no_answer_from_chatgpt", locale=language))
         return
-    last_question_answer = question_answers[0]
+    last_question_answer = question_answers[0][0]
     # Save the generated question
     _, qs_res = await persist_question(
         session_id, last_question_answer.question, last_question_answer.id, total_cost
