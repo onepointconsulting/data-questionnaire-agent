@@ -4,8 +4,8 @@ en:
   "Advice": "Advice"
   "banner_link": /development/playground/langchain/data_questionnaire_agent/public/images/D-Well_Report_Banner.png
   "banner_link_email": https://d-well.onepointltd.ai/images/D-Well_Report_Banner.png
-  "Confidence Degree": "D-Well confidence degree"
-  "Data Wellness Aggregation Report": "Data Wellness Aggregation Report"
+  "Confidence Degree": "Res-AI confidence degree"
+  "Data Wellness Aggregation Report": "Res-AI Aggregation Report"
   "for_more_info": "For more information, please visit us at <a href=\"https://www.onepointltd.com/data-wellness/\">Onepoint Data Wellness</a>."
   "intro_advice": "Here you have the questions we asked and the answers you gave, followed by the recommendations and suggested courses of action."
   "offering_long": "We are offering a free results interpretation call to talk through the Companion's recommendations and suggested courses of action with a real human expert. <br /><br />If you are open to that, please email us at <a href=\"mailto:datawellness@onepointltd.com\">datawellness@onepointltd.com</a> from your business email address with your request to schedule a call. <br /><br /> You can also try out Onepoint's free <a href='https://d-wise.onepointltd.ai/index.html'>AI-powered Self-Diagnostic Report tool</a> to get a free self-diagnostic."
@@ -13,7 +13,7 @@ en:
   "Potential positive outcomes": "Benefits (in case you follow the advice)"
   "Positive outcomes (if you follow the advices)": "Benefits (if you follow the advices)"
   "Produced on": "Produced on"
-  "Reasoning": "D-Well reasoning behind confidence degree"
+  "Reasoning": "Res-AI reasoning behind confidence degree"
   "Transcript": "Transcript"
   "We would love your feedback": "We would love your feedback"
   "What to avoid": "What to avoid"
