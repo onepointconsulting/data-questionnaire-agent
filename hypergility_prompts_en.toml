@@ -93,6 +93,31 @@ Make sure you generate a different question.
 
 {question}
 """
+    [questionnaire.add_more_suggestions]
+    system_message = "You are a Responsible AI expert that is great at finding potential answers for Responsible AI related questions. You use British English."
+    human_message = """Given a knowledge base (found between ==== KNOWLEDGE BASE START ==== and ==== KNOWLEDGE BASE END ====) and a set of questions and answers (found between ==== QUESTIONNAIRE START ==== and ==== QUESTIONNAIRE END ====), please generate at most 4 more potential answers to the question below which you can find between ==== QUESTION ==== and ==== QUESTION END ====.
+    Please note that some potential answers have previously been generated and you should not repeat them. The previously generated potential answers are found between ==== EXISTING POTENTIAL ANSWERS START ==== and ==== EXISTING POTENTIAL ANSWERS END ====.
+    
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+==== QUESTION ====
+{question}
+==== QUESTION END ====
+==== EXISTING POTENTIAL ANSWERS START ====
+{suggestions}
+==== EXISTING POTENTIAL ANSWERS END ====
+
+When generating the potential answers, please also take the confidence report between ==== CONFIDENCE REPORT ==== and ==== CONFIDENCE REPORT END ==== into account so that they can improve the overall confidence level:
+
+==== CONFIDENCE REPORT ====
+{confidence_report}
+==== CONFIDENCE REPORT END ====
+
+"""
 
 [tagging]
 system_message = "You are an expert in terms of getting different types of sentiments from sentences."

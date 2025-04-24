@@ -335,15 +335,13 @@ async def add_more_suggestions(
             room=sid,
         )
     except Exception as e:
-        logger.error(str(e))
+        error_message = str(e)
+        logger.error(error_message)
         await sio.emit(
             Commands.ADD_MORE_SUGGESTIONS,
             ErrorMessage(
                 session_id=session_id,
-                error=t(
-                    "add_more_suggestions_failed",
-                    locale=language,
-                ),
+                error=t("add_more_suggestions_failed", locale=language) + f" {error_message}",
             ).json(),
             room=sid,
         )
