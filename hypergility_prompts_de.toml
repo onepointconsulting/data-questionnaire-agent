@@ -96,6 +96,31 @@ Stellen Sie sicher, dass Sie eine andere, neue Frage generieren.
 
 {question}
 """
+    [questionnaire.add_more_suggestions]
+    system_message = "Du bist eine Expertin für verantwortungsvolle KI und ausgezeichnet darin, mögliche Antworten auf Fragen rund um verantwortungsvolle KI zu finden. Du sprichst Hochdeutsch."
+    human_message = """Gegeben ist eine Wissensdatenbank (zu finden zwischen ==== KNOWLEDGE BASE START ==== und ==== KNOWLEDGE BASE END ====), sowie eine Reihe von Fragen und Antworten (zu finden zwischen ==== QUESTIONNAIRE START ==== und ==== QUESTIONNAIRE END ====). Bitte generiere bis zu 4 weitere mögliche Antworten auf die untenstehende Frage, die du zwischen ==== QUESTION ==== und ==== QUESTION END ==== findest.
+Bitte beachte, dass bereits einige mögliche Antworten generiert wurden, und du diese nicht wiederholen sollst. Die bereits generierten möglichen Antworten findest du zwischen ==== EXISTING POTENTIAL ANSWERS START ==== und ==== EXISTING POTENTIAL ANSWERS END ====.
+
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+==== QUESTION ====
+{question}
+==== QUESTION END ====
+==== EXISTING POTENTIAL ANSWERS START ====
+{suggestions}
+==== EXISTING POTENTIAL ANSWERS END ====
+
+Beim Generieren der möglichen Antworten beachte bitte auch den Vertrauensbericht zwischen ==== CONFIDENCE REPORT ==== und ==== CONFIDENCE REPORT END ====, damit die neuen Antworten das allgemeine Vertrauensniveau verbessern können:
+
+==== CONFIDENCE REPORT ====
+{confidence_report}
+==== CONFIDENCE REPORT END ====
+
+"""
 
 
 [tagging]

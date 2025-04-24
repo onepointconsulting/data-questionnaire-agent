@@ -10,7 +10,9 @@ from tenacity import stop_after_attempt
 from data_questionnaire_agent.config_support import create_db_conn_str
 from data_questionnaire_agent.log_init import logger
 
-load_dotenv(".env", verbose=True)
+root_project = Path(__file__).resolve().parent.parent
+
+load_dotenv((root_project / ".env").resolve().as_posix(), verbose=True)
 
 
 class GraphRagMode(StrEnum):
@@ -49,14 +51,18 @@ class Config:
     )
     logger.info(f"Using model {model}")
 
-    image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))
+    image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE", "0.0"))
     image_llm = OpenAI(temperature=image_llm_temperature)
 
     verbose_llm = os.getenv("VERBOSE_LLM") == "true"
-    ui_timeout = int(os.getenv("UI_TIMEOUT"))
-    project_root = Path(os.getenv("PROJECT_ROOT"))
+    ui_timeout = int(os.getenv("UI_TIMEOUT", "60"))
+    project_root = Path(
+        os.getenv("PROJECT_ROOT", Path(__file__).resolve().parent.parent)
+    )
     assert project_root.exists()
-    question_cache_folder = os.getenv("QUESTION_CACHE_FOLDER")
+    question_cache_folder = os.getenv(
+        "QUESTION_CACHE_FOLDER", Path(__file__).resolve().parent.parent
+    )
     question_cache_folder_path = Path(question_cache_folder)
 
     create_if_not_exists(question_cache_folder_path)

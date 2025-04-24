@@ -103,6 +103,9 @@ from data_questionnaire_agent.service.report_aggregation_main_service import (
 from data_questionnaire_agent.service.secondary_question_processor import (
     process_secondary_questions,
 )
+from data_questionnaire_agent.service.add_more_suggestions_service import (
+    process_add_more_suggestions,
+)
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
 
@@ -124,6 +127,7 @@ class Commands(StrEnum):
     EXTEND_SESSION = "extend_session"
     ERROR = "error"
     REGENERATE_QUESTION = "regenerate_question"
+    ADD_MORE_SUGGESTIONS = "add_more_suggestions"
 
 
 @sio.event
@@ -234,9 +238,15 @@ async def regenerate_question(sid: str, session_id: str):
             )
             questionnaire = await select_questionnaire(session_id)
             knowledge_base = await fetch_context(questionnaire)
-            confidence_rating = await calculate_confidence_rating(questionnaire, session_properties.session_language)
+            confidence_rating = await calculate_confidence_rating(
+                questionnaire, session_properties.session_language
+            )
             input = prepare_secondary_question(
-                questionnaire, knowledge_base, questions_per_batch=1, is_recreate=True, confidence_rating=confidence_rating
+                questionnaire,
+                knowledge_base,
+                questions_per_batch=1,
+                is_recreate=True,
+                confidence_rating=confidence_rating,
             )
             res: ResponseQuestions = await runnable.ainvoke(input)
             # replace latest question in the database.
@@ -311,6 +321,35 @@ async def clarify_question(
 
 
 @sio.event
+async def add_more_suggestions(
+    sid: str, session_id: str, question: str, language: str = "en"
+):
+    language = adapt_language(language)
+    try:
+        possible_answers = await process_add_more_suggestions(
+            session_id, question, language
+        )
+        await sio.emit(
+            Commands.ADD_MORE_SUGGESTIONS,
+            possible_answers,
+            room=sid,
+        )
+    except Exception as e:
+        logger.error(str(e))
+        await sio.emit(
+            Commands.ADD_MORE_SUGGESTIONS,
+            ErrorMessage(
+                session_id=session_id,
+                error=t(
+                    "add_more_suggestions_failed",
+                    locale=language,
+                ),
+            ).json(),
+            room=sid,
+        )
+
+
+@sio.event
 async def extend_session(sid: str, session_id: str, session_steps: int):
     final_report = await has_final_report(session_id)
     if final_report:
@@ -366,14 +405,18 @@ async def handle_secondary_question(
     if len(question_answers) == 0:
         # Generate questions using AI
         with get_openai_callback() as cb:
-            confidence_rating = await calculate_confidence_rating(questionnaire, language)
-            question_answers = await process_secondary_questions(
-                questionnaire,
-                cfg.questions_per_batch,
-                session_properties,
-                session_id,
-                confidence_rating
-            ),
+            confidence_rating = await calculate_confidence_rating(
+                questionnaire, language
+            )
+            question_answers = (
+                await process_secondary_questions(
+                    questionnaire,
+                    cfg.questions_per_batch,
+                    session_properties,
+                    session_id,
+                    confidence_rating,
+                ),
+            )
             total_cost = cb.total_cost
     else:
         confidence_rating = await calculate_confidence_rating(questionnaire, language)
@@ -418,10 +461,13 @@ async def save_confidence_rating(
         previous_confidence_rating = None
         if step is not None and step > 2:
             previous_confidence_rating = await select_confidence(session_id, step - 1)
-            if previous_confidence_rating is not None and previous_confidence_rating is not None:
+            if (
+                previous_confidence_rating is not None
+                and previous_confidence_rating is not None
+            ):
                 if previous_confidence_rating > confidence_rating:
                     confidence_rating = previous_confidence_rating
-        
+
         # Save the confidence
         if conditional_advice:
             conditional_advice.confidence = confidence_rating

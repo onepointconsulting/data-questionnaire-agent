@@ -64,7 +64,7 @@ def prompt_factory_secondary_questions(
             "questions_answers",
             "answers",
             "questions_per_batch",
-            "confidence_report"
+            "confidence_report",
         ],
         prompts,
         prompt_transformer,
@@ -130,7 +130,7 @@ def prepare_secondary_question(
     knowledge_base: str,
     questions_per_batch: int = cfg.questions_per_batch,
     is_recreate: bool = False,
-    confidence_rating: ConfidenceRating | None = None
+    confidence_rating: ConfidenceRating | None = None,
 ) -> dict:
     confidence_report = "No confidence report available."
     if confidence_rating is not None:

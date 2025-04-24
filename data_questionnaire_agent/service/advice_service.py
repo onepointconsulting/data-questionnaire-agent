@@ -21,9 +21,7 @@ def prompt_factory_conditional_advice(language: str) -> ChatPromptTemplate:
 
 
 def chain_factory_advice(language: str) -> RunnableSequence:
-    model = cfg.llm.with_structured_output(ConditionalAdvice)
-    prompt = prompt_factory_conditional_advice(language)
-    return prompt | model
+    return create_structured_question_call(language)
 
 
 def create_structured_question_call(language: str) -> RunnableSequence:

@@ -24,3 +24,14 @@ class QuestionInfo(BaseModel):
     question_and_suggestions: list[QuestionAndSuggestions] = Field(
         ..., description="Theh list of question and suggestions"
     )
+
+
+class PossibleAnswer(BaseModel):
+    title: str = Field(..., description="The title of the possible answer")
+    main_text: str = Field(..., description="The text of the possible answer")
+
+
+class PossibleAnswers(BaseModel):
+    possible_answers: list[PossibleAnswer] = Field(
+        ..., description="The list of possible answers to the generated questions"
+    )

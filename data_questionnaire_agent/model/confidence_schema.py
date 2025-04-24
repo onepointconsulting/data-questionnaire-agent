@@ -81,5 +81,3 @@ class ConfidenceRating(BaseModel):
 
 <p>{self.reasoning}</p>
 """
-
-    

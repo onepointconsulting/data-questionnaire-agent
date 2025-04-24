@@ -19,6 +19,7 @@ de:
   "What to avoid": "Was man vermeiden sollte"
   "What you should avoid": "Was Sie vermeiden sollten"
   "What you should do": "Empfehlungen"
+  add_more_suggestions_failed: "Fehler beim Hinzufügen weiterer Vorschläge"
   confidence_degree_high: "Gut"
   confidence_degree_low: "Sehr niedrig"
   confidence_degree_mediocre: "Niedrig"

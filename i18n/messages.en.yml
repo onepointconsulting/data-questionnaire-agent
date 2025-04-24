@@ -19,6 +19,7 @@ en:
   "What to avoid": "What to avoid"
   "What you should avoid": "What you should avoid"
   "What you should do": "Suggested courses of action"
+  add_more_suggestions_failed: "Failed to add more suggestions"
   confidence_degree_high: "Good"
   confidence_degree_low: "Very low"
   confidence_degree_mediocre: "Low"

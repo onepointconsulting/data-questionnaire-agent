@@ -146,7 +146,9 @@ async def calculate_consultant_ratings_for(
         await save_session_consultant_ratings(
             session_id, ConsultantRatings(consultant_ratings=consultant_ratings)
         )
-        return await read_session_consultant_ratings(session_id) # read with extra data, like photos.
+        return await read_session_consultant_ratings(
+            session_id
+        )  # read with extra data, like photos.
     except Exception as e:
         logger.error(f"Failed to save consultant ratings: {e}")
     return ConsultantRatings(consultant_ratings=consultant_ratings)

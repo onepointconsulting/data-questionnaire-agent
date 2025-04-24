@@ -29,11 +29,14 @@ async def process_secondary_questions(
     question_per_batch: int,
     session_properties: SessionProperties,
     session_id: str,
-    confidence_rating: ConfidenceRating | None
+    confidence_rating: ConfidenceRating | None,
 ) -> List[QuestionAnswer]:
     knowledge_base = await fetch_context(questionnaire)
     secondary_question_input = prepare_secondary_question(
-        questionnaire, knowledge_base, question_per_batch, confidence_rating=confidence_rating
+        questionnaire,
+        knowledge_base,
+        question_per_batch,
+        confidence_rating=confidence_rating,
     )
     retries = 3
     while retries > 0:
