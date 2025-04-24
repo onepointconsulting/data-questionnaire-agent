@@ -331,7 +331,7 @@ async def add_more_suggestions(
         )
         await sio.emit(
             Commands.ADD_MORE_SUGGESTIONS,
-            possible_answers,
+            possible_answers.json(),
             room=sid,
         )
     except Exception as e:
