@@ -52,6 +52,14 @@
             margin-bottom: 0;
         }
 
+        h3 {
+            font-size: 1.15rem;
+            line-height: 1.75rem;
+            background: linear-gradient(to right, #2382C3 , #82D6AF);
+            padding-left: .75rem;
+            margin-bottom: 0;
+        }
+
         table {
             font-size: 1rem;
             line-height: 1.5rem;
@@ -59,6 +67,35 @@
             margin: 0;
         }
 
+        .confidence-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            border: 1pse solid #2382C3;
+        }
+
+        .confidence-logo {
+            text-align: center
+        }
+
+        .confidence-logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .confidence-title {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .confidence-explanation {
+            text-align: left;
+            font-size: 0.75rem;
+            vertical-align: top
+        }
+            
         a {
             color: #0084d7;
         }
@@ -93,6 +130,33 @@
         </ul>
         <h2 class="confidence">{{title_confidence}}</h2>
         {{confidence}}
+        <h3 class="confidence">{{confidence_degree_explanation_title}}</h3>
+        <p>{{confidence_degree_explanation_intro}}</p>
+        <table class="confidence-table">
+            <tbody>
+                <tr>
+                    <td class="confidence-logo"><img src="https://responsible-ai.onepointltd.ai/confidence-img/thinking.svg" /></td>
+                    <td class="confidence-logo"><img src="https://responsible-ai.onepointltd.ai/confidence-img/low-confidence.svg" /></td>
+                    <td class="confidence-logo"><img src="https://responsible-ai.onepointltd.ai/confidence-img/medium-confidence.svg" /></td>
+                    <td class="confidence-logo"><img src="https://responsible-ai.onepointltd.ai/confidence-img/good-confidence.svg" /></td>
+                    <td class="confidence-logo"><img src="https://responsible-ai.onepointltd.ai/confidence-img/good-confidence.svg" /></td>
+                </tr>
+                <tr>
+                    <td class="confidence-title">{{confidence_degree_low}}</td>
+                    <td class="confidence-title">{{confidence_degree_mediocre}}</td>
+                    <td class="confidence-title">{{confidence_degree_medium}}</td>
+                    <td class="confidence-title">{{confidence_degree_high}}</td>
+                    <td class="confidence-title">{{confidence_degree_outstanding}}</td>
+                </tr>
+                <tr>
+                    <td class="confidence-explanation">{{confidence_degree_low_explanation}}</td>
+                    <td class="confidence-explanation">{{confidence_degree_mediocre_explanation}}</td>
+                    <td class="confidence-explanation">{{confidence_degree_medium_explanation}}</td>
+                    <td class="confidence-explanation">{{confidence_degree_high_explanation}}</td>
+                    <td class="confidence-explanation">{{confidence_degree_outstanding_explanation}}</td>
+                </tr>
+            </tbody>
+        </table>
         <h2 class="personalOffer">{{personal_offer}}</h2>
         <p>{{offering_long}}</p>
         <p>{{love_feedback}}: <a href="mailto:feedback@onepointltd.ai">feedback@onepointltd.ai</a>.</p>

@@ -127,7 +127,7 @@ class ConditionalAdvice(PydanticV1BaseModel):
         )
         markdown += convert_to_text(
             self.positive_outcomes,
-            t("Positive outcomes (if you follow the advices)", locale=language),
+            t("Positive outcomes (if you follow the actions to review)", locale=language),
         )
 
         if self.confidence is not None and isinstance(

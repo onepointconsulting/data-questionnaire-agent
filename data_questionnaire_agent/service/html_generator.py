@@ -42,6 +42,18 @@ def generate_html(
         "title_transcript": t("Transcript", locale=language),
         "title_what_to_do": t("What you should do", locale=language),
         "title_what_to_avoid": t("What to avoid", locale=language),
+        "confidence_degree_explanation_title": t("confidence_degree_explanation_title", locale=language),
+        "confidence_degree_explanation_intro": t("confidence_degree_explanation_intro", locale=language),
+        "confidence_degree_low": t("confidence_degree_low", locale=language),
+        "confidence_degree_mediocre": t("confidence_degree_mediocre", locale=language),
+        "confidence_degree_medium": t("confidence_degree_medium", locale=language),
+        "confidence_degree_high": t("confidence_degree_high", locale=language),
+        "confidence_degree_outstanding": t("confidence_degree_outstanding", locale=language),
+        "confidence_degree_low_explanation": t("confidence_degree_low_explanation", locale=language),
+        "confidence_degree_mediocre_explanation": t("confidence_degree_mediocre_explanation", locale=language),
+        "confidence_degree_medium_explanation": t("confidence_degree_medium_explanation", locale=language),
+        "confidence_degree_high_explanation": t("confidence_degree_high_explanation", locale=language),
+        "confidence_degree_outstanding_explanation": t("confidence_degree_outstanding_explanation", locale=language),
     }
     template_loader = jinja2.FileSystemLoader(cfg.template_location)
     template_env = jinja2.Environment(loader=template_loader)
