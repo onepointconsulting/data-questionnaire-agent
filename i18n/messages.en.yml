@@ -32,6 +32,7 @@ en:
   confidence_degree_medium_explanation: "The Res-AI Companion knows about the main problem and has some information about it causes. It still lacks information about the ethical standards, gouvernance, strategies and policies around Responsible AI."
   confidence_degree_outstanding: "Very good"
   confidence_degree_outstanding_explanation: "The Res-AI Companion knows about the main problem and has a good understanding of its causes. It knows thoroughly about the ethical standards, gouvernance, strategies and policies around Responsible AI."
+  confidence_image_location: /development/playground/langchain/data_questionnaire_agent/public/images/confidence
   db_insert_failed: "Failed to add query to database"
   db_update_failed: "Failed to update the answer in database"
   failed_insert_question: "Failed to insert question in database"

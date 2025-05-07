@@ -54,6 +54,7 @@ def generate_html(
         "confidence_degree_medium_explanation": t("confidence_degree_medium_explanation", locale=language),
         "confidence_degree_high_explanation": t("confidence_degree_high_explanation", locale=language),
         "confidence_degree_outstanding_explanation": t("confidence_degree_outstanding_explanation", locale=language),
+        "confidence_image_location": t("confidence_image_location", locale=language),
     }
     template_loader = jinja2.FileSystemLoader(cfg.template_location)
     template_env = jinja2.Environment(loader=template_loader)
