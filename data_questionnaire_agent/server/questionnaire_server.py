@@ -114,6 +114,8 @@ from data_questionnaire_agent.ui.advice_processor import process_advice
 
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
+WINDOW, MAX_REQ = 1.0, 5  # 5 req/sec per IP
+CLEANUP_INTERVAL = 300  # Clean up every 5 minutes
 
 
 sio = socketio.AsyncServer(
@@ -151,18 +153,14 @@ app = web.Application(middlewares=[rate_limit])
 sio.attach(app)
 
 
-@web.middleware
-async def startup_cleanup_task(request, handler):
-    """Start the cleanup task on first request if not already started."""
-    if not hasattr(startup_cleanup_task, 'cleanup_started'):
-        asyncio.create_task(cleanup_inactive_ips())
-        startup_cleanup_task.cleanup_started = True
-        logger.info("Started IP cleanup background task")
-    return await handler(request)
+async def on_startup(app):
+    """Application startup handler to start background tasks."""
+    asyncio.create_task(cleanup_inactive_ips())
+    logger.info("Started IP cleanup background task")
 
 
-# Add startup middleware to begin cleanup task
-app.middlewares.append(startup_cleanup_task)
+# Register startup handler
+app.on_startup.append(on_startup)
 
 
 class Commands(StrEnum):
@@ -175,8 +173,7 @@ class Commands(StrEnum):
     ADD_MORE_SUGGESTIONS = "add_more_suggestions"
 
 
-WINDOW, MAX_REQ = 1.0, 10  # 10 req/sec per IP
-CLEANUP_INTERVAL = 300  # Clean up every 5 minutes
+
 hits = defaultdict(deque)
 
 
