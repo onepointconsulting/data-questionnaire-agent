@@ -3,6 +3,7 @@ import asyncio
 import json
 from enum import StrEnum
 from typing import Any, List, Tuple, Union
+from collections import defaultdict, deque
 
 import socketio
 from aiohttp import web
@@ -120,18 +121,6 @@ sio = socketio.AsyncServer(
     ping_interval=15,
     max_http_buffer_size=1_000_000,
 )
-app = web.Application()
-sio.attach(app)
-
-
-class Commands(StrEnum):
-    START_SESSION = "start_session"
-    SERVER_MESSAGE = "server_message"
-    CLARIFICATION_TOKEN = "clarification_token"
-    EXTEND_SESSION = "extend_session"
-    ERROR = "error"
-    REGENERATE_QUESTION = "regenerate_question"
-    ADD_MORE_SUGGESTIONS = "add_more_suggestions"
 
 
 @web.middleware
@@ -146,6 +135,24 @@ async def rate_limit(request, handler):
             return web.Response(status=429, text="Too Many Requests")
     q.append(now)
     return await handler(request)
+
+
+app = web.Application(middlewares=[rate_limit])
+sio.attach(app)
+
+
+class Commands(StrEnum):
+    START_SESSION = "start_session"
+    SERVER_MESSAGE = "server_message"
+    CLARIFICATION_TOKEN = "clarification_token"
+    EXTEND_SESSION = "extend_session"
+    ERROR = "error"
+    REGENERATE_QUESTION = "regenerate_question"
+    ADD_MORE_SUGGESTIONS = "add_more_suggestions"
+
+
+WINDOW, MAX_REQ = 1.0, 10  # 10 req/sec per IP
+hits = defaultdict(deque)
 
 
 @sio.event
