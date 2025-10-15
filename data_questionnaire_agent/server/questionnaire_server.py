@@ -1,6 +1,7 @@
 import time
 import asyncio
 import json
+import ipaddress
 from enum import StrEnum
 from typing import Any, List, Tuple, Union
 from collections import defaultdict, deque
@@ -125,20 +126,43 @@ sio = socketio.AsyncServer(
 
 @web.middleware
 async def rate_limit(request, handler):
-    ip = request.headers.get("X-Forwarded-For", request.remote) or "unknown"
+    # Only apply rate limiting to socket.io requests
+    if not request.path.startswith("/socket.io/"):
+        return await handler(request)
+    
+    ip = extract_client_ip(request)
     now = time.monotonic()
     q = hits[ip]
+    
+    # Clean old timestamps
     while q and now - q[0] > WINDOW:
         q.popleft()
-    if request.path.startswith("/socket.io/"):
-        if len(q) >= MAX_REQ:
-            return web.Response(status=429, text="Too Many Requests")
+    
+    # Check rate limit
+    if len(q) >= MAX_REQ:
+        return web.Response(status=429, text="Too Many Requests")
+    
+    # Add current request timestamp
     q.append(now)
     return await handler(request)
 
 
 app = web.Application(middlewares=[rate_limit])
 sio.attach(app)
+
+
+@web.middleware
+async def startup_cleanup_task(request, handler):
+    """Start the cleanup task on first request if not already started."""
+    if not hasattr(startup_cleanup_task, 'cleanup_started'):
+        asyncio.create_task(cleanup_inactive_ips())
+        startup_cleanup_task.cleanup_started = True
+        logger.info("Started IP cleanup background task")
+    return await handler(request)
+
+
+# Add startup middleware to begin cleanup task
+app.middlewares.append(startup_cleanup_task)
 
 
 class Commands(StrEnum):
@@ -152,7 +176,62 @@ class Commands(StrEnum):
 
 
 WINDOW, MAX_REQ = 1.0, 10  # 10 req/sec per IP
+CLEANUP_INTERVAL = 300  # Clean up every 5 minutes
 hits = defaultdict(deque)
+
+
+def extract_client_ip(request) -> str:
+    """Extract and validate client IP address from request headers."""
+    # Check X-Forwarded-For header (for reverse proxies)
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        # X-Forwarded-For can contain multiple IPs, take the first one
+        client_ip = forwarded_for.split(",")[0].strip()
+        try:
+            # Validate IP address
+            ipaddress.ip_address(client_ip)
+            return client_ip
+        except ValueError:
+            pass
+    
+    # Fall back to direct connection IP
+    if request.remote:
+        try:
+            ipaddress.ip_address(request.remote)
+            return request.remote
+        except ValueError:
+            pass
+    
+    # If all else fails, return a default identifier
+    return "unknown"
+
+
+async def cleanup_inactive_ips():
+    """Periodically clean up inactive IP addresses to prevent memory leaks."""
+    while True:
+        try:
+            await asyncio.sleep(CLEANUP_INTERVAL)
+            now = time.monotonic()
+            inactive_ips = []
+            
+            for ip, timestamps in hits.items():
+                # Remove old timestamps
+                while timestamps and now - timestamps[0] > WINDOW:
+                    timestamps.popleft()
+                
+                # If no recent activity, mark for removal
+                if not timestamps:
+                    inactive_ips.append(ip)
+            
+            # Remove inactive IPs
+            for ip in inactive_ips:
+                del hits[ip]
+                
+            if inactive_ips:
+                logger.info(f"Cleaned up {len(inactive_ips)} inactive IP addresses")
+                
+        except Exception as e:
+            logger.error(f"Error during IP cleanup: {e}")
 
 
 @sio.event
