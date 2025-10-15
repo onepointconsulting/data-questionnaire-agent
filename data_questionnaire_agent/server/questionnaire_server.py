@@ -114,7 +114,7 @@ from data_questionnaire_agent.ui.advice_processor import process_advice
 
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
-WINDOW, MAX_REQ = 1.0, 5  # 5 req/sec per IP
+WINDOW, MAX_REQ = 1.0, 8  # 5 req/sec per IP
 CLEANUP_INTERVAL = 300  # Clean up every 5 minutes
 
 
