@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.13"
-openai = "^1.37.0"
+openai = "^1.93.0"
 langchain = "^0.3.16"
 langchain-community = "0.3.16"
 prompt-toolkit = "^3.0.39"

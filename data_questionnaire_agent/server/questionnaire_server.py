@@ -1,3 +1,4 @@
+import time
 import asyncio
 import json
 from enum import StrEnum
@@ -114,7 +115,10 @@ MAX_SESSION_STEPS = 14
 
 
 sio = socketio.AsyncServer(
-    cors_allowed_origins=websocket_cfg.websocket_cors_allowed_origins
+    cors_allowed_origins=websocket_cfg.websocket_cors_allowed_origins,
+    ping_timeout=10,
+    ping_interval=15,
+    max_http_buffer_size=1_000_000,
 )
 app = web.Application()
 sio.attach(app)
@@ -128,6 +132,20 @@ class Commands(StrEnum):
     ERROR = "error"
     REGENERATE_QUESTION = "regenerate_question"
     ADD_MORE_SUGGESTIONS = "add_more_suggestions"
+
+
+@web.middleware
+async def rate_limit(request, handler):
+    ip = request.headers.get("X-Forwarded-For", request.remote) or "unknown"
+    now = time.monotonic()
+    q = hits[ip]
+    while q and now - q[0] > WINDOW:
+        q.popleft()
+    if request.path.startswith("/socket.io/"):
+        if len(q) >= MAX_REQ:
+            return web.Response(status=429, text="Too Many Requests")
+    q.append(now)
+    return await handler(request)
 
 
 @sio.event
