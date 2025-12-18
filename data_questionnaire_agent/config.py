@@ -49,7 +49,7 @@ class Config:
         cache=has_langchain_cache,
         streaming=True,
     )
-    logger.info(f"Using model {model}")
+    logger.info(f"Using AI model {model}")
 
     image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE", "0.0"))
     image_llm = OpenAI(temperature=image_llm_temperature)
