@@ -1,5 +1,5 @@
 
-ENV_NAME=data_wellness_agent_staging
+ENV_NAME=data_wellness_agent_hypergility
 source /home/ubuntu/miniconda3/etc/profile.d/conda.sh
 conda activate $ENV_NAME
 cd "$(dirname "$0")"
