@@ -162,6 +162,8 @@ class WebsocketConfig:
     websocket_port = int(os.getenv("WEBSOCKET_PORT", 8080))
     logger.info(f"Websocket server: {websocket_server}")
     logger.info(f"Websocket port: {websocket_port}")
+    print(f"Websocket server: {websocket_server}")
+    print(f"Websocket port: {websocket_port}")
     websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
 
 
