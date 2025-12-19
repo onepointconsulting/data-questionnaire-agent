@@ -1,6 +1,4 @@
-from langchain.chains.llm import LLMChain
-from langchain.chains.openai_functions import create_structured_output_chain
-from langchain.prompts import (
+from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     PromptTemplate,
@@ -116,13 +114,10 @@ def create_structured_question_call(
     return prompt | model
 
 
-def chain_factory_secondary_question(session_properties: SessionProperties) -> LLMChain:
-    return create_structured_output_chain(
-        ResponseQuestions,
-        cfg.llm,
-        prompt_factory_secondary_questions(session_properties),
-        verbose=cfg.verbose_llm,
-    )
+def chain_factory_secondary_question(session_properties: SessionProperties) -> RunnableSequence:
+    model = cfg.llm.with_structured_output(ResponseQuestions)
+    prompt = prompt_factory_secondary_questions(session_properties)
+    return prompt | model
 
 
 def prepare_secondary_question(
