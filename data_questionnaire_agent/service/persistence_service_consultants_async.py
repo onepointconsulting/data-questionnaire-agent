@@ -1,4 +1,4 @@
-from consultant_info_generator.model import Company, Consultant, Experience, Skill
+from consultant_info_generator.model.model import Company, Consultant, Experience, Skill
 from psycopg import AsyncCursor
 
 from data_questionnaire_agent.model.consultant_rating import (
