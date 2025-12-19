@@ -3,7 +3,7 @@ import json
 from typing import TypedDict
 
 import jinja2
-from consultant_info_generator.model import Consultant
+from consultant_info_generator.model.model import Consultant
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 
