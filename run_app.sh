@@ -3,7 +3,7 @@ set -e  # Exit on error
 cd "$(dirname "$0")"
 
 # Check if uv is installed
-if ! command -v uv &> /dev/null; then
+if ! command -v /home/ubuntu/.local/bin/uv &> /dev/null; then
     echo "Error: uv is not installed. Please install uv first."
     exit 1
 fi
