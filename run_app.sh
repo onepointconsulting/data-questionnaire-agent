@@ -8,6 +8,6 @@ if ! command -v uv &> /dev/null; then
     exit 1
 fi
 
-uv sync
-uv run python ./data_questionnaire_agent/server/questionnaire_server_main.py
+/home/ubuntu/.local/bin/uv sync
+/home/ubuntu/.local/bin/uv run python ./data_questionnaire_agent/server/questionnaire_server_main.py
 
