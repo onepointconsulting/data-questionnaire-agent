@@ -1,6 +1,6 @@
 import datetime
 
-from consultant_info_generator.model import Company, Consultant, Experience, Skill
+from consultant_info_generator.model.model import Company, Consultant, Experience, Skill
 
 from data_questionnaire_agent.model.consultant_rating import (
     AnalystRating,

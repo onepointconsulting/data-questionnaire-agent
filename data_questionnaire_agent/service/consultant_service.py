@@ -4,7 +4,7 @@ from typing import TypedDict
 
 import jinja2
 from consultant_info_generator.model import Consultant
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg

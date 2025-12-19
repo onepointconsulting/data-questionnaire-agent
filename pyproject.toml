@@ -32,7 +32,7 @@ dependencies = [
     "pandas>=2.2.3,<3",
     "xlsxwriter>=3.2.0,<4",
     "openpyxl>=3.1.5,<4",
-    "consultant-info-generator==0.1.6",
+    "consultant-info-generator==0.1.7",
     "networkx>=3.6.1",
 ]
 

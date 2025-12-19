@@ -289,8 +289,8 @@ wheels = [
 
 [[package]]
 name = "consultant-info-generator"
-version = "0.1.6"
-source = { git = "https://github.com/OnepointConsultingLtd/consultant_info_generator.git#f524683b93eaba8053a825d538746a626f39f6b2" }
+version = "0.1.8"
+source = { git = "https://github.com/OnepointConsultingLtd/consultant_info_generator.git#5450d8593ce7732a6d090c2df61680fdbe429db0" }
 dependencies = [
     { name = "click" },
     { name = "google-generativeai" },
