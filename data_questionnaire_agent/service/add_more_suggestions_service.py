@@ -1,5 +1,5 @@
 from langchain_core.runnables.base import RunnableSequence
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
