@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 import pandas as pd
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 from ulid import ULID
 
