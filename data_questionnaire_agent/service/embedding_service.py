@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List, TypeVar
 
 import numpy as np
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import FAISS
 
