@@ -2,8 +2,8 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field
-from pydantic.v1 import BaseModel as PydanticV1BaseModel
-from pydantic.v1 import Field as FieldV1
+from pydantic import BaseModel as PydanticV1BaseModel
+from pydantic import Field as FieldV1
 
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.translation import t

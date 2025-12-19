@@ -1,7 +1,6 @@
 from enum import StrEnum
-from typing import Union
 
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from data_questionnaire_agent.translation import t
 
@@ -26,7 +25,7 @@ CONFIDENCE_DEGREE_DICT = {
 class ConfidenceRating(BaseModel):
     """Represents a rating of how confident the model is to give advice to a customer based on a questionnaire"""
 
-    id: Union[int, None] = Field(
+    id: int | None = Field(
         default=None, description="The identifier of this session configuration"
     )
 
