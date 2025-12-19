@@ -1,6 +1,4 @@
-from langchain.chains.llm import LLMChain
-from langchain.chains.openai_functions import create_structured_output_chain
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
@@ -27,15 +25,6 @@ def prompt_factory_ontology(language: str) -> ChatPromptTemplate:
         section=section,
         input_variables=[PARAM_ADVICE, PARAM_QUESTIONS_ANSWERS],
         prompts=prompts,
-    )
-
-
-def chain_factory_ontology(language: str) -> LLMChain:
-    return create_structured_output_chain(
-        Ontology,
-        cfg.llm,
-        prompt_factory_ontology(language),
-        verbose=cfg.verbose_llm,
     )
 
 
