@@ -33,6 +33,7 @@ dependencies = [
     "xlsxwriter>=3.2.0,<4",
     "openpyxl>=3.1.5,<4",
     "consultant-info-generator==0.1.6",
+    "networkx>=3.6.1",
 ]
 
 [project.scripts]
