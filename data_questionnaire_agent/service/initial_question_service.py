@@ -1,6 +1,6 @@
 from langchain.chains.llm import LLMChain
 from langchain.chains.openai_functions import create_structured_output_chain
-from langchain.prompts import (
+from langchain_core.prompts import (
     ChatPromptTemplate,
 )
 
@@ -26,12 +26,9 @@ def prompt_factory_initial_questions(language: str) -> ChatPromptTemplate:
 
 
 def chain_factory_initial_question(language: str) -> LLMChain:
-    return create_structured_output_chain(
-        ResponseQuestions,
-        cfg.llm,
-        prompt_factory_initial_questions(language),
-        verbose=cfg.verbose_llm,
-    )
+    model = cfg.llm.with_structured_output(ResponseQuestions)
+    prompt = prompt_factory_initial_questions(language)
+    return prompt | model
 
 
 def prepare_initial_question(

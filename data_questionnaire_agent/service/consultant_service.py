@@ -3,8 +3,8 @@ import json
 from typing import TypedDict
 
 import jinja2
-from consultant_info_generator.model import Consultant
-from langchain.prompts import ChatPromptTemplate
+from consultant_info_generator.model.model import Consultant
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
@@ -146,6 +146,9 @@ async def calculate_consultant_ratings_for(
         await save_session_consultant_ratings(
             session_id, ConsultantRatings(consultant_ratings=consultant_ratings)
         )
+        return await read_session_consultant_ratings(
+            session_id
+        )  # read with extra data, like photos.
     except Exception as e:
         logger.error(f"Failed to save consultant ratings: {e}")
     return ConsultantRatings(consultant_ratings=consultant_ratings)

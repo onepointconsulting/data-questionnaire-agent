@@ -1,4 +1,4 @@
-from consultant_info_generator.model import Company, Consultant, Experience, Skill
+from consultant_info_generator.model.model import Company, Consultant, Experience, Skill
 from psycopg import AsyncCursor
 
 from data_questionnaire_agent.model.consultant_rating import (
@@ -221,7 +221,8 @@ async def read_session_consultant_ratings(
     session_id: str, limit: int = 5
 ) -> ConsultantRatings:
     sql = """
-SELECT C.GIVEN_NAME, C.SURNAME, C.LINKEDIN_PROFILE_URL, SC.REASONING, SC.RATING FROM TB_SESSION_CONSULTANT_RATING SC INNER JOIN TB_CONSULTANT C ON C.ID = SC.CONSULTANT_ID
+SELECT C.GIVEN_NAME, C.SURNAME, C.LINKEDIN_PROFILE_URL, SC.REASONING, SC.RATING, C.LINKEDIN_PHOTO_200, C.LINKEDIN_PHOTO_400 
+FROM TB_SESSION_CONSULTANT_RATING SC INNER JOIN TB_CONSULTANT C ON C.ID = SC.CONSULTANT_ID
 WHERE SC.SESSION_ID = %(session_id)s ORDER BY SC.RATING_NUMBER DESC LIMIT %(limit)s
 """
     rows = await select_from(sql, {"session_id": session_id, "limit": limit})
@@ -230,12 +231,16 @@ WHERE SC.SESSION_ID = %(session_id)s ORDER BY SC.RATING_NUMBER DESC LIMIT %(limi
     pos_linkedin_profile_url = 2
     pos_reasoning = 3
     pos_rating = 4
+    pos_linkedin_photo_200 = 5
+    pos_linkedin_photo_400 = 6
     consultant_ratings = [
         ConsultantRating(
             analyst_name=f"{row[pos_given_name]} {row[pos_surname]}",
             analyst_linkedin_url=row[pos_linkedin_profile_url],
             reasoning=row[pos_reasoning],
             rating=row[pos_rating],
+            linkedin_photo_200=row[pos_linkedin_photo_200],
+            linkedin_photo_400=row[pos_linkedin_photo_400],
         )
         for row in rows
     ]

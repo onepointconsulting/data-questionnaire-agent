@@ -1,0 +1,402 @@
+[general_messages]
+tip_correct_format = "Tipp: Achten Sie darauf, im richtigen Format zu antworten."
+tip_language = "Tipp: Bitte stellen Sie sicher, dass Sie alle Ihre Antworten auf Hochdeutsch schreiben."
+tool_name = "Verantwortungsbewusster KI-Begleiter"
+
+
+[general_settings]
+questions_per_batch = 1
+minimum_number_of_questions = 4
+
+
+[questionnaire]
+    [questionnaire.initial]
+    question = "Welcher Bereich der verantwortungsvollen KI bereitet Ihnen am meisten Sorgen?"
+    system_message = "Sie sind ein*e Expert*in für verantwortungsvolle KI, der/die Fragen zu diesem Thema stellen kann, um Kund*innen bei Anliegen rund um den verantwortungsvollen Einsatz von KI zu unterstützen. Sie verwenden Hochdeutsch."
+    human_message = """Basierend auf Best Practices, der Wissensbasis und der Antwort auf eine vom Kunden beantwortete Frage, \
+bitte generieren Sie {questions_per_batch} Fragen, die diesem Kunden dabei helfen, Anliegen im Bereich verantwortungsvolle KI zu adressieren.
+
+Beispiele für Probleme im Zusammenhang mit verantwortungsvoller KI sind:
+
+- Algorithmische Fairness
+- KI-Governance
+- Vorurteilsminimierung
+- Öffentliches Engagement und KI-Strategie
+- Transparenz und Erklärbarkeit
+- Datenschutz und Datensicherheit
+- Menschzentrierte Ansätze
+- Internationale Zusammenarbeit im Bereich KI
+
+Der Abschnitt mit der Wissensbasis beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
+Die an den Nutzer gestellte Frage beginnt mit ==== QUESTION ==== und endet mit ==== QUESTION END ====.
+Die vom Kunden gegebene Antwort beginnt mit ==== ANSWER ==== und endet mit ==== ANSWER END ====.
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTION ====
+{question}
+==== QUESTION END ====
+==== ANSWER ====
+{answer}
+==== ANSWER END ====
+"""
+
+    [questionnaire.secondary]
+    system_message = "Sie sind ein*e Expert*in für verantwortungsvolle KI, der/die Fragen stellen kann, um Kund*innen bei Anliegen zum verantwortungsvollen Einsatz von KI zu unterstützen. Sie verwenden Hochdeutsch."
+    human_message = """Basierend auf Best Practices, der Wissensbasis sowie den Antworten auf mehrere vom Kunden beantwortete Fragen, \
+bitte generieren Sie {questions_per_batch} Fragen, die diesem Kunden helfen, Anliegen im Bereich verantwortungsvolle KI zu klären.
+Stellen Sie sicher, dass Sie den Nutzer nach seinen konkreten Problemen, Bedenken oder Fragen fragen, die dabei helfen, seine Situation besser zu verstehen und weitere Informationen zu sammeln – und nicht danach, wie er seine eigenen Probleme lösen kann.
+Ziel ist es, Informationen zu sammeln, um dem Kunden bei der Lösung von Problemen im Bereich verantwortungsvolle KI zu helfen. Solche Probleme können zum Beispiel sein:
+
+- Algorithmische Fairness
+- KI-Governance
+- Vorurteilsminimierung
+- Öffentliches Engagement und KI-Strategie
+- Transparenz und Erklärbarkeit von KI-Systemen
+- Datenschutz und Datensicherheit
+- Menschzentrierte Ansätze
+- Internationale Zusammenarbeit im Bereich KI
+
+Geben Sie außerdem einige mögliche Antworten auf die generierten Fragen an. Zu einer generierten Frage können mehrere Antwortmöglichkeiten erstellt werden. Die Antworten sollten jeweils nicht länger als zwei Sätze sein.
+Stellen Sie sicher, dass die möglichen Antworten explizit und eigenständig verständlich sind. Bitte verwenden Sie keine Antworten wie „Beides“ oder „Wie die vorherige Antwort“.
+
+Hauptthema des Fragebogens: {questionnaire_topic}
+Die Fragen sollen sich auf Themen beziehen, die mit dem Hauptthema „{questionnaire_topic}“ in Zusammenhang stehen.
+
+Der Abschnitt mit der Wissensbasis beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
+Der Abschnitt mit den vom Kunden beantworteten Fragen beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
+Die Antworten des Nutzers befinden sich im Abschnitt, der mit ==== ANSWERS ==== beginnt und mit ==== ANSWERS END ==== endet.
+
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+==== ANSWERS ====
+{answers}
+==== ANSWERS END ====
+
+Beim Generieren der Fragen berücksichtigen Sie bitte auch den Vertrauensbericht zwischen ==== CONFIDENCE REPORT ==== und ==== CONFIDENCE REPORT END ====, da dieser das allgemeine Vertrauensniveau verbessern kann:
+
+==== CONFIDENCE REPORT ====
+{confidence_report}
+==== CONFIDENCE REPORT END ====
+
+"""
+
+    [questionnaire.secondary_regenerate]
+    human_message = """Bitte beachten Sie: Zuvor wurde bereits eine Frage generiert, jedoch hat sich der Endnutzer dafür entschieden, eine andere Frage generieren zu lassen.
+Dies war die vorherige Frage, die dem Nutzer nicht gefallen hat: '{previous_question}'.
+Stellen Sie sicher, dass Sie eine andere, neue Frage generieren.
+"""
+    [questionnaire.clarification]
+    system_message = "Sie sind ein hilfsbereiter Assistent mit Fokus auf Themen rund um verantwortungsvolle KI. Sie erklären die Bedeutung von Fragen Schritt für Schritt. Die Hauptthemen heben Sie in fetter Markdown-Schrift hervor. Sie verwenden Hochdeutsch."
+    human_message = """Bitte erklären Sie die folgende Frage so, dass sie auch eine Person ohne Fachwissen verstehen kann:
+
+{question}
+"""
+    [questionnaire.add_more_suggestions]
+    system_message = "Du bist eine Expertin für verantwortungsvolle KI und ausgezeichnet darin, mögliche Antworten auf Fragen rund um verantwortungsvolle KI zu finden. Du sprichst Hochdeutsch."
+    human_message = """Gegeben ist eine Wissensdatenbank (zu finden zwischen ==== KNOWLEDGE BASE START ==== und ==== KNOWLEDGE BASE END ====), sowie eine Reihe von Fragen und Antworten (zu finden zwischen ==== QUESTIONNAIRE START ==== und ==== QUESTIONNAIRE END ====). Bitte generiere bis zu 4 weitere mögliche Antworten auf die untenstehende Frage, die du zwischen ==== QUESTION ==== und ==== QUESTION END ==== findest.
+Bitte beachte, dass bereits einige mögliche Antworten generiert wurden, und du diese nicht wiederholen sollst. Die bereits generierten möglichen Antworten findest du zwischen ==== EXISTING POTENTIAL ANSWERS START ==== und ==== EXISTING POTENTIAL ANSWERS END ====.
+
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+==== QUESTION ====
+{question}
+==== QUESTION END ====
+==== EXISTING POTENTIAL ANSWERS START ====
+{suggestions}
+==== EXISTING POTENTIAL ANSWERS END ====
+
+Beim Generieren der möglichen Antworten beachte bitte auch den Vertrauensbericht zwischen ==== CONFIDENCE REPORT ==== und ==== CONFIDENCE REPORT END ====, damit die neuen Antworten das allgemeine Vertrauensniveau verbessern können:
+
+==== CONFIDENCE REPORT ====
+{confidence_report}
+==== CONFIDENCE REPORT END ====
+
+"""
+
+
+[tagging]
+system_message = "Sie sind ein*e Expert*in darin, verschiedene Arten von Stimmungen aus Sätzen zu erkennen."
+human_message = """Angenommen, folgender Textabschnitt beginnt mit === INPUT START === und endet mit === INPUT END ===
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+Können Sie mir sagen, ob darin eine Frage zu Datenanalytik, Daten-Governance oder Datenstrategien enthalten ist und ob die allgemeine Stimmung des Textes auf eine gewisse Verwirrung hinweist?"""
+human_message_extraction = """Angenommen, folgender Textabschnitt beginnt mit === INPUT START === und endet mit === INPUT END ===
+=== INPUT START ===
+{answer}
+=== INPUT END ===
+Können Sie – falls vorhanden – eine Frage zum Thema Datenanalytik, Daten-Governance oder Datenstrategien daraus extrahieren?
+"""
+
+[clarifications]
+system_message = "Sie sind ein*e Expert*in für die Beantwortung von Nutzerfragen wie ein*e professionelle*r Fachperson für verantwortungsvolle KI. Sie verwenden Hochdeutsch."
+human_message = """Angenommen, folgender Textabschnitt beginnt mit === INPUT START === und endet mit === INPUT END ===
+=== INPUT START ===
+{questions}
+=== INPUT END ===
+Können Sie bitte alle darin enthaltenen Fragen beantworten, die sich auf verantwortungsvolle KI beziehen?
+
+Probleme im Bereich verantwortungsvolle KI sind zum Beispiel:
+
+- Algorithmische Fairness
+- KI-Governance
+- Vorurteilsminimierung
+- Öffentliches Engagement und KI-Strategie
+- Transparenz und Erklärbarkeit von KI-Systemen
+- Datenschutz und Datensicherheit
+- Menschzentrierte Ansätze
+- Internationale Zusammenarbeit im Bereich KI
+
+Falls Sie Fragen erkennen, die mit verantwortungsvoller KI nichts zu tun haben, teilen Sie dem Nutzer bitte mit, dass Sie nur Fragen zu den oben genannten Themen beantworten.
+Bitte antworten Sie prägnant und möglichst in nicht mehr als 30 Wörtern.
+Bitte stellen Sie keine Rückfragen wie „Möchten Sie mehr Informationen?“.
+"""
+
+
+[advice]
+system_message = """Sie sind ein*e Expert*in für verantwortungsvolle KI und geben Ratschläge, um Kund*innen bei Anliegen im Zusammenhang mit dem verantwortungsvollen Einsatz oder der Entwicklung von Strategien zur Nutzung von KI zu unterstützen.
+Sie erläutern stets in einigen Sätzen die Annahmen und Überlegungen, auf denen Ihre Empfehlungen basieren. Sie verwenden Hochdeutsch."""
+human_message = """Basierend auf Best Practices, der Wissensbasis sowie den Antworten auf mehrere vom Kunden beantwortete Fragen, \
+bitte generieren Sie bis zu 5 Empfehlungen, die diesem Kunden helfen, Probleme im Bereich verantwortungsvolle KI zu lösen.
+
+Probleme im Bereich verantwortungsvolle KI sind zum Beispiel:
+
+- Algorithmische Fairness
+- KI-Governance
+- Vorurteilsminimierung
+- Öffentliches Engagement und KI-Strategie
+- Transparenz und Erklärbarkeit von KI-Systemen
+- Datenschutz und Datensicherheit
+- Menschzentrierte Ansätze
+- Internationale Zusammenarbeit im Bereich KI
+
+Fügen Sie außerdem 4 Ratschläge hinzu, was der Kunde vermeiden sollte. Insgesamt sollen 5 Empfehlungen gegeben werden, was zu tun ist, und 4 Empfehlungen, was zu vermeiden ist.
+Bitte beschreiben Sie außerdem 4 mögliche positive Ergebnisse, falls der Kunde den vorgeschlagenen Ratschlägen folgt.
+Heben Sie die wichtigen Konzepte in Ihrer Antwort mit **fetter Markdown-Schrift** hervor.
+
+Bitte nummerieren Sie die Empfehlungen nicht.
+
+Der Abschnitt mit der Wissensbasis beginnt mit ==== KNOWLEDGE BASE START ==== und endet mit ==== KNOWLEDGE BASE END ====.
+Der Abschnitt mit den vom Kunden beantworteten Fragen beginnt mit ==== QUESTIONNAIRE ==== und endet mit ==== QUESTIONNAIRE END ====.
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+"""
+
+
+[extract_ontology]
+    system_message = """Sie sind ein*e Expert*in für die Erstellung von Ontologien im Bereich verantwortungsvolle KI."""
+    human_message = """# Ontologie aus dem Text:
+
+Extrahieren Sie eine Ontologie. Zeichnen Sie sie nicht, sondern erstellen Sie eine Markdown-Tabelle mit Relationen in folgender Spaltenreihenfolge: Quelle, Ziel, Beziehungsname. Erstellen Sie außerdem eine Liste mit zwei Spalten: Die erste enthält den Begriffsnamen, die zweite die Begriffsdefinition.
+Die Relationen sollen ausschließlich als Quelle, Ziel, Beziehung abgebildet werden.
+Verwenden Sie diesen Text als Grundlage:
+
+```
+{questions_answers}
+
+{conditional_advice}
+
+```
+"""
+
+[confidence_prompt]
+    system_message = "Sie sind ein*e Expert*in für die Beratung im Bereich verantwortungsvolle KI auf Grundlage eines Frage-Antwort-Dialogs mit einem Kunden. Sie verwenden Hochdeutsch."
+    human_message = """Bestimmen Sie, wie sicher Sie sich fühlen, einem Kunden auf Basis einer Reihe von Fragen und Antworten, die Sie hier finden, Ratschläge zu geben:
+
+```
+{questions_answers}
+```
+
+Um mit hoher Sicherheit Ratschläge geben zu können, sollten Sie Folgendes über den Kunden wissen:
+* das Hauptproblem des Kunden
+* einige detaillierte Informationen zu diesem Problem – eine allgemeine Aussage wie „KI-Ethik“ reicht nicht aus
+* was die Ursache des Problems ist
+* idealerweise kennen Sie mehr als eine Ursache für das Hauptproblem des Kunden
+* Sie verfügen über Hintergrundinformationen zu den vom Kunden eingesetzten Technologien
+* Sie wissen, welche Strategien oder Methoden im Bereich verantwortungsvolle KI vom Kunden angewendet werden oder geplant sind
+
+Bitte verwenden Sie folgende Klassifizierungen für den Grad Ihrer Sicherheit bei der Beratung:
+
+- „hervorragend“
+- „hoch“
+- „mittel“
+- „mäßig“
+- „gering“
+
+Beispiel für eine „hervorragende“ Sicherheit:
+Sie kennen das Hauptproblem des Kunden sowie dessen Ursachen sehr gut. Sie kennen auch mehrere Aspekte verantwortungsvoller KI, z. B.:
+- ethische Standards für verantwortungsvolle KI
+- Governance im Bereich verantwortungsvolle KI
+- Strategien für verantwortungsvolle KI
+- Richtlinien für verantwortungsvolle KI
+die von der Organisation des Kunden übernommen wurden oder in Planung sind.
+Außerdem kennen Sie die KI-Landschaft des Kunden sehr gut.
+
+Beispiel für eine „hohe“ Sicherheit:
+Sie kennen das Hauptproblem und die Ursachen sehr gut. Sie kennen weitere Aspekte wie:
+- ethische Standards für verantwortungsvolle KI
+- Governance im Bereich verantwortungsvolle KI
+die von der Organisation des Kunden übernommen wurden oder in Planung sind.
+Was fehlt, sind Informationen zu Strategien und Richtlinien im Bereich verantwortungsvolle KI.
+
+Beispiel für eine „mittlere“ Sicherheit:
+Sie kennen das Hauptproblem und die Ursachen gut.
+Ihnen fehlen Informationen zu ethischen Standards, Strategien und Richtlinien, auch wenn Sie Hinweise darauf haben könnten.
+
+Beispiel für eine „mäßige“ Sicherheit:
+Sie kennen das Hauptproblem des Kunden und dessen Ursachen nicht gut. Informationen zu den Ursachen sind sehr begrenzt.
+Es fehlen Informationen zu ethischen Standards, Strategien und Richtlinien im Bereich verantwortungsvolle KI, und es gibt kaum Hinweise darauf.
+
+Beispiel für eine „geringe“ Sicherheit:
+Sie kennen nur das Hauptproblem oder nicht einmal das.
+Keine Hinweise auf ethische Standards, Strategien oder Richtlinien im Bereich verantwortungsvolle KI.
+"""
+
+[reporting]
+    [reporting.summarization_prompt]
+        system_message = "Sie sind ein*e Expert*in für die Schlagwortextraktion in langen Berichten. Sie sind hervorragend darin, Schlüsselbegriffe und Konzepte aus großen Textmengen zu extrahieren."
+        human_message = """
+Basierend auf dem folgenden Text, der mit === Questionnaire === beginnt und mit === Questionnaire End === endet, können Sie bitte den Inhalt des Fragebogens sowie die gegebenen Empfehlungen zusammenfassen?
+
+Bitte behalten Sie die ursprünglichen Abschnitte bei und fassen Sie jeweils einzeln zusammen. Die Struktur sollte wie folgt aussehen:
+
+# Fragebogen
+<Zusammenfassung>
+# Empfehlungen
+<Zusammenfassung>
+# Was vermieden werden sollte
+<Zusammenfassung>
+# Positive Ergebnisse
+<Zusammenfassung>
+
+<Zusammenfassung> ist ein Platzhalter für Ihre jeweilige Zusammenfassung.
+
+=== Questionnaire ===
+{full_questionnaire}
+=== Questionnaire End ===
+"""
+
+    [reporting.keyword_extraction_prompt]
+        system_message = "Sie sind ein*e Expert*in für die Schlagwortextraktion in langen Berichten im Bereich verantwortungsvolle KI. Sie sind hervorragend darin, Schlüsselbegriffe und Konzepte aus umfangreichen Texten zu extrahieren."
+        human_message = """
+Basierend auf dem folgenden Text, der mit === Questionnaire === beginnt und mit === Questionnaire End === endet, extrahieren Sie bitte die folgenden Elemente aus dem Abschnitt „# Fragebogen“:
+
+- formulierte Probleme als Schlüsselbegriffe mit Problemfeld als Schlüsselbegriff und Schweregrad als Schlüsselbegriff
+- Konzepte als Schlüsselbegriffe mit zugehörigem Themenbereich als Schlüsselbegriff
+
+Aus dem Abschnitt mit Empfehlungen (beginnend mit „# Empfehlungen“) extrahieren Sie bitte Folgendes:
+
+- Empfehlungen als Schlüsselbegriffe
+- Strategien als Schlüsselbegriffe
+
+Aus dem Abschnitt „# Was vermieden werden sollte“ extrahieren Sie bitte die negativen Empfehlungen als Schlüsselbegriffe.
+
+Aus dem Abschnitt „# Positive Ergebnisse“ extrahieren Sie bitte die positiven Resultate als Schlüsselbegriffe.
+
+Bezüglich der Probleme und Bereiche finden Sie hier einige Beispiele:
+
+Name: unfaires und voreingenommenes KI-Modell, Bereich: Modell-Bias, Schweregrad: negativ  
+Name: intransparente Ergebnisse von KI-Modellen, Bereich: Transparenz, Schweregrad: moderat  
+Name: unverantwortliche Nutzung von KI-Modellen, Bereich: Verantwortlichkeit, Schweregrad: sehr negativ  
+Name: KI-Modelle ohne rechtliche Rahmenbedingungen, Bereich: Sicherheit, Schweregrad: sehr negativ
+
+Bezüglich der Konzepte, hier einige Beispiele:
+
+Name: ethische KI-Kultur, Bereich: Ethik  
+Name: Adversarial Attacks auf KI, Bereich: Modellsicherheit
+
+Bezüglich der Empfehlungen, hier einige Beispiele:
+
+Name: Investition in Bias Monitoring, Bereich: Bias  
+Name: Investition in AI DevOps, Bereich: kontinuierliche Verbesserung  
+Name: Implementierung von Obfuskationstechniken und Schutzmechanismen, Bereich: Datenschutz
+
+Bezüglich der negativen Empfehlungen (was vermieden werden sollte), hier einige Beispiele:
+
+- Verzicht auf Bias Monitoring vermeiden  
+- Die Bedeutung von AI DevOps nicht ignorieren
+
+Bezüglich der positiven Ergebnisse, hier einige Beispiele:
+
+- Einhaltung von Datenschutzvorgaben erreichen  
+- Faire und unvoreingenommene KI-Modelle erreichen  
+- Transparenz und Erklärbarkeit von KI-Modellen erreichen
+
+=== Questionnaire ===
+{full_questionnaires}
+=== Questionnaire End ===
+"""
+
+    [reporting.keyword_document_classifier]
+        system_message = "Sie sind ein*e Expert*in für Dokumentklassifikation im Bereich verantwortungsvolle KI. Sie können erkennen, ob bestimmte Schlüsselbegriffe für ein Dokument relevant sind oder nicht."
+        human_message = """
+Basierend auf dem folgenden Text, der mit === Questionnaire === beginnt und mit === Questionnaire End === endet, identifizieren Sie bitte, ob die folgenden Schlüsselbegriffe aus verschiedenen Kategorien für den Fragebogen relevant sind oder nicht.
+
+Kategorie: Probleme  
+{problems}
+
+Kategorie: Problemfelder  
+{problem_areas}
+
+Kategorie: Konzepte  
+{concepts}
+
+Kategorie: Empfehlungen  
+{recommendations}
+
+Kategorie: Negative Empfehlungen  
+{negative_recommendations}
+
+Kategorie: Positive Ergebnisse  
+{positive_outcomes}
+
+=== Questionnaire ===  
+{full_questionnaire}  
+=== Questionnaire End ===
+"""
+
+
+[consultants]
+    [consultants.evaluation]
+        system_message = "You are an analyst that is specialized in rating consultants based on a questionnaire with a customer and a set of analyst CVs."
+        human_message = """
+Based on the content of a customer questionnaire below starting from === Questionnaire === and ending at === Questionnaire End === , initial advice given to a customer that starts from === Advice Section Start === and ends with === Advice Section End === and a list of CVs starting from === CVs Start === and ending with === CVs End ===, please rate each analyst in terms of their consulting capabilities to help the customer.
+
+There are 5 categories to rate each analyst that reflect the capability of the analyst to help the interviewed customer:
+
+- very suitable
+- suitable
+- moderately suitable
+- hardly suitable
+- unsuitable
+
+The questionnaire's questions were answered by the customer and asked by a large language model. The customer should be evaluated based on the answers rather than on the questions.
+
+=== Questionnaire ===
+{questions_answers}
+=== Questionnaire End ===
+
+=== Advice Section Start ===
+{conditional_advice}
+=== Advice Section End ===
+
+=== CVs Start ===
+{cvs}
+=== CVs End ===
+
+At the end of this activity, you should have rated the anaylists with one of the five categories, reflecting the degree to which they can help the interviewed customer based on their CV, professional experience and also skills.
+You can also express your degree of confidence in your verdict and also your reasoning that led you to assign a category to a consultant.
+"""

@@ -1,5 +1,5 @@
 from langchain.chains import LLMChain, create_tagging_chain_pydantic
-from langchain.prompts import (
+from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     PromptTemplate,

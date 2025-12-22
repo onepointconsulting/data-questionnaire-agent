@@ -1,6 +1,6 @@
 from typing import AsyncIterator
 
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import BaseMessageChunk
 
 from data_questionnaire_agent.config import cfg

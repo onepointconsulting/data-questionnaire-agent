@@ -10,7 +10,9 @@ from tenacity import stop_after_attempt
 from data_questionnaire_agent.config_support import create_db_conn_str
 from data_questionnaire_agent.log_init import logger
 
-load_dotenv(".env", verbose=True)
+root_project = Path(__file__).resolve().parent.parent
+
+load_dotenv((root_project / ".env").resolve().as_posix(), verbose=True)
 
 
 class GraphRagMode(StrEnum):
@@ -47,16 +49,20 @@ class Config:
         cache=has_langchain_cache,
         streaming=True,
     )
-    logger.info(f"Using model {model}")
+    logger.info(f"Using AI model {model}")
 
-    image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE"))
+    image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE", "0.0"))
     image_llm = OpenAI(temperature=image_llm_temperature)
 
     verbose_llm = os.getenv("VERBOSE_LLM") == "true"
-    ui_timeout = int(os.getenv("UI_TIMEOUT"))
-    project_root = Path(os.getenv("PROJECT_ROOT"))
+    ui_timeout = int(os.getenv("UI_TIMEOUT", "60"))
+    project_root = Path(
+        os.getenv("PROJECT_ROOT", Path(__file__).resolve().parent.parent)
+    )
     assert project_root.exists()
-    question_cache_folder = os.getenv("QUESTION_CACHE_FOLDER")
+    question_cache_folder = os.getenv(
+        "QUESTION_CACHE_FOLDER", Path(__file__).resolve().parent.parent
+    )
     question_cache_folder_path = Path(question_cache_folder)
 
     create_if_not_exists(question_cache_folder_path)
@@ -94,7 +100,7 @@ class Config:
         "wait": tenacity.wait_fixed(wait_fixed),
     }
 
-    product_title = "Onepoint Data Wellness Companion™"
+    product_title = os.getenv("PRODUCT_TITLE", "Onepoint Data Wellness Companion™")
     tracker_db_logs_password = os.getenv("TRACKER_DB_LOGS_PASSWORD")
 
     translation_path = os.getenv("TRANSLATION_PATH")
@@ -130,6 +136,9 @@ class Config:
     assert graphrag_project is not None, "GraphRAG project is required."
     graphrag_read_timeout = float(os.getenv("GRAPHRAG_READ_TIMEOUT", "20"))
 
+    prompts_prefix = os.getenv("PROMPTS_PREFIX", "prompts")
+    assert prompts_prefix is not None, "Prompts prefix is not set."
+
 
 cfg = Config()
 
@@ -151,6 +160,8 @@ mail_config = MailConfig()
 class WebsocketConfig:
     websocket_server = os.getenv("WEBSOCKET_SERVER", "0.0.0.0")
     websocket_port = int(os.getenv("WEBSOCKET_PORT", 8080))
+    logger.info(f"Websocket server: {websocket_server}")
+    logger.info(f"Websocket port: {websocket_port}")
     websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
 
 

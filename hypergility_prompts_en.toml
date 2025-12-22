@@ -1,7 +1,7 @@
 [general_messages]
 tip_correct_format = "Tip: Make sure to answer in the correct format"
 tip_language = "Tip: Please make sure that you write all your answers in British English."
-tool_name = "Data Wellness Companion"
+tool_name = "Responsible AI Companion"
 
 [general_settings]
 questions_per_batch = 1
@@ -10,11 +10,22 @@ minimum_number_of_questions = 4
 
 [questionnaire]
     [questionnaire.initial]
-    question = "Which area of your data ecosystem are you most concerned about?"
-    system_message = "You are a data integration and gouvernance expert that can ask questions about data integration and gouvernance to help a customer with data integration and gouvernance problems. You use British English."
+    question = "Which area of Responsible AI are you most concerned about?"
+    system_message = "You are a Responsible AI expert that can ask questions about Responsible AI to help a customer with concerns related to the responsible usage of AI. You use British English."
     human_message = """Based on the best practices and knowledge base and on an answer to a question answered by a customer, \
-please generate {questions_per_batch} questions that are helpful to this customer to solve data integration and gouvernance issues.
-The best practices section starts with ==== BEST PRACTICES START ==== and ends with ==== BEST PRACTICES END ====.
+please generate {questions_per_batch} questions that are helpful to this customer to address Responsible AI concerns.
+
+Responsible AI related problems are for example:
+
+- Algorithmic Fairness
+- AI governance
+- Bias Mitigation
+- Public Engagement and AI Strategy
+- Transparency and Explainability
+- Data Privacy and Security
+- Human-Centric Approaches
+- International Collaboration in the area of AI
+
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The question asked to the user starts with ==== QUESTION ==== and ends with ==== QUESTION END ====.
 The user answer provided by the customer starts with ==== ANSWER ==== and ends with ==== ANSWER END ====.
@@ -29,11 +40,22 @@ The user answer provided by the customer starts with ==== ANSWER ==== and ends w
 ==== ANSWER END ====
 """
     [questionnaire.secondary]
-    system_message = "You are a British data integration and governance expert that can ask questions about data integration and governance to help a customer with data integration and governance problems. You use British English."
+    system_message = "You are a Responsible AI expert that can ask questions about Responsible AI to help a customer with concerns related to the responsible usage of AI. You use British English."
     human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate {questions_per_batch} questions that are helpful to this customer to solve data integration, governance and quality issues. Make sure that you ask the user about his painpoints or questions which help to understand the user's problems better and to gather more information - and not how to solve his own problems. Your purpose is to gather information to help a customer solve data integration, gouvernance and quality issues.
+please generate {questions_per_batch} questions that are helpful to this customer to address Responsible AI related concerns. 
+Make sure that you ask the user about his or her painpoints and concerns or questions which help to understand the user's problems better and to gather more information - and not how to solve his own problems.
+Your purpose is to gather information to help a customer solve Responsible AI related problems. Responsible AI related problems are for example:
 
-Also provide at least 4 possible answers to the questions you generate. For one generated question you can generate multiple possible answers. Each generated possible answer should not be more than 2 sentences.
+- Algorithmic Fairness
+- AI governance
+- Bias Mitigation
+- Public Engagement and AI Strategy
+- Transparency and Explainability of AI systems
+- Data Privacy and Security
+- Human-Centric Approaches
+- International Collaboration in the area of AI
+
+Also provide at least 4 possible answers to the questions you generate. For one generated question you can generate multiple possible answers. The generated possible answer should not be more than 2 sentences.
 Make sure that the possible answers are explicit and are able to be understood on their own. Please do not use possible answers like 'Both', 'Like the previous possible answer'.
 
 Main questionnaire topic: {questionnaire_topic}
@@ -58,6 +80,7 @@ When generating the questions, please also take the confidence report between ==
 ==== CONFIDENCE REPORT ====
 {confidence_report}
 ==== CONFIDENCE REPORT END ====
+
 """
     [questionnaire.secondary_regenerate]
     human_message = """Please note: previously a question has been generated, but the end user decided to generate another one.
@@ -65,10 +88,35 @@ This was the previous question which the user did not like: '{previous_question}
 Make sure you generate a different question.
 """
     [questionnaire.clarification]
-    system_message = "I am a helpful assistant. I explain the meaning of questions step by step. I highlight the main topics in bold markdown. I use British English."
+    system_message = "You are a helpful assistant focused on topics related to Responsible AI. You explain the meaning of questions step by step. You highlight the main topics in bold markdown. I use British English."
     human_message = """Please explain the following question in a way that a layman can understand it:
 
 {question}
+"""
+    [questionnaire.add_more_suggestions]
+    system_message = "You are a Responsible AI expert that is great at finding potential answers for Responsible AI related questions. You use British English."
+    human_message = """Given a knowledge base (found between ==== KNOWLEDGE BASE START ==== and ==== KNOWLEDGE BASE END ====) and a set of questions and answers (found between ==== QUESTIONNAIRE START ==== and ==== QUESTIONNAIRE END ====), please generate at most 4 more potential answers to the question below which you can find between ==== QUESTION ==== and ==== QUESTION END ====.
+    Please note that some potential answers have previously been generated and you should not repeat them. The previously generated potential answers are found between ==== EXISTING POTENTIAL ANSWERS START ==== and ==== EXISTING POTENTIAL ANSWERS END ====.
+    
+==== KNOWLEDGE BASE START ====
+{knowledge_base}
+==== KNOWLEDGE BASE END ====
+==== QUESTIONNAIRE ====
+{questions_answers}
+==== QUESTIONNAIRE END ====
+==== QUESTION ====
+{question}
+==== QUESTION END ====
+==== EXISTING POTENTIAL ANSWERS START ====
+{suggestions}
+==== EXISTING POTENTIAL ANSWERS END ====
+
+When generating the potential answers, please also take the confidence report between ==== CONFIDENCE REPORT ==== and ==== CONFIDENCE REPORT END ==== into account so that they can improve the overall confidence level:
+
+==== CONFIDENCE REPORT ====
+{confidence_report}
+==== CONFIDENCE REPORT END ====
+
 """
 
 [tagging]
@@ -85,30 +133,50 @@ human_message_extraction = """Given this input that starts with === INPUT START 
 can you extract question related to data analytics, data governance and strategies, if there is one?"""
 
 [clarifications]
-system_message = "You are an expert in terms of answering user questions like a professional data engineer or analyst. You use British English."
+system_message = "You are an expert in terms of answering user questions like a professional Responsible AI expert. You use British English."
 human_message = """Given this input that starts with === INPUT START === and ends with === INPUT END ===
 === INPUT START ===
 {questions}
 === INPUT END ===
-can you please answer all questions related to data analytics, data governance and strategies you see in it? 
-If you see questions related to topics that are totally unrelated to data analytics, data governance and strategies, please tell the user that you only answer questions about these topics.
+can you please answer all questions related to Responsible AI you see in it? 
+
+Responsible AI related problems are for example:
+
+- Algorithmic Fairness
+- AI governance
+- Bias Mitigation
+- Public Engagement and AI Strategy
+- Transparency and Explainability of AI systems
+- Data Privacy and Security
+- Human-Centric Approaches
+- International Collaboration in the area of AI
+
+If you see questions related to topics that are totally unrelated to Responsible AI, please tell the user that you only answer questions about these topics.
 Please be concise and limit your replies to around 30 words if possible. 
 Do not reply with follow up questions like 'Would you like more information?'."""
 
 [advice]
-system_message = """You are a British data integration and gouvernance advisor \
-that gives advice about data integration and gouvernance to help a customer with data integration and gouvernance problems \
+system_message = """You are a Responsible AI expert that gives advice about Responsible AI to help a customer with concerns related to the responsible usage or creation of strategies around the usaage of AI.
 You spend alwayas a few sentences explaining the assumptions and reasoning behind the advice you then present. You use British English."""
 human_message = """Based on the best practices and knowledge base and answers to multiple questions answered by a customer, \
-please generate a series of at most 5 advices that are helpful to this customer to solve data integration and gouvernance issues \
-if the customer has given enough information in his answers to your questions. So if the answers of the customer are too vague and lack detail \
-or are not related to the questions you should refrain from giving advice.
+please generate a series of at most 5 advices that are helpful to this customer to solve Responsible AI related problems.
 
-Also include 3 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 3 pieces of advice about what should be avoided.
-Please also describe 3 potential positive outcomes in case the customer follows the suggested advices.
+Responsible AI related problems are for example:
+
+- Algorithmic Fairness
+- AI governance
+- Bias Mitigation
+- Public Engagement and AI Strategy
+- Transparency and Explainability of AI systems
+- Data Privacy and Security
+- Human-Centric Approaches
+- International Collaboration in the area of AI
+
+Also include 4 pieces of advice about what the customer should avoid. In total you should give 5 pieces of advice regarding what should be done and 4 pieces of advice about what should be avoided.
+Please also describe 4 potential positive outcomes in case the customer follows the suggested advices.
 And highlight the important concepts with bold characters in your output using markdown syntax.
 
-Make sure not to enumerate the advices if you decide to give them.
+Make sure not to enumerate the advices you give.
 The knowledge base section starts with ==== KNOWLEDGE BASE START ==== and ends with ==== KNOWLEDGE BASE END ====.
 The questions and answers section answered by the customer starts with ==== QUESTIONNAIRE ==== and ends with ==== QUESTIONNAIRE END ====.
 ==== KNOWLEDGE BASE START ====
@@ -117,35 +185,10 @@ The questions and answers section answered by the customer starts with ==== QUES
 ==== QUESTIONNAIRE ====
 {questions_answers}
 ==== QUESTIONNAIRE END ====
-
-Here is an example of a questionnaire with answers that are too vague to which you should not give advice:
-==== QUESTIONNAIRE EXAMPLE ====
-question: Which area of your data ecosystem are you most concerned about?
-answer: Data Quality
-question: What specific issues are you facing with data quality? Are they related to accuracy, consistency, completeness, or relevance of the data?
-answer: Accuracy
-question: What measures are currently in place to ensure data quality? Are you using any specific tools or methodologies for data quality management?
-answer: We are using an MDM product.
-==== QUESTIONNAIRE EXAMPLE END ====
-
-Here is an example of a questionnaire with answers that have enough detail to which you should give advices:
-==== QUESTIONNAIRE EXAMPLE ====
-question: Which area of your data ecosystem are you most concerned about?
-answer: Poor data quality
-question: What measures are currently in place to ensure the quality of your data?
-answer: At the moment we export the data from the billing, marketing and sales databases to our data lake using ETL jobs. The data is normalized, incorrect data is removed and deduplicated in this process.
-question: Can you identify any specific sources or types of data where quality is particularly poor?
-answer: Yes, customer data. It is often incorrect and has many duplicates.
-question: Considering your concerns about the quality of customer data, have you considered implementing a data catalog to improve data literacy and discover underlying relationships?
-answer: Yes, but we have not done so. Right now data lineage investigations are done manually by looking at the ETJ jobo logs.
-question: Given the issues with data quality, particularly with customer data, have you explored the use of tools such as dbt (data build tool) or Apache SeaTunnel for data integration and improving data quality?
-answer: Not yet, but I would like to know about it.
-==== QUESTIONNAIRE EXAMPLE END ====
-
 """
 
 [extract_ontology]
-    system_message = """You are an expert at creating ontologies"""
+    system_message = """You are an expert at creating ontologies related to Responsible AI"""
     human_message = """# Ontology from text:
 
 Extract an ontology. Do not draw it, but create a markdown table of relations with 3 columns in this order: source, target, relation name. And also create a list with 2 columns: the first contains the term name and the second column contains the term definition.
@@ -161,7 +204,7 @@ Use this text as a basis:
 """
 
 [confidence_prompt]
-    system_message = "You are an expert at giving data governance advice based on a question answer dialogue with a customer"
+    system_message = "You are an expert at giving Responsible AI related advice based on a question answer dialogue with a customer. You use British English"
     human_message = """Determine how confident you are in terms giving advice to a customer based on a sequence of questions and answers that you can find here:
 
 ```
@@ -170,11 +213,11 @@ Use this text as a basis:
 
 In order to be confident you should know about the difficulties of the customer. You should know about the following:
 * the customer's main problem
-* have some detailed information about his problem. Just having a high-level sentence on the problem of the customer like e.g: "Data Quality" is not enough to be confident.
+* have some detailed information about his problem. Just having a high-level sentence on the problem of the customer like e.g: "AI Ethics" is not enough to be confident.
 * you should have also knowledge about what is causing the problem.
 * ideally you know more than one cause behind the main problem of the customer. 
 * you also need some more background information about the technologies used by the customer to be confident.
-* you should also know about the data governance strategies of the customer to be able to have a high degree of confidence.
+* you should also know about the Responsible AI strategies or methodologies applied by the customer to be able to have a high degree of confidence.
 
 Please use the following classifications to this question about the degree of confidence with which you can give advice:
 
@@ -185,28 +228,40 @@ Please use the following classifications to this question about the degree of co
 - "low"
 
 For example, you should report an "outstanding" confidence degree when:
-You know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. 
-And you also know the technological landscape of the customer very well.
+You know the main problem of the customer and the causes well. You also know about multiple aspects of Responsible AI like two of:
+- Responsible AI ethical standards
+- Responsible AI ethical culture
+- Responsible AI gouvernance
+- Responsible AI strategies
+- Responsible AI policies
+- AI DevOps
+- Stakeholder engagement in model development
+related to the customer's organisation which the customer has adopted or plans to adopt.
+And you also know the AI landscape of the customer very well.
 
 For example, you should report a "high" confidence degree when:
-You know the main problem of the customer and the causes well. You also know about data governance aspects related to the customer's organisation. 
-The only thing missing is more background information about the technological landscape of the customer.
+You know the main problem of the customer and the causes well. You also know about other aspects of Responsible AI like one of:
+- Responsible AI ethical standards
+- Responsible AI gouvernance
+related to the customer's organisation which the customer has adopted or plans to adopt.
+The only things missing are information about Responsible AI strategies and policies.
 
 For example, you should report a "medium" confidence degree when:
 You know the main problem of the customer and the causes well.
-You miss the background information about the technological landscape of the customer and also about data governance in the customer's company.
+You miss information about Responsible AI on ethical standards, gouvernance, strategies and policies, even though you might have some hints about these.
 
 For example, you should report a "mediocre" confidence degree when:
 You know the main problem of the customer and the cause not well. The information about the causes is very limited
-You miss the background information about the technological landscape of the customer and also about data governance in the customer's company.
+You miss information about Responsible AI on ethical standards, strategies and policies and there are almost no hints about these.
 
 For example, you should report a "low" confidence degree when:
 You know the main problem of the customer and nothing else. Or you do not even know about the main problem of the user.
+No clue on Responsible AI ethical standards, strategies or policies
 """
 
 [reporting]
     [reporting.summarization_prompt]
-        system_message = "You are an expert at creating summaries of dialogues in which you capture the main topics of questionnaires and provided types of advice."
+        system_message = "You are an expert at keyword extraction in long reports. You excel at extracting keywords with concepts from large amounts of text."
         human_message = """
 Based on the text below starting from === Questionnaire === and ending at === Questionnaire End === can you please summarize the content of the questionnaire and provided advices?
 
@@ -228,7 +283,7 @@ Please summarize and keep the original sections. So, please keep the following s
 === Questionnaire End ===
 """
     [reporting.keyword_extraction_prompt]
-        system_message = "You are an expert at keyword extraction in long reports. You excel at extracting keywords with concepts from large amounts of text."
+        system_message = "You are an expert at keyword extraction in long reports in the area of responsible AI. You excel at extracting keywords with concepts from large amounts of text."
         human_message = """
 Based on the text below starting from === Questionnaire === and ending at === Questionnaire End === can you please extract the following items from the questionnaire section which always starts with "# Questionnaire":
 - stated problems as keywords with problem area as keywords and degree as keywords
@@ -244,39 +299,39 @@ From the "# Positive outcomes" section can you please extract extract the positi
 
 Regarding the problems and areas, here are some examples of problems:
 
-name: data duplication, area: data quality, degree: negative
-name: resistence to change, area: human resources, degree: moderate
-name: data silos, area: enterprise data architecture, degree: very negative
-name: skill shortage, area: human resources, degree: moderate
+name: unfair and biased AI models, area: model bias, degree: negative
+name: obscure AI model results, area: transparency, degree: moderate
+name: irresponsible usage of models, area: accountability, degree: very negative
+name: AI models without legal guardrails, area: safety, degree: very negative
 
 Regarding the concepts, here are some examples:
 
-name: data lake, area: enterprise data architecture
-name: data mart, area: enterprise data architecture
+name: ethical AI culture, area: ethics
+name: AI adversarial attacks, area: model safety
 
 Regarding the recommendations, here are some examples:
 
-name: Invest in Data Quality Training, area: data quality
-name: Implement Data Governance Policies, area: data gouvernance
-name: Adopt Feedback Loops, area: human resources
+name: invest in Bias Monitoring, area: bias
+name: invest in AI DevOps, area: continous improvement
+name: implement obfuscation techniques and guardrails, area: privacy
 
 Regarding negative recommendations (about what you should avoid), here are some examples:
 
-- Avoid Overburdening Your Team
-- Do Not Rely Solely on External Consultants
+- Avoid neglecting bias monitoring
+- Avoid ignoring the importance of AI DevOps
 
 Regarding positive outcomes, here are some examples:
 
-- Enhanced ability to extract meaningful insights from data
-- Improved data governance
-- Improved data quality
+- Achieving compliance with data privacy regulations
+- Achieving fair and unbiased AI models
+- Achieving transparency and explainability of AI models
 
 === Questionnaire ===
 {full_questionnaires}
 === Questionnaire End ===
 """
     [reporting.keyword_document_classifier]
-        system_message = "You are an expert at document classification. You can detect whether some keywords are relevant to a document or not."
+        system_message = "You are an expert at document classification in the area of Responsible AI. You can detect whether some keywords are relevant to a document or not."
         human_message = """
 Based on the text below starting from === Questionnaire === and ending at === Questionnaire End === can you please identify whether the following keywords in different categories are relevant to the questionnaire or not.
 

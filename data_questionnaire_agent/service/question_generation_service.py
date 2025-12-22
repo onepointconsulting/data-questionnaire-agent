@@ -1,6 +1,4 @@
-from langchain.chains.llm import LLMChain
-from langchain.chains.openai_functions import create_structured_output_chain
-from langchain.prompts import (
+from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     PromptTemplate,
@@ -18,6 +16,7 @@ from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 
 
 def divergent_prompt_transformer(prompt: str, language: str = "en") -> str:
@@ -63,6 +62,7 @@ def prompt_factory_secondary_questions(
             "questions_answers",
             "answers",
             "questions_per_batch",
+            "confidence_report",
         ],
         prompts,
         prompt_transformer,
@@ -114,13 +114,10 @@ def create_structured_question_call(
     return prompt | model
 
 
-def chain_factory_secondary_question(session_properties: SessionProperties) -> LLMChain:
-    return create_structured_output_chain(
-        ResponseQuestions,
-        cfg.llm,
-        prompt_factory_secondary_questions(session_properties),
-        verbose=cfg.verbose_llm,
-    )
+def chain_factory_secondary_question(session_properties: SessionProperties) -> RunnableSequence:
+    model = cfg.llm.with_structured_output(ResponseQuestions)
+    prompt = prompt_factory_secondary_questions(session_properties)
+    return prompt | model
 
 
 def prepare_secondary_question(
@@ -128,7 +125,11 @@ def prepare_secondary_question(
     knowledge_base: str,
     questions_per_batch: int = cfg.questions_per_batch,
     is_recreate: bool = False,
+    confidence_rating: ConfidenceRating | None = None,
 ) -> dict:
+    confidence_report = "No confidence report available."
+    if confidence_rating is not None:
+        confidence_report = confidence_rating.reasoning
     params = {
         "knowledge_base": knowledge_base,
         "questions_answers": str(questionnaire),
@@ -139,6 +140,7 @@ def prepare_secondary_question(
             if len(questionnaire.questions) > 0
             else ""
         ),
+        "confidence_report": confidence_report,
     }
     if is_recreate:
         params["previous_question"] = questionnaire.questions[-1].question

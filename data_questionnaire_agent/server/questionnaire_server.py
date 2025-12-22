@@ -1,7 +1,10 @@
+import time
 import asyncio
 import json
+import ipaddress
 from enum import StrEnum
 from typing import Any, List, Tuple, Union
+from collections import defaultdict, deque
 
 import socketio
 from aiohttp import web
@@ -103,18 +106,61 @@ from data_questionnaire_agent.service.report_aggregation_main_service import (
 from data_questionnaire_agent.service.secondary_question_processor import (
     process_secondary_questions,
 )
+from data_questionnaire_agent.service.add_more_suggestions_service import (
+    process_add_more_suggestions,
+)
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
 
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
+WINDOW, MAX_REQ = 1.0, 8  # 5 req/sec per IP
+CLEANUP_INTERVAL = 300  # Clean up every 5 minutes
 
 
 sio = socketio.AsyncServer(
-    cors_allowed_origins=websocket_cfg.websocket_cors_allowed_origins
+    cors_allowed_origins=websocket_cfg.websocket_cors_allowed_origins,
+    ping_timeout=10,
+    ping_interval=15,
+    max_http_buffer_size=1_000_000,
 )
-app = web.Application()
+
+
+@web.middleware
+async def rate_limit(request, handler):
+    # Only apply rate limiting to socket.io requests
+    if not request.path.startswith("/socket.io/"):
+        return await handler(request)
+    
+    ip = extract_client_ip(request)
+    now = time.monotonic()
+    q = hits[ip]
+    
+    # Clean old timestamps
+    while q and now - q[0] > WINDOW:
+        q.popleft()
+    
+    # Check rate limit
+    if len(q) >= MAX_REQ:
+        return web.Response(status=429, text="Too Many Requests")
+    
+    # Add current request timestamp
+    q.append(now)
+    return await handler(request)
+
+
+app = web.Application(middlewares=[rate_limit])
 sio.attach(app)
+
+
+async def on_startup(app):
+    """Application startup handler to start background tasks."""
+    asyncio.create_task(cleanup_inactive_ips())
+    logger.info("Started IP cleanup background task")
+
+
+# Register startup handler
+app.on_startup.append(on_startup)
 
 
 class Commands(StrEnum):
@@ -124,6 +170,65 @@ class Commands(StrEnum):
     EXTEND_SESSION = "extend_session"
     ERROR = "error"
     REGENERATE_QUESTION = "regenerate_question"
+    ADD_MORE_SUGGESTIONS = "add_more_suggestions"
+
+
+
+hits = defaultdict(deque)
+
+
+def extract_client_ip(request) -> str:
+    """Extract and validate client IP address from request headers."""
+    # Check X-Forwarded-For header (for reverse proxies)
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        # X-Forwarded-For can contain multiple IPs, take the first one
+        client_ip = forwarded_for.split(",")[0].strip()
+        try:
+            # Validate IP address
+            ipaddress.ip_address(client_ip)
+            return client_ip
+        except ValueError:
+            pass
+    
+    # Fall back to direct connection IP
+    if request.remote:
+        try:
+            ipaddress.ip_address(request.remote)
+            return request.remote
+        except ValueError:
+            pass
+    
+    # If all else fails, return a default identifier
+    return "unknown"
+
+
+async def cleanup_inactive_ips():
+    """Periodically clean up inactive IP addresses to prevent memory leaks."""
+    while True:
+        try:
+            await asyncio.sleep(CLEANUP_INTERVAL)
+            now = time.monotonic()
+            inactive_ips = []
+            
+            for ip, timestamps in hits.items():
+                # Remove old timestamps
+                while timestamps and now - timestamps[0] > WINDOW:
+                    timestamps.popleft()
+                
+                # If no recent activity, mark for removal
+                if not timestamps:
+                    inactive_ips.append(ip)
+            
+            # Remove inactive IPs
+            for ip in inactive_ips:
+                del hits[ip]
+                
+            if inactive_ips:
+                logger.info(f"Cleaned up {len(inactive_ips)} inactive IP addresses")
+                
+        except Exception as e:
+            logger.error(f"Error during IP cleanup: {e}")
 
 
 @sio.event
@@ -234,8 +339,15 @@ async def regenerate_question(sid: str, session_id: str):
             )
             questionnaire = await select_questionnaire(session_id)
             knowledge_base = await fetch_context(questionnaire)
+            confidence_rating = await calculate_confidence_rating(
+                questionnaire, session_properties.session_language
+            )
             input = prepare_secondary_question(
-                questionnaire, knowledge_base, questions_per_batch=1, is_recreate=True
+                questionnaire,
+                knowledge_base,
+                questions_per_batch=1,
+                is_recreate=True,
+                confidence_rating=confidence_rating,
             )
             res: ResponseQuestions = await runnable.ainvoke(input)
             # replace latest question in the database.
@@ -310,6 +422,33 @@ async def clarify_question(
 
 
 @sio.event
+async def add_more_suggestions(
+    sid: str, session_id: str, question: str, language: str = "en"
+):
+    language = adapt_language(language)
+    try:
+        possible_answers = await process_add_more_suggestions(
+            session_id, question, language
+        )
+        await sio.emit(
+            Commands.ADD_MORE_SUGGESTIONS,
+            possible_answers.json(),
+            room=sid,
+        )
+    except Exception as e:
+        error_message = str(e)
+        logger.error(error_message)
+        await sio.emit(
+            Commands.ADD_MORE_SUGGESTIONS,
+            ErrorMessage(
+                session_id=session_id,
+                error=t("add_more_suggestions_failed", locale=language) + f" {error_message}",
+            ).json(),
+            room=sid,
+        )
+
+
+@sio.event
 async def extend_session(sid: str, session_id: str, session_steps: int):
     final_report = await has_final_report(session_id)
     if final_report:
@@ -365,13 +504,16 @@ async def handle_secondary_question(
     if len(question_answers) == 0:
         # Generate questions using AI
         with get_openai_callback() as cb:
-            confidence_rating, question_answers = await asyncio.gather(
-                calculate_confidence_rating(questionnaire, language),
-                process_secondary_questions(
+            confidence_rating = await calculate_confidence_rating(
+                questionnaire, language
+            )
+            question_answers = (
+                await process_secondary_questions(
                     questionnaire,
                     cfg.questions_per_batch,
                     session_properties,
                     session_id,
+                    confidence_rating,
                 ),
             )
             total_cost = cb.total_cost
@@ -380,7 +522,7 @@ async def handle_secondary_question(
     if len(question_answers) == 0:
         await send_error(sid, session_id, t("no_answer_from_chatgpt", locale=language))
         return
-    last_question_answer = question_answers[0]
+    last_question_answer = question_answers[0][0]
     # Save the generated question
     _, qs_res = await persist_question(
         session_id, last_question_answer.question, last_question_answer.id, total_cost
@@ -418,10 +560,13 @@ async def save_confidence_rating(
         previous_confidence_rating = None
         if step is not None and step > 2:
             previous_confidence_rating = await select_confidence(session_id, step - 1)
-            if previous_confidence_rating is not None and previous_confidence_rating is not None:
+            if (
+                previous_confidence_rating is not None
+                and previous_confidence_rating is not None
+            ):
                 if previous_confidence_rating > confidence_rating:
                     confidence_rating = previous_confidence_rating
-        
+
         # Save the confidence
         if conditional_advice:
             conditional_advice.confidence = confidence_rating

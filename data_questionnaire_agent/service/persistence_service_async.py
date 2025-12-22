@@ -33,6 +33,7 @@ from data_questionnaire_agent.service.query_support import (
     select_from,
     use_connection,
 )
+from data_questionnaire_agent.model.question_suggestion import PossibleAnswers
 
 
 async def select_questionnaire_statuses(session_id: str) -> List[QuestionnaireStatus]:
@@ -491,6 +492,32 @@ WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire_status_id)s
 """,
         {"questionnaire_status_id": questionnaire_status_id},
     )
+    return question_suggestion_factory(res)
+
+
+async def select_last_questionnaire_status_suggestions(
+    session_id: str,
+) -> List[QuestionSuggestion]:
+    res = await select_from(
+        """
+SELECT SS.ID, SS.MAIN_TEXT
+FROM TB_QUESTIONNAIRE_STATUS_SUGGESTIONS SS
+INNER JOIN PUBLIC.TB_QUESTIONNAIRE_STATUS QS ON QS.ID = SS.QUESTIONNAIRE_STATUS_ID
+WHERE QS.SESSION_ID = %(session_id)s
+	AND QS.ID =
+		(SELECT MAX(ID)
+			FROM TB_QUESTIONNAIRE_STATUS
+			WHERE SESSION_ID = %(session_id)s)
+""",
+        {"session_id": session_id},
+    )
+    return question_suggestion_factory(res)
+
+
+def question_suggestion_factory(res: list) -> List[QuestionSuggestion]:
+    """
+    Factory function to create a list of QuestionSuggestion objects from the result set.
+    """
     ID = 0
     MAIN_TEXT = 1
     if res is None:
@@ -532,6 +559,30 @@ WHERE ID = (SELECT ID FROM PUBLIC.TB_QUESTIONNAIRE_STATUS WHERE SESSION_ID = %(s
         return ConfidenceRating(
             id=created_id, rating=confidence.rating, reasoning=confidence.reasoning
         )
+
+    return await create_cursor(process_save, True)
+
+
+async def save_additional_suggestions(
+    suggestions: PossibleAnswers, session_id: str
+) -> int:
+    async def process_save(cur: AsyncCursor):
+        count = 0
+        for suggestion in suggestions.possible_answers:
+            await cur.execute(
+                """
+        INSERT INTO PUBLIC.TB_QUESTIONNAIRE_STATUS_SUGGESTIONS(MAIN_TEXT, QUESTIONNAIRE_STATUS_ID)
+        VALUES(%(main_text)s, (SELECT MAX(ID)
+                    FROM TB_QUESTIONNAIRE_STATUS
+                    WHERE SESSION_ID = %(session_id)s)) RETURNING ID
+        """,
+                {
+                    "session_id": session_id,
+                    "main_text": suggestion.main_text,
+                },
+            )
+            count += cur.rowcount
+        return count
 
     return await create_cursor(process_save, True)
 
