@@ -13,6 +13,7 @@ async def graphrag_context(question: str) -> Union[str, None]:
         "search": cfg.graphrag_mode,
         "context_size": cfg.graphrag_context_size,
         "project": cfg.graphrag_project,
+        "engine": cfg.graphrag_engine,
     }
 
     params = {key: value for key, value in params.items() if value is not None}
