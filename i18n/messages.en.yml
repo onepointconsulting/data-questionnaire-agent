@@ -2,7 +2,7 @@ en:
   "A big thank you for completing a session with": "A big thank you for completing a session with the %{name}"
   "A personal offer for you": "A personal offer for you"
   "Advice": "Advice"
-  "banner_link": /development/playground/langchain/data_questionnaire_agent/public/images/Onepoint_Res_AI_Banner.png
+  "banner_link": /home/ubuntu/projects/data-wellness-companion-hypergility/ui/banner/report-header.png
   "banner_link_email": https://responsible-ai.onepointltd.ai/banner/report-header.png
   "Confidence Degree": "Res-AI confidence degree"
   "confidence_degree_explanation_title": "About the confidence degree"
