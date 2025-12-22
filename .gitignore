@@ -163,3 +163,5 @@ cython_debug/
 embeddings/
 
 docker_start.bat
+
+data/*.sql
