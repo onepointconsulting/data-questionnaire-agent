@@ -3,7 +3,7 @@ en:
   "A personal offer for you": "A personal offer for you"
   "Advice": "Advice"
   "banner_link": /development/playground/langchain/data_questionnaire_agent/public/images/Onepoint_Res_AI_Banner.png
-  "banner_link_email": https://responsible-ai.onepointltd.ai/images/Onepoint_Res_AI_Banner.png
+  "banner_link_email": https://responsible-ai.onepointltd.ai/banner/report-header.png
   "Confidence Degree": "Res-AI confidence degree"
   "confidence_degree_explanation_title": "About the confidence degree"
   "confidence_degree_explanation_intro": "Confidence degree is a measure of how much the Res-AI Companion trusts its own answer. It is based on the number of sources it used to generate the answer and the quality of those sources. The higher the confidence degree, the more reliable the answer is. Here you are the available confidence degrees:"
