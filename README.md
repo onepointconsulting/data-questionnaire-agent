@@ -22,14 +22,6 @@ uv venv
 uv sync
 ```
 
-## Installation
-
-Change the directory to the root folder of the project.
-
-``` 
-poetry install
-```
-
 ## UI Installation
 
 Before you run, you should compile the UI with this command from the root folder of the project. 

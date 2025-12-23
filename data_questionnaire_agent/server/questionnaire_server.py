@@ -41,6 +41,7 @@ from data_questionnaire_agent.model.session_configuration import (
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
 from data_questionnaire_agent.server.server_support import (
     CORS_HEADERS,
+    extract_email,
     extract_language,
     extract_session,
     handle_error,
@@ -86,6 +87,7 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_regenerated_question,
     update_session_steps,
 )
+from data_questionnaire_agent.service.persistence_service_consultants_async import read_consultant_image
 from data_questionnaire_agent.service.persistence_service_questions_async import (
     select_initial_question,
     select_outstanding_questions,
@@ -884,6 +886,21 @@ async def generate_aggregated_report(request: web.Request) -> web.Response:
                 )
 
     return await handle_error(process, request=request)
+
+
+@routes.get("/consultant/image/{email}")
+async def send_email_request(request: web.Request) -> web.Response:
+    email = extract_email(request)
+    result = await read_consultant_image(email)
+    if result is not None:
+        image, image_name = result
+        return web.Response(
+            body=image,
+            headers={**CORS_HEADERS, "Content-Disposition": f'attachment; filename="{image_name}"'},
+            content_type=f"image/{image_name.split('.')[1]}"
+        )
+    else:
+        return web.Response(status=404, text="Image not found")
 
 
 def extract_time_delta(json_content: dict) -> Union[int, None]:

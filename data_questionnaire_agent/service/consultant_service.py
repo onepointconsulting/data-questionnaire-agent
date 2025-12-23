@@ -133,6 +133,7 @@ async def calculate_consultant_ratings_for(
                     reasoning=cr.reasoning,
                     rating=cr.rating,
                     score=SCORES[cr.rating],
+                    email=cr.email,
                 )
                 for cr in consultant_ratings
             ],

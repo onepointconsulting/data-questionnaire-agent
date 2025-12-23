@@ -47,6 +47,10 @@ class ConsultantRating(BaseModel):
         default=None,
         description="The URL of the LinkedIn photo of the consultant with 400px width.",
     )
+    email: str | None = Field(
+        default=None,
+        description="The email of the consultant.",
+    )
 
 
 class ScoredConsultantRating(ConsultantRating):
