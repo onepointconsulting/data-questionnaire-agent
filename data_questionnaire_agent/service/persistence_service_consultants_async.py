@@ -102,6 +102,30 @@ VALUES(%(consultant_id)s, %(title)s, %(location)s, %(start_date)s, %(end_date)s,
     return await create_cursor(process, True)
 
 
+async def save_consultant_image(email: str, image: bytes) -> int | None:
+    async def process(cur: AsyncCursor):
+        sql = """
+INSERT INTO TB_CONSULTANT_IMAGE(CONSULTANT_ID, CONSULTANT_IMAGE) VALUES((SELECT ID FROM TB_CONSULTANT WHERE EMAIL = %(email)s), %(image)s)
+ON CONFLICT (CONSULTANT_ID) DO UPDATE SET CONSULTANT_IMAGE=%(image)s RETURNING ID;
+"""
+        await cur.execute(sql, {"email": email, "image": image})
+        return cur.rowcount
+    return await create_cursor(process, True)
+
+
+async def read_consultant_image(email: str) -> bytes | None:
+    async def process(cur: AsyncCursor):
+        sql = """
+SELECT CONSULTANT_IMAGE FROM TB_CONSULTANT_IMAGE WHERE CONSULTANT_ID = (SELECT ID FROM TB_CONSULTANT WHERE EMAIL = %(email)s)
+"""
+        await cur.execute(sql, {"email": email})
+        result = await cur.fetchone()
+        if result is None:
+            return None
+        return result[0]
+    return await create_cursor(process, True)
+
+
 async def delete_consultant(consultant: Consultant) -> int:
     async def process(cur: AsyncCursor):
         sql = """
