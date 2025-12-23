@@ -14,14 +14,12 @@ git submodule update
 
 ## Setup
 
-We suggest to use [Conda](https://docs.conda.io/en/latest/) to manage the virtual environment and then install poetry.
+Please use uv for installation.
 
 ```
-conda activate base
-conda remove -n data_wellness_agent --all
-conda create -n data_wellness_agent python=3.13.1
-conda activate data_wellness_agent
-pip install poetry
+uv venv
+.\.venv\Scripts\activate
+uv sync
 ```
 
 ## Installation
