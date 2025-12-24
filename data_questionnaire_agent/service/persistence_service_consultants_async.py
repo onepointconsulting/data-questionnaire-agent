@@ -102,6 +102,30 @@ VALUES(%(consultant_id)s, %(title)s, %(location)s, %(start_date)s, %(end_date)s,
     return await create_cursor(process, True)
 
 
+async def save_consultant_image(email: str, image_name: str, image: bytes) -> int | None:
+    async def process(cur: AsyncCursor):
+        sql = """
+INSERT INTO TB_CONSULTANT_IMAGE(CONSULTANT_ID, CONSULTANT_IMAGE, IMAGE_NAME) VALUES((SELECT ID FROM TB_CONSULTANT WHERE EMAIL = %(email)s), %(image)s, %(image_name)s)
+ON CONFLICT (CONSULTANT_ID) DO UPDATE SET CONSULTANT_IMAGE=%(image)s, IMAGE_NAME=%(image_name)s RETURNING ID;
+"""
+        await cur.execute(sql, {"email": email, "image": image, "image_name": image_name})
+        return cur.rowcount
+    return await create_cursor(process, True)
+
+
+async def read_consultant_image(email: str) -> tuple[bytes, str] | None:
+    async def process(cur: AsyncCursor):
+        sql = """
+SELECT CONSULTANT_IMAGE, IMAGE_NAME FROM TB_CONSULTANT_IMAGE WHERE CONSULTANT_ID = (SELECT ID FROM TB_CONSULTANT WHERE EMAIL = %(email)s)
+"""
+        await cur.execute(sql, {"email": email})
+        result = await cur.fetchone()
+        if result is None:
+            return None
+        return result[0], result[1]
+    return await create_cursor(process, True)
+
+
 async def delete_consultant(consultant: Consultant) -> int:
     async def process(cur: AsyncCursor):
         sql = """
@@ -120,8 +144,8 @@ async def read_consultants(offset: int = None, limit: int = None) -> list[Consul
     consultant_sql = f"""
 select C.ID, C.GIVEN_NAME, C.SURNAME, C.EMAIL, C.CV, C.INDUSTRY_NAME, C.GEO_LOCATION, C.LINKEDIN_PROFILE_URL,
 string_agg(S.SKILL_NAME, '{splitter}') skills from TB_CONSULTANT C 
-INNER JOIN TB_CONSULTANT_SKILL CS ON C.ID = CS.CONSULTANT_ID
-INNER JOIN TB_SKILL S ON S.ID = CS.SKILL_ID
+LEFT JOIN TB_CONSULTANT_SKILL CS ON C.ID = CS.CONSULTANT_ID
+LEFT JOIN TB_SKILL S ON S.ID = CS.SKILL_ID
 GROUP BY C.ID, C.GIVEN_NAME, C.SURNAME, C.EMAIL, C.CV, C.INDUSTRY_NAME, C.GEO_LOCATION, C.LINKEDIN_PROFILE_URL
 {offset_expression} {limit_expression}
 """
@@ -151,7 +175,7 @@ WHERE C.ID = %(consultant_id)s
     for r in rows:
         id = r[consultant_id]
         skills_str = r[consultant_skills]
-        skills = [Skill(name=s) for s in skills_str.split(splitter)]
+        skills = [Skill(name=s) for s in skills_str.split(splitter)] if skills_str else []
         experience_rows = await select_from(experience_sql, {"consultant_id": id})
         experiences = [
             Experience(
@@ -170,8 +194,8 @@ WHERE C.ID = %(consultant_id)s
                 email=r[consultant_email],
                 cv=r[consultant_cv],
                 industry_name=r[consultant_industry_name],
-                geo_location=r[consultant_geo_location],
-                linkedin_profile_url=r[consultant_linkedin_profile_url],
+                geo_location=r[consultant_geo_location] if r[consultant_geo_location] else "",
+                linkedin_profile_url=r[consultant_linkedin_profile_url] if r[consultant_linkedin_profile_url] else "",
                 experiences=experiences,
                 skills=skills,
             )
@@ -221,7 +245,7 @@ async def read_session_consultant_ratings(
     session_id: str, limit: int = 5
 ) -> ConsultantRatings:
     sql = """
-SELECT C.GIVEN_NAME, C.SURNAME, C.LINKEDIN_PROFILE_URL, SC.REASONING, SC.RATING, C.LINKEDIN_PHOTO_200, C.LINKEDIN_PHOTO_400 
+SELECT C.GIVEN_NAME, C.SURNAME, C.LINKEDIN_PROFILE_URL, SC.REASONING, SC.RATING, C.LINKEDIN_PHOTO_200, C.LINKEDIN_PHOTO_400, C.EMAIL 
 FROM TB_SESSION_CONSULTANT_RATING SC INNER JOIN TB_CONSULTANT C ON C.ID = SC.CONSULTANT_ID
 WHERE SC.SESSION_ID = %(session_id)s ORDER BY SC.RATING_NUMBER DESC LIMIT %(limit)s
 """
@@ -233,6 +257,7 @@ WHERE SC.SESSION_ID = %(session_id)s ORDER BY SC.RATING_NUMBER DESC LIMIT %(limi
     pos_rating = 4
     pos_linkedin_photo_200 = 5
     pos_linkedin_photo_400 = 6
+    pos_email = 7
     consultant_ratings = [
         ConsultantRating(
             analyst_name=f"{row[pos_given_name]} {row[pos_surname]}",
@@ -241,6 +266,7 @@ WHERE SC.SESSION_ID = %(session_id)s ORDER BY SC.RATING_NUMBER DESC LIMIT %(limi
             rating=row[pos_rating],
             linkedin_photo_200=row[pos_linkedin_photo_200],
             linkedin_photo_400=row[pos_linkedin_photo_400],
+            email=row[pos_email],
         )
         for row in rows
     ]

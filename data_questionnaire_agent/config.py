@@ -51,9 +51,6 @@ class Config:
     )
     logger.info(f"Using AI model {model}")
 
-    image_llm_temperature = float(os.getenv("IMAGE_LLM_TEMPERATURE", "0.0"))
-    image_llm = OpenAI(temperature=image_llm_temperature)
-
     verbose_llm = os.getenv("VERBOSE_LLM") == "true"
     ui_timeout = int(os.getenv("UI_TIMEOUT", "60"))
     project_root = Path(
@@ -101,7 +98,6 @@ class Config:
     }
 
     product_title = os.getenv("PRODUCT_TITLE", "Onepoint Data Wellness Companion™")
-    tracker_db_logs_password = os.getenv("TRACKER_DB_LOGS_PASSWORD")
 
     translation_path = os.getenv("TRANSLATION_PATH")
     assert Path(translation_path).exists()

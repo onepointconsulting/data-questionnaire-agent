@@ -1,8 +1,7 @@
-from langchain.chains.llm import LLMChain
-from langchain.chains.openai_functions import create_structured_output_chain
 from langchain_core.prompts import (
     ChatPromptTemplate,
 )
+from langchain_core.runnables import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
@@ -25,7 +24,7 @@ def prompt_factory_initial_questions(language: str) -> ChatPromptTemplate:
     )
 
 
-def chain_factory_initial_question(language: str) -> LLMChain:
+def chain_factory_initial_question(language: str) -> RunnableSequence:
     model = cfg.llm.with_structured_output(ResponseQuestions)
     prompt = prompt_factory_initial_questions(language)
     return prompt | model
