@@ -250,6 +250,8 @@ FROM TB_SESSION_CONSULTANT_RATING SC INNER JOIN TB_CONSULTANT C ON C.ID = SC.CON
 WHERE SC.SESSION_ID = %(session_id)s ORDER BY SC.RATING_NUMBER DESC LIMIT %(limit)s
 """
     rows = await select_from(sql, {"session_id": session_id, "limit": limit})
+    if rows is None:
+        return ConsultantRatings(consultant_ratings=[])
     pos_given_name = 0
     pos_surname = 1
     pos_linkedin_profile_url = 2
