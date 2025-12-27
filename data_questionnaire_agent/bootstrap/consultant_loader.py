@@ -52,6 +52,18 @@ async def abootstrap_photos():
         {
             "email": "shashinbshah@linkedin.com",
             "image_url": "https://media.licdn.com/dms/image/v2/D4E03AQEEBDoAz1mbaA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725447261446?e=1768435200&v=beta&t=nbbWKipwsxsKsM1uBhrO3ivhIXy4-YSiGInxt3Gltg0"
+        },
+        {
+            "email": "alexander-polev-cto@linkedin.com",
+            "image_url": "https://media.licdn.com/dms/image/v2/D4E03AQEY0W3f_Xug1g/profile-displayphoto-shrink_800_800/B4EZaqQl8bHIAc-/0/1746613199118?e=1768435200&v=beta&t=PWtis1MlE81hommj_4z4tic2S-JPpzU32CoBATRthEU"
+        },
+        {
+            "email": "miguelvale@linkedin.com",
+            "image_url": "https://media.licdn.com/dms/image/v2/C5603AQHIAHpZhpMq9Q/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1516274191466?e=1768435200&v=beta&t=VXODY66geR7Fmb0ctxKcgMMpvKt4SyHtZr55EdM-140"
+        },
+        {
+            "email": "gil-palma-fernandes@linkedin.com",
+            "image_url": "https://media.licdn.com/dms/image/v2/C4D03AQEDBl5Kh0CY8Q/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1602326759733?e=1768435200&v=beta&t=5W3P0bUkyL127Uzj5R_XgM6sS6HEPjQzhdW00sVAZAc"
         }
     ]
     for consultant in consultants:
