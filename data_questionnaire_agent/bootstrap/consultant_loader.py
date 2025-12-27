@@ -44,6 +44,10 @@ async def abootstrap_photos():
         {
             "email": "tuli-faas-37b8674@linkedin.com",
             "image_url": "https://media.licdn.com/dms/image/v2/D4E03AQF-LGWIoTvW0g/profile-displayphoto-scale_400_400/B4EZkuuBRlIkAg-/0/1757425441876?e=1767830400&v=beta&t=mEUHWGbOuR-LBNoxKfbRtaFmIUD45d1y2i-CR_HpDhs"
+        },
+        {
+            "email": "allanschweitz@linkedin.com",
+            "image_url": "https://media.licdn.com/dms/image/v2/D4E03AQEOQ-JSZRUdaQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1724161708940?e=1768435200&v=beta&t=FXy3o9w7SwKJV6SVTN1gvSnrUeFg7TFWSDL-F0mZE64"
         }
     ]
     for consultant in consultants:
