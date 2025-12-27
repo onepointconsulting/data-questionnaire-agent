@@ -48,6 +48,10 @@ async def abootstrap_photos():
         {
             "email": "allanschweitz@linkedin.com",
             "image_url": "https://media.licdn.com/dms/image/v2/D4E03AQEOQ-JSZRUdaQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1724161708940?e=1768435200&v=beta&t=FXy3o9w7SwKJV6SVTN1gvSnrUeFg7TFWSDL-F0mZE64"
+        },
+        {
+            "email": "shashinbshah@linkedin.com",
+            "image_url": "https://media.licdn.com/dms/image/v2/D4E03AQEEBDoAz1mbaA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725447261446?e=1768435200&v=beta&t=nbbWKipwsxsKsM1uBhrO3ivhIXy4-YSiGInxt3Gltg0"
         }
     ]
     for consultant in consultants:
