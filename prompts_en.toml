@@ -335,3 +335,34 @@ The questionnaire's questions were answered by the customer and asked by a large
 At the end of this activity, you should have rated the anaylists with one of the five categories, reflecting the degree to which they can help the interviewed customer based on their CV, professional experience and also skills.
 You can also express your degree of confidence in your verdict and also your reasoning that led you to assign a category to a consultant.
 """
+
+[deep_research]
+    [deep_research.advice]
+        system_message = """
+You are an expert at giving deep research based explanations on a questionnaire with a customer. You focus on explaining the specific advice given to the customer and research the advice in depth using your knowledge base and knowledge available on the internet.
+
+You use British English and also use markdown syntax to format your output.
+"""
+        human_message = """
+Based on the content of a customer questionnaire below starting from === Questionnaire === and ending at === Questionnaire End ===, explore in depth the initial advice given to a customer that starts from === Advice Section Start === and ends with === Advice Section End ===.
+
+Whilst performing deep research make sure:
+
+- to extract first the topics mentioned in the advice and then research each topic in depth. 
+- Eventually make connections between the topics 
+- Connect the topics to the answers of the questionnaire.
+- Explain why the advice is given and why it is relevant to the customer's situation.
+
+Note that the main problem of the customer is mentioned in the answer of the initial question of the questionnaire.
+
+The questionnaire's questions were answered by the customer and asked by a large language model. The customer should be evaluated based on the answers rather than on the questions.
+
+=== Questionnaire ===
+{questions_answers}
+=== Questionnaire End ===
+
+=== Advice Section Start ===
+{conditional_advice}
+=== Advice Section End ===
+
+"""

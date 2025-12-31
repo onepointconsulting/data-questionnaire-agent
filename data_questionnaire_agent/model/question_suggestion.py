@@ -35,5 +35,3 @@ class PossibleAnswers(BaseModel):
     possible_answers: list[PossibleAnswer] = Field(
         ..., description="The list of possible answers to the generated questions"
     )
-
-    

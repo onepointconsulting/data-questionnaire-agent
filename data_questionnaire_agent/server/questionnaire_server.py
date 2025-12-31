@@ -1,10 +1,10 @@
-import time
 import asyncio
-import json
 import ipaddress
+import json
+import time
+from collections import defaultdict, deque
 from enum import StrEnum
 from typing import Any, List, Tuple, Union
-from collections import defaultdict, deque
 
 import socketio
 from aiohttp import web
@@ -47,6 +47,9 @@ from data_questionnaire_agent.server.server_support import (
     handle_error,
     routes,
 )
+from data_questionnaire_agent.service.add_more_suggestions_service import (
+    process_add_more_suggestions,
+)
 from data_questionnaire_agent.service.advice_service import (
     create_structured_question_call,
 )
@@ -87,7 +90,9 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_regenerated_question,
     update_session_steps,
 )
-from data_questionnaire_agent.service.persistence_service_consultants_async import read_consultant_image
+from data_questionnaire_agent.service.persistence_service_consultants_async import (
+    read_consultant_image,
+)
 from data_questionnaire_agent.service.persistence_service_questions_async import (
     select_initial_question,
     select_outstanding_questions,
@@ -107,9 +112,6 @@ from data_questionnaire_agent.service.report_aggregation_main_service import (
 )
 from data_questionnaire_agent.service.secondary_question_processor import (
     process_secondary_questions,
-)
-from data_questionnaire_agent.service.add_more_suggestions_service import (
-    process_add_more_suggestions,
 )
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
@@ -133,19 +135,19 @@ async def rate_limit(request, handler):
     # Only apply rate limiting to socket.io requests
     if not request.path.startswith("/socket.io/"):
         return await handler(request)
-    
+
     ip = extract_client_ip(request)
     now = time.monotonic()
     q = hits[ip]
-    
+
     # Clean old timestamps
     while q and now - q[0] > WINDOW:
         q.popleft()
-    
+
     # Check rate limit
     if len(q) >= MAX_REQ:
         return web.Response(status=429, text="Too Many Requests")
-    
+
     # Add current request timestamp
     q.append(now)
     return await handler(request)
@@ -175,7 +177,6 @@ class Commands(StrEnum):
     ADD_MORE_SUGGESTIONS = "add_more_suggestions"
 
 
-
 hits = defaultdict(deque)
 
 
@@ -192,7 +193,7 @@ def extract_client_ip(request) -> str:
             return client_ip
         except ValueError:
             pass
-    
+
     # Fall back to direct connection IP
     if request.remote:
         try:
@@ -200,7 +201,7 @@ def extract_client_ip(request) -> str:
             return request.remote
         except ValueError:
             pass
-    
+
     # If all else fails, return a default identifier
     return "unknown"
 
@@ -212,23 +213,23 @@ async def cleanup_inactive_ips():
             await asyncio.sleep(CLEANUP_INTERVAL)
             now = time.monotonic()
             inactive_ips = []
-            
+
             for ip, timestamps in hits.items():
                 # Remove old timestamps
                 while timestamps and now - timestamps[0] > WINDOW:
                     timestamps.popleft()
-                
+
                 # If no recent activity, mark for removal
                 if not timestamps:
                     inactive_ips.append(ip)
-            
+
             # Remove inactive IPs
             for ip in inactive_ips:
                 del hits[ip]
-                
+
             if inactive_ips:
                 logger.info(f"Cleaned up {len(inactive_ips)} inactive IP addresses")
-                
+
         except Exception as e:
             logger.error(f"Error during IP cleanup: {e}")
 
@@ -444,7 +445,8 @@ async def add_more_suggestions(
             Commands.ADD_MORE_SUGGESTIONS,
             ErrorMessage(
                 session_id=session_id,
-                error=t("add_more_suggestions_failed", locale=language) + f" {error_message}",
+                error=t("add_more_suggestions_failed", locale=language)
+                + f" {error_message}",
             ).json(),
             room=sid,
         )
@@ -896,8 +898,11 @@ async def send_email_request(request: web.Request) -> web.Response:
         image, image_name = result
         return web.Response(
             body=image,
-            headers={**CORS_HEADERS, "Content-Disposition": f'attachment; filename="{image_name}"'},
-            content_type=f"image/{image_name.split('.')[1]}"
+            headers={
+                **CORS_HEADERS,
+                "Content-Disposition": f'attachment; filename="{image_name}"',
+            },
+            content_type=f"image/{image_name.split('.')[1]}",
         )
     else:
         return web.Response(status=404, text="Image not found")

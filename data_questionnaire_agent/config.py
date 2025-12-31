@@ -4,7 +4,7 @@ from pathlib import Path
 
 import tenacity
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI, OpenAI, OpenAIEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from tenacity import stop_after_attempt
 
 from data_questionnaire_agent.config_support import create_db_conn_str
@@ -29,6 +29,7 @@ def create_if_not_exists(folder):
 
 class Config:
     model = os.getenv("OPENAI_MODEL")
+    deep_research_model = os.getenv("DEEP_RESEARCH_MODEL")
     request_timeout = int(os.getenv("REQUEST_TIMEOUT"))
     has_langchain_cache = os.getenv("LANGCHAIN_CACHE") == "true"
     streaming = os.getenv("CHATGPT_STREAMING") == "true"

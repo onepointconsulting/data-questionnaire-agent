@@ -3,6 +3,7 @@ import asyncio
 from aiohttp import web
 
 from data_questionnaire_agent.config import web_server_cfg, websocket_cfg
+from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.server.questionnaire_server import (
     MAX_SESSION_STEPS,
     app,
@@ -14,7 +15,6 @@ from data_questionnaire_agent.server.questionnaire_server_backend import (
 from data_questionnaire_agent.server.questionnaire_server_consultants import (
     routes as consultant_routes,
 )
-from data_questionnaire_agent.log_init import logger
 
 assert config_routes == routes
 assert consultant_routes == routes
@@ -40,7 +40,9 @@ def run_server():
     app.router.add_static("/", path=web_server_cfg.ui_folder.as_posix(), name="ui")
     loop = asyncio.new_event_loop()
 
-    logger.info(f"Running server on {websocket_cfg.websocket_server}:{websocket_cfg.websocket_port}")
+    logger.info(
+        f"Running server on {websocket_cfg.websocket_server}:{websocket_cfg.websocket_port}"
+    )
 
     web.run_app(
         app,

@@ -7,6 +7,7 @@ from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 from data_questionnaire_agent.model.session_configuration import (
     ChatType,
@@ -16,7 +17,6 @@ from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
-from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 
 
 def divergent_prompt_transformer(prompt: str, language: str = "en") -> str:
@@ -114,7 +114,9 @@ def create_structured_question_call(
     return prompt | model
 
 
-def chain_factory_secondary_question(session_properties: SessionProperties) -> RunnableSequence:
+def chain_factory_secondary_question(
+    session_properties: SessionProperties,
+) -> RunnableSequence:
     model = cfg.llm.with_structured_output(ResponseQuestions)
     prompt = prompt_factory_secondary_questions(session_properties)
     return prompt | model

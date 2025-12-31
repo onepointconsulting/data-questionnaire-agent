@@ -9,6 +9,7 @@ from data_questionnaire_agent.model.application_schema import (
     Questionnaire,
     convert_to_question_answers,
 )
+from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
 )
@@ -21,7 +22,6 @@ from data_questionnaire_agent.service.question_generation_service import (
     create_structured_question_call,
     prepare_secondary_question,
 )
-from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 
 
 async def process_secondary_questions(

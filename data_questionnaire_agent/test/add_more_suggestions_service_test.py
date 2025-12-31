@@ -1,7 +1,8 @@
 from langchain_core.runnables.base import RunnableSequence
+
 from data_questionnaire_agent.service.add_more_suggestions_service import (
-    prompt_factory_add_more_suggestions,
     chain_factory_add_more_suggestions,
+    prompt_factory_add_more_suggestions,
 )
 
 

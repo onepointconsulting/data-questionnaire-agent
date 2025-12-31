@@ -16,7 +16,10 @@ from data_questionnaire_agent.model.jwt_token import JWTToken
 from data_questionnaire_agent.model.languages import DEFAULT_LANGUAGE
 from data_questionnaire_agent.model.ontology_schema import Ontology
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.model.question_suggestion import QuestionSuggestion
+from data_questionnaire_agent.model.question_suggestion import (
+    PossibleAnswers,
+    QuestionSuggestion,
+)
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
 from data_questionnaire_agent.model.session_configuration import (
     DEFAULT_CHAT_TYPE,
@@ -33,7 +36,6 @@ from data_questionnaire_agent.service.query_support import (
     select_from,
     use_connection,
 )
-from data_questionnaire_agent.model.question_suggestion import PossibleAnswers
 
 
 async def select_questionnaire_statuses(session_id: str) -> List[QuestionnaireStatus]:

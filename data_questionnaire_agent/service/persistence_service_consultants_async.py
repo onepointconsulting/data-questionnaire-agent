@@ -102,14 +102,19 @@ VALUES(%(consultant_id)s, %(title)s, %(location)s, %(start_date)s, %(end_date)s,
     return await create_cursor(process, True)
 
 
-async def save_consultant_image(email: str, image_name: str, image: bytes) -> int | None:
+async def save_consultant_image(
+    email: str, image_name: str, image: bytes
+) -> int | None:
     async def process(cur: AsyncCursor):
         sql = """
 INSERT INTO TB_CONSULTANT_IMAGE(CONSULTANT_ID, CONSULTANT_IMAGE, IMAGE_NAME) VALUES((SELECT ID FROM TB_CONSULTANT WHERE EMAIL = %(email)s), %(image)s, %(image_name)s)
 ON CONFLICT (CONSULTANT_ID) DO UPDATE SET CONSULTANT_IMAGE=%(image)s, IMAGE_NAME=%(image_name)s RETURNING ID;
 """
-        await cur.execute(sql, {"email": email, "image": image, "image_name": image_name})
+        await cur.execute(
+            sql, {"email": email, "image": image, "image_name": image_name}
+        )
         return cur.rowcount
+
     return await create_cursor(process, True)
 
 
@@ -123,6 +128,7 @@ SELECT CONSULTANT_IMAGE, IMAGE_NAME FROM TB_CONSULTANT_IMAGE WHERE CONSULTANT_ID
         if result is None:
             return None
         return result[0], result[1]
+
     return await create_cursor(process, True)
 
 
@@ -175,7 +181,9 @@ WHERE C.ID = %(consultant_id)s
     for r in rows:
         id = r[consultant_id]
         skills_str = r[consultant_skills]
-        skills = [Skill(name=s) for s in skills_str.split(splitter)] if skills_str else []
+        skills = (
+            [Skill(name=s) for s in skills_str.split(splitter)] if skills_str else []
+        )
         experience_rows = await select_from(experience_sql, {"consultant_id": id})
         experiences = [
             Experience(
@@ -194,8 +202,14 @@ WHERE C.ID = %(consultant_id)s
                 email=r[consultant_email],
                 cv=r[consultant_cv],
                 industry_name=r[consultant_industry_name],
-                geo_location=r[consultant_geo_location] if r[consultant_geo_location] else "",
-                linkedin_profile_url=r[consultant_linkedin_profile_url] if r[consultant_linkedin_profile_url] else "",
+                geo_location=(
+                    r[consultant_geo_location] if r[consultant_geo_location] else ""
+                ),
+                linkedin_profile_url=(
+                    r[consultant_linkedin_profile_url]
+                    if r[consultant_linkedin_profile_url]
+                    else ""
+                ),
                 experiences=experiences,
                 skills=skills,
             )
