@@ -44,11 +44,13 @@ VALUES(%(deep_research_output_id)s, %(title)s, %(url)s, %(start_index)s, %(end_i
     return await create_cursor(process, True)
 
 
-async def read_deep_research(session_id: str) -> List[DeepResearchAdviceOutput]:
+async def read_deep_research(session_id: str, advice: str | None = None) -> List[DeepResearchAdviceOutput]:
     sql = """
 SELECT ID, ADVICE, OUTPUT FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s
+""" if advice is None else """
+SELECT ID, ADVICE, OUTPUT FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s AND ADVICE = %(advice)s
 """
-    rows = await select_from(sql, {"session_id": session_id})
+    rows = await select_from(sql, {"session_id": session_id} if advice is None else {"session_id": session_id, "advice": advice})
     if rows is None:
         return []
     deep_research_outputs = []
@@ -74,7 +76,7 @@ SELECT TITLE, URL, START_INDEX, END_INDEX, TEXT FROM TB_DEEP_RESEARCH_CITATION W
             )
             for i, citation_row in enumerate(citation_rows)
         ]
-        deep_research_outputs.append(DeepResearchAdviceOutput(deep_research_output=row[2], citations=citations))
+        deep_research_outputs.append(DeepResearchAdviceOutput(advice=row[1], deep_research_output=row[2], citations=citations))
     return deep_research_outputs
 
 

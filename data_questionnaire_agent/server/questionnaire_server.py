@@ -3,7 +3,6 @@ import ipaddress
 import json
 import time
 from collections import defaultdict, deque
-from enum import StrEnum
 from typing import Any, List, Tuple, Union
 
 import socketio
@@ -56,6 +55,7 @@ from data_questionnaire_agent.service.advice_service import (
 from data_questionnaire_agent.service.confidence_service import (
     calculate_confidence_rating,
 )
+from data_questionnaire_agent.service.deep_research import deep_research_websocket
 from data_questionnaire_agent.service.graph_service import generate_analyzed_ontology
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.jwt_token_service import (
@@ -115,6 +115,8 @@ from data_questionnaire_agent.service.secondary_question_processor import (
 )
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
+from data_questionnaire_agent.server.socket_commands import Commands
+
 
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
@@ -165,16 +167,6 @@ async def on_startup(app):
 
 # Register startup handler
 app.on_startup.append(on_startup)
-
-
-class Commands(StrEnum):
-    START_SESSION = "start_session"
-    SERVER_MESSAGE = "server_message"
-    CLARIFICATION_TOKEN = "clarification_token"
-    EXTEND_SESSION = "extend_session"
-    ERROR = "error"
-    REGENERATE_QUESTION = "regenerate_question"
-    ADD_MORE_SUGGESTIONS = "add_more_suggestions"
 
 
 hits = defaultdict(deque)
@@ -471,6 +463,12 @@ async def extend_session(sid: str, session_id: str, session_steps: int):
         session_steps,
         room=sid,
     )
+
+
+@sio.event
+async def generate_deep_research(sid: str, session_id: str, advice: str, language: str = "en"):
+    await deep_research_websocket(session_id, advice, sid, sio)
+    
 
 
 async def generate_report(session_id: str, questionnaire: Questionnaire, language: str):

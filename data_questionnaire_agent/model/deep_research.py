@@ -33,5 +33,11 @@ class Citation(BaseModel):
 
 
 class DeepResearchAdviceOutput(BaseModel):
+    advice: str = Field(..., description="The advice")
     deep_research_output: str = Field(..., description="The deep research output")
     citations: List[Citation] = Field(..., description="The citations")
+
+
+class DeepResearchStatus(BaseModel):
+    status: str = Field(..., description="The status")
+    advice: str = Field(..., description="The advice")
