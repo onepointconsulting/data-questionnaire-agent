@@ -45,10 +45,13 @@ VALUES(%(deep_research_output_id)s, %(title)s, %(url)s, %(start_index)s, %(end_i
 
 
 async def read_deep_research(session_id: str, advice: str | None = None) -> List[DeepResearchAdviceOutput]:
-    sql = """
-SELECT ID, ADVICE, OUTPUT FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s
-""" if advice is None else """
-SELECT ID, ADVICE, OUTPUT FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s AND ADVICE = %(advice)s
+    """
+    Only the latest deep research output for the given advice will be returned.
+    """
+    sql = f"""
+WITH INIT_QUERY AS
+(SELECT ROW_NUMBER() OVER (PARTITION BY SESSION_ID, ADVICE ORDER BY CREATED_AT) deep_research_row_number, ID, ADVICE, OUTPUT FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s {f"AND ADVICE = %(advice)s" if advice is not None else ""})
+SELECT ID, ADVICE, OUTPUT FROM INIT_QUERY WHERE deep_research_row_number = 1
 """
     rows = await select_from(sql, {"session_id": session_id} if advice is None else {"session_id": session_id, "advice": advice})
     if rows is None:

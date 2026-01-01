@@ -8,7 +8,7 @@ from data_questionnaire_agent.service.persistence_deep_research_async import (
 )
 
 @pytest.mark.asyncio
-async def test_generate_deep_research():
+async def test_save_and_read_deep_research():
     with open("data/deep_research_output.json", "r", encoding="utf-8") as f:
         deep_research_output = DeepResearchAdviceOutput.model_validate_json(f.read())
     test_session_id = "test_session_id"
