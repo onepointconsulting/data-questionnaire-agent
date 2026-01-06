@@ -284,7 +284,7 @@ async def start_session(
     await append_other_suggestions(server_messages, questionnaire_messages)
     await sio.emit(
         Commands.START_SESSION,
-        server_messages.json(),
+        server_messages.model_dump_json(),
         room=sid,
     )
 
@@ -467,7 +467,8 @@ async def extend_session(sid: str, session_id: str, session_steps: int):
 
 @sio.event
 async def generate_deep_research(sid: str, session_id: str, advice: str, language: str = "en"):
-    await deep_research_websocket(session_id, advice, sid, sio)
+    # Run deep research in background task to avoid blocking the socket handler
+    asyncio.create_task(deep_research_websocket(session_id, advice, sid, sio))
     
 
 

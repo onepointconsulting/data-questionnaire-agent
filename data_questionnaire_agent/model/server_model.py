@@ -1,6 +1,6 @@
 from typing import Any, List, Union
 
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from data_questionnaire_agent.model.global_configuration import GlobalConfiguration
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus

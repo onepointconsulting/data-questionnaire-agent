@@ -1,7 +1,7 @@
 from typing import List
 from psycopg import AsyncCursor
 
-from data_questionnaire_agent.model.deep_research import Citation, DeepResearchAdviceOutput
+from data_questionnaire_agent.model.deep_research import Citation, DeepResearchAdviceOutput, DeepResearchOutputs
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
 
 
@@ -44,7 +44,7 @@ VALUES(%(deep_research_output_id)s, %(title)s, %(url)s, %(start_index)s, %(end_i
     return await create_cursor(process, True)
 
 
-async def read_deep_research(session_id: str, advice: str | None = None) -> List[DeepResearchAdviceOutput]:
+async def read_deep_research(session_id: str, advice: str | None = None) -> DeepResearchOutputs:
     """
     Only the latest deep research output for the given advice will be returned.
     """
@@ -80,7 +80,7 @@ SELECT TITLE, URL, START_INDEX, END_INDEX, TEXT FROM TB_DEEP_RESEARCH_CITATION W
             for i, citation_row in enumerate(citation_rows)
         ]
         deep_research_outputs.append(DeepResearchAdviceOutput(advice=row[1], deep_research_output=row[2], citations=citations))
-    return deep_research_outputs
+    return DeepResearchOutputs(outputs=deep_research_outputs)
 
 
 async def delete_deep_research(session_id: str) -> int:

@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 
 from pydantic import BaseModel, Field
@@ -38,6 +39,11 @@ class DeepResearchAdviceOutput(BaseModel):
     citations: List[Citation] = Field(..., description="The citations")
 
 
+class DeepResearchOutputs(BaseModel):
+    outputs: List[DeepResearchAdviceOutput] = Field(..., description="The deep research outputs")
+
+
 class DeepResearchStatus(BaseModel):
     status: str = Field(..., description="The status")
     advice: str = Field(..., description="The advice")
+    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now, description="The timestamp")

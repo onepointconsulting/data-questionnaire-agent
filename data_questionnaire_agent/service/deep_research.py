@@ -1,4 +1,4 @@
-from time import sleep
+import asyncio
 
 from openai import AsyncOpenAI
 from openai.types.responses.response import Response
@@ -73,7 +73,8 @@ async def deep_research_websocket(
     sid: str,
     sio: socketio.AsyncServer,
 ):
-    saved_deep_research = await read_deep_research(session_id, advice)
+    saved_deep_researches = await read_deep_research(session_id, advice)
+    saved_deep_research = saved_deep_researches.outputs
     if len(saved_deep_research) > 0:
         return saved_deep_research[0]
     questionnaire = await select_questionnaire(session_id)
@@ -133,7 +134,7 @@ async def deep_research(
     while response.status in {"queued", "in_progress"}:
         if callback:
             await callback.on_response_update(response)
-        sleep(5)
+        await asyncio.sleep(5)
         response = await client.responses.retrieve(response.id)
 
     if callback:

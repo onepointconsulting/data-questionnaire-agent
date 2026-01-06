@@ -1,4 +1,4 @@
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from data_questionnaire_agent.log_init import logger
 

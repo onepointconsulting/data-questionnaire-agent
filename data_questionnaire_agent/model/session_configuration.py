@@ -1,7 +1,7 @@
 from enum import StrEnum
 from typing import List, Union
 
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 DEFAULT_SESSION_STEPS = 6
 
