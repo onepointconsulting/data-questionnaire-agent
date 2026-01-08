@@ -26,6 +26,7 @@ class DeepResearchCallback:
 
     async def on_response_update(self, response: Response):
         logger.info(f"Current status: {response.status}")
+        logger.info(f"Response: {response.model_dump_json()}")
 
     async def on_response_complete(self, output: DeepResearchAdviceOutput):
         logger.info(output.deep_research_output)
