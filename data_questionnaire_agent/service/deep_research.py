@@ -6,16 +6,13 @@ import socketio
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.model.application_schema import (
-    QuestionAnswer,
-    Questionnaire,
-)
+
 from data_questionnaire_agent.model.deep_research import (
     Citation,
-    DeepResearchAdviceInput,
     DeepResearchAdviceOutput,
     DeepResearchStatus,
 )
+from data_questionnaire_agent.model.deep_research_input import DeepResearchAdviceInput
 from data_questionnaire_agent.service.persistence_deep_research_async import read_deep_research, save_deep_research
 from data_questionnaire_agent.service.persistence_service_async import select_questionnaire
 from data_questionnaire_agent.toml_support import get_prompts

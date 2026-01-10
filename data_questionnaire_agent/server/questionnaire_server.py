@@ -21,6 +21,7 @@ from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
 )
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
+from data_questionnaire_agent.model.report_advice_schema import ReportAdviceData
 from data_questionnaire_agent.model.server_model import (
     ErrorMessage,
     ServerMessage,
@@ -67,6 +68,7 @@ from data_questionnaire_agent.service.knowledge_base_service import fetch_contex
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.ontology_service import create_ontology
+from data_questionnaire_agent.service.persistence_deep_research_async import read_deep_research
 from data_questionnaire_agent.service.persistence_service_async import (
     delete_last_question,
     fetch_ontology,
@@ -679,7 +681,15 @@ async def get_pdf(request: web.Request) -> web.Response:
     questionnaire, advices = await query_questionnaire_advices(session_id)
     logger.info("PDF advices: %s", advices)
     language = extract_language(request)
-    report_path = generate_pdf_from(questionnaire, advices, language)
+    deep_research_outputs = await read_deep_research(session_id)
+    report_path = generate_pdf_from(
+        ReportAdviceData(
+            questionnaire=questionnaire,
+            advices=advices,
+            deep_research_outputs=deep_research_outputs
+        ), 
+        language
+    )
     logger.info("PDF report_path: %s", report_path)
     content_disposition = "attachment"
     return web.FileResponse(

@@ -6,17 +6,26 @@ import pdfkit
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.model.application_schema import Questionnaire
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+
+from data_questionnaire_agent.model.report_advice_schema import ReportAdviceData
 from data_questionnaire_agent.service.report_enhancement_service import (
     replace_bold_markdown,
 )
+from data_questionnaire_agent.test.provider.advice_provider import create_deep_research_outputs
 from data_questionnaire_agent.translation import t
+from data_questionnaire_agent.service.advice_service import combine_advices_and_deep_research_outputs
 
 
 def generate_html(
-    questionnaire: Questionnaire, advices: ConditionalAdvice, language: str = "en"
+    report_advice_data: ReportAdviceData, language: str = "en"
 ) -> str:
+    from data_questionnaire_agent.model.application_schema import Questionnaire
+    from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+    from data_questionnaire_agent.model.deep_research import DeepResearchOutputs
+    questionnaire: Questionnaire = report_advice_data.questionnaire
+    advices: ConditionalAdvice = report_advice_data.advices
+    deep_research_outputs: DeepResearchOutputs = report_advice_data.deep_research_outputs
+    combine_advices_and_deep_research_outputs(advices, deep_research_outputs)
     timestamp = datetime.today().strftime("%A, %b %d %Y")
     context = {
         "banner": t("banner_link", locale=language),
@@ -79,11 +88,12 @@ def generate_html(
 
 
 def generate_pdf_from(
-    questionnaire: Questionnaire, advices: ConditionalAdvice, language: str = "en"
-) -> Path:
-    if questionnaire is None:
+    report_advice_data: ReportAdviceData,
+    language: str = "en"
+) -> Path | None:
+    if report_advice_data.questionnaire is None or report_advice_data.advices is None:
         return None
-    html = generate_html(questionnaire, advices, language)
+    html = generate_html(report_advice_data, language)
     logger.info("PDF html: %s", html)
     file_name = cfg.pdf_folder / f"generated_advice_{generate_iso()}.pdf"
     logger.info("PDF to be created file name: %s", file_name)
@@ -111,7 +121,17 @@ if __name__ == "__main__":
     from data_questionnaire_agent.test.provider.questionnaire_provider import (
         create_questionnaire_2_questions,
     )
+    from data_questionnaire_agent.model.application_schema import Questionnaire
+    from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 
     questionnaire: Questionnaire = create_questionnaire_2_questions()
     advices: ConditionalAdvice = create_simple_advice()
-    logger.info("PDF Path: %s", generate_pdf_from(questionnaire, advices))
+    logger.info("PDF Path: %s", 
+        generate_pdf_from(
+            ReportAdviceData(
+                questionnaire=questionnaire,
+                advices=advices,
+                deep_research_outputs=create_deep_research_outputs()
+            ),
+        ), "en"
+    )

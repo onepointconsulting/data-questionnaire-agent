@@ -1,7 +1,7 @@
 import pytest
 
 from data_questionnaire_agent.model.application_schema import QuestionAnswer, Questionnaire
-from data_questionnaire_agent.model.deep_research import DeepResearchAdviceInput
+from data_questionnaire_agent.model.deep_research_input import DeepResearchAdviceInput
 from data_questionnaire_agent.service.deep_research import DeepResearchCallback, deep_research
 
 @pytest.mark.asyncio

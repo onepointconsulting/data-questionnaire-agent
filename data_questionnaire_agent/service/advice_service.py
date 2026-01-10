@@ -2,6 +2,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.model.deep_research import DeepResearchOutputs
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
@@ -32,3 +33,12 @@ def create_structured_question_call(language: str) -> RunnableSequence:
 
 def prepare_conditional_advice(knowledge_base: str, questions_answers: str) -> dict:
     return {"knowledge_base": knowledge_base, "questions_answers": questions_answers}
+
+
+def combine_advices_and_deep_research_outputs(advices: ConditionalAdvice, deep_research_outputs: DeepResearchOutputs) -> ConditionalAdvice:
+    for advice in advices.advices:
+        for deep_research_output in deep_research_outputs.outputs:
+            if advice == deep_research_output.advice:
+                advices.advices_with_deep_research.append((advice, deep_research_output))
+                break
+    return advices
