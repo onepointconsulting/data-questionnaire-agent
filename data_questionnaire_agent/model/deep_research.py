@@ -22,6 +22,28 @@ class Citation(BaseModel):
 {self.start_index} - {self.end_index}
 """
 
+    def __eq__(self, other):
+        if not isinstance(other, Citation):
+            return NotImplemented
+        return (
+            self.index == other.index
+            and self.title == other.title
+            and self.url == other.url
+            and self.start_index == other.start_index
+            and self.end_index == other.end_index
+            and self.text == other.text
+        )
+
+    def __hash__(self):
+        return hash((
+            self.index,
+            self.title,
+            self.url,
+            self.start_index,
+            self.end_index,
+            self.text,
+        ))
+
 
 class DeepResearchAdviceOutput(BaseModel):
     advice: str = Field(..., description="The advice")
