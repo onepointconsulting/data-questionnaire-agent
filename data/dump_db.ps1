@@ -1,0 +1,1 @@
+C:\Program Files\PostgreSQL\17\bin\pg_dump.exe -U postgres -h 127.0.0.1 -p 5432 data_wellness_companion_hypergility > expert_matcher.sql
