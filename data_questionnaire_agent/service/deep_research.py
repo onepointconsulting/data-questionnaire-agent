@@ -70,7 +70,7 @@ async def deep_research_websocket(
     advice: str,
     sid: str,
     sio: socketio.AsyncServer,
-):
+) -> DeepResearchAdviceOutput | None:
     saved_deep_researches = await read_deep_research(session_id, advice)
     saved_deep_research = saved_deep_researches.outputs
     if len(saved_deep_research) > 0:
@@ -82,6 +82,8 @@ async def deep_research_websocket(
     )
     callback = DeepResearchWebsocketCallback(sid, sio, advice)
     deep_research_output = await deep_research(deep_research_advice_input, callback=callback)
+    if deep_research_output is None:
+        return None
     await save_deep_research(session_id, advice, deep_research_output)
     return deep_research_output
 
@@ -90,7 +92,7 @@ async def deep_research(
     deep_research_advice_input: DeepResearchAdviceInput,
     language: str = "en",
     callback: DeepResearchCallback = None,
-) -> DeepResearchAdviceOutput:
+) -> DeepResearchAdviceOutput | None:
     prompts = get_prompts(language)
     assert (
         "deep_research" in prompts
@@ -140,6 +142,9 @@ async def deep_research(
 
     final_output = response.output[-1].content[0].text
     citations = []
+    if len(response.output) == 0:
+        logger.error(f"No output from deep research response: {response.model_dump_json()}")
+        return None
     annotations = response.output[-1].content[0].annotations
     for i, citation in enumerate(annotations):
         citations.append(
