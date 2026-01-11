@@ -1,1 +1,2 @@
 "C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -h 127.0.0.1 -d data_wellness_companion < data_wellness_companion.sql
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -h 127.0.0.1 -d data_wellness_companion_hypergility < data_wellness_companion_hypergility.sql

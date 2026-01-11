@@ -720,7 +720,14 @@ async def send_email_request(request: web.Request) -> web.Response:
         language = extract_language(request)
         data: Any = await request.json()
         mail_data = MailData.parse_obj(data)
-        mail_body = create_mail_body(questionnaire, advices, language=language)
+        deep_research_outputs = await read_deep_research(session_id)
+        mail_body = create_mail_body(
+            ReportAdviceData(
+                questionnaire=questionnaire, 
+                advices=advices, 
+                deep_research_outputs=deep_research_outputs
+            ), language=language
+        )
         # Respond with a JSON message indicating success
         await asyncify(send_email)(
             mail_data.person_name, mail_data.email, mail_config.mail_subject, mail_body

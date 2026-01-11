@@ -113,7 +113,7 @@ class ConditionalAdvice(PydanticBaseModel):
             html += f'<li class="onepoint-blue onepoint-advice">{advice}</li>'
             for deep_research_output in self.advices_with_deep_research:
                 if deep_research_output[0] == advice:
-                    html += f"""<div class="onepoint-deep-research">
+                    html += f"""<div class="onepoint-deep-research" style="background-color: #ececec; padding: 2px 8px 20px 8px;">
 <h4>Deep Research</h4>
 {mistune.markdown(deep_research_output[1].deep_research_output)}
 <h4>Citations</h4>
