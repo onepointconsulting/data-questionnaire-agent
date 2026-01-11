@@ -124,10 +124,10 @@ class ConditionalAdvice(PydanticBaseModel):
                         if not citation.title in citations_dict:
                             citations_dict[citation.title] = []
                         citations_dict[citation.title].append(citation)
-                    citations_html_snippets = []
                     for title, citations in citations_dict.items():
                         from collections import Counter
                         citations_counter = Counter(citations)
+                        citations_html_snippets = []
                         for citation in citations:
                             citation_text = get_url_text(citation.url)
                             citations_counter[citation_text] += 1
