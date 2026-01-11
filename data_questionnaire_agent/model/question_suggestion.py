@@ -1,6 +1,6 @@
 from typing import Union
 
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 
 class QuestionSuggestion(BaseModel):
@@ -35,5 +35,3 @@ class PossibleAnswers(BaseModel):
     possible_answers: list[PossibleAnswer] = Field(
         ..., description="The list of possible answers to the generated questions"
     )
-
-    

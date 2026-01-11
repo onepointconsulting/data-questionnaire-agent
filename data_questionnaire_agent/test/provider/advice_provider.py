@@ -4,6 +4,7 @@ from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
 )
+from data_questionnaire_agent.model.deep_research import Citation, DeepResearchAdviceOutput, DeepResearchOutputs
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 
 
@@ -138,3 +139,42 @@ def create_full_advice1() -> ConditionalAdvice:
         },
     }
     return ConditionalAdvice.parse_obj(advice_dict)
+
+
+def create_deep_research_outputs() -> DeepResearchOutputs:
+    return DeepResearchOutputs(
+        outputs=[
+            DeepResearchAdviceOutput(
+                advice="""Consider implementing data governance policies to ensure uniformity in handling and managing data throughout your organization. \
+These policies should outline roles, responsibilities, standards, and processes related to data management. \
+Implementing clear guidelines on collecting, storing, processing, and sharing information within the company can, over time, significantly improve overall data quality.""",
+                deep_research_output="The customer's **main problem** is identified as resistance to change, specifically employees' lack of motivation to learn and adapt to new data processes. There is detailed information about the problem, including the cultural resistance to change and lack of clear communication about the benefits and goals of data-driven transformation. The causes behind the problem are well understood. The customer has tried strategies like peer mentoring and gamification, and is considering incentives, which gives some insight into their data governance strategies. However, there is no information about the technological landscape used by the customer, which is a significant gap in understanding the full context. Therefore, while the understanding of the problem and its causes is solid, the lack of technological background information prevents a higher confidence rating.",
+                citations=[
+                    Citation(
+                        index=0,
+                        title="AI Red Teaming: Breaking Your Models Before Attackers Do – Khirawdhi",
+                        url="https://raykhira.com/ai-red-teaming-breaking-your-models-before-attackers-do/#:~:text=2.%20Threat%20Modeling%20%28ML,team%20exercises%2C%20automated%20fuzzers",
+                        start_index=883,
+                        end_index=1059,
+                        text="([raykhira.com](https://raykhira.com/ai-red-teaming-breaking-your-models-before-attackers-do/#:~:text=2.%20Threat%20Modeling%20%28ML,team%20exercises%2C%20automated%20fuzzers))",
+                    ),
+                    Citation(
+                        index=1,
+                        title="AI Red Teaming: Breaking Your Models Before Attackers Do – Khirawdhi",
+                        url="https://raykhira.com/ai-red-teaming-breaking-your-models-before-attackers-do/#:~:text=2.%20Threat%20Modeling%20%28ML,team%20exercises%2C%20automated%20fuzzers",
+                        start_index=1425,
+                        end_index=1601,
+                        text="([raykhira.com](https://raykhira.com/ai-red-teaming-breaking-your-models-before-attackers-do/#:~:text=2.%20Threat%20Modeling%20%28ML,team%20exercises%2C%20automated%20fuzzers))",
+                    ),
+                    Citation(
+                        index=1,
+                        title="Model Extraction & IP Protection",
+                        url="https://www.linkedin.com/pulse/model-extraction-ip-protection-jitendra-kumar-te0we#:~:text=Model%20extraction%20attacks%20represent%20one,years%27%20worth%20of%20research%2C%20development",
+                        start_index=1425,
+                        end_index=1601,
+                        text="([www.linkedin.com](https://www.linkedin.com/pulse/model-extraction-ip-protection-jitendra-kumar-te0we#:~:text=Model%20extraction%20attacks%20represent%20one,years%27%20worth%20of%20research%2C%20development))"
+                    )
+                ],
+            )
+        ]
+    )

@@ -1,10 +1,9 @@
-import time
 import asyncio
-import json
 import ipaddress
-from enum import StrEnum
-from typing import Any, List, Tuple, Union
+import json
+import time
 from collections import defaultdict, deque
+from typing import Any, List, Tuple, Union
 
 import socketio
 from aiohttp import web
@@ -22,6 +21,7 @@ from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
 )
 from data_questionnaire_agent.model.questionnaire_status import QuestionnaireStatus
+from data_questionnaire_agent.model.report_advice_schema import ReportAdviceData
 from data_questionnaire_agent.model.server_model import (
     ErrorMessage,
     ServerMessage,
@@ -47,12 +47,16 @@ from data_questionnaire_agent.server.server_support import (
     handle_error,
     routes,
 )
+from data_questionnaire_agent.service.add_more_suggestions_service import (
+    process_add_more_suggestions,
+)
 from data_questionnaire_agent.service.advice_service import (
     create_structured_question_call,
 )
 from data_questionnaire_agent.service.confidence_service import (
     calculate_confidence_rating,
 )
+from data_questionnaire_agent.service.deep_research import deep_research_websocket
 from data_questionnaire_agent.service.graph_service import generate_analyzed_ontology
 from data_questionnaire_agent.service.html_generator import generate_pdf_from
 from data_questionnaire_agent.service.jwt_token_service import (
@@ -64,6 +68,7 @@ from data_questionnaire_agent.service.knowledge_base_service import fetch_contex
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.ontology_service import create_ontology
+from data_questionnaire_agent.service.persistence_deep_research_async import read_deep_research
 from data_questionnaire_agent.service.persistence_service_async import (
     delete_last_question,
     fetch_ontology,
@@ -87,7 +92,9 @@ from data_questionnaire_agent.service.persistence_service_async import (
     update_regenerated_question,
     update_session_steps,
 )
-from data_questionnaire_agent.service.persistence_service_consultants_async import read_consultant_image
+from data_questionnaire_agent.service.persistence_service_consultants_async import (
+    read_consultant_image,
+)
 from data_questionnaire_agent.service.persistence_service_questions_async import (
     select_initial_question,
     select_outstanding_questions,
@@ -108,15 +115,14 @@ from data_questionnaire_agent.service.report_aggregation_main_service import (
 from data_questionnaire_agent.service.secondary_question_processor import (
     process_secondary_questions,
 )
-from data_questionnaire_agent.service.add_more_suggestions_service import (
-    process_add_more_suggestions,
-)
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
+from data_questionnaire_agent.server.socket_commands import Commands
+
 
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
-WINDOW, MAX_REQ = 1.0, 8  # 5 req/sec per IP
+WINDOW, MAX_REQ = 1.0, 8  # 8 req/sec per IP
 CLEANUP_INTERVAL = 300  # Clean up every 5 minutes
 
 
@@ -133,19 +139,19 @@ async def rate_limit(request, handler):
     # Only apply rate limiting to socket.io requests
     if not request.path.startswith("/socket.io/"):
         return await handler(request)
-    
+
     ip = extract_client_ip(request)
     now = time.monotonic()
     q = hits[ip]
-    
+
     # Clean old timestamps
     while q and now - q[0] > WINDOW:
         q.popleft()
-    
+
     # Check rate limit
     if len(q) >= MAX_REQ:
         return web.Response(status=429, text="Too Many Requests")
-    
+
     # Add current request timestamp
     q.append(now)
     return await handler(request)
@@ -165,17 +171,6 @@ async def on_startup(app):
 app.on_startup.append(on_startup)
 
 
-class Commands(StrEnum):
-    START_SESSION = "start_session"
-    SERVER_MESSAGE = "server_message"
-    CLARIFICATION_TOKEN = "clarification_token"
-    EXTEND_SESSION = "extend_session"
-    ERROR = "error"
-    REGENERATE_QUESTION = "regenerate_question"
-    ADD_MORE_SUGGESTIONS = "add_more_suggestions"
-
-
-
 hits = defaultdict(deque)
 
 
@@ -192,7 +187,7 @@ def extract_client_ip(request) -> str:
             return client_ip
         except ValueError:
             pass
-    
+
     # Fall back to direct connection IP
     if request.remote:
         try:
@@ -200,7 +195,7 @@ def extract_client_ip(request) -> str:
             return request.remote
         except ValueError:
             pass
-    
+
     # If all else fails, return a default identifier
     return "unknown"
 
@@ -212,23 +207,23 @@ async def cleanup_inactive_ips():
             await asyncio.sleep(CLEANUP_INTERVAL)
             now = time.monotonic()
             inactive_ips = []
-            
+
             for ip, timestamps in hits.items():
                 # Remove old timestamps
                 while timestamps and now - timestamps[0] > WINDOW:
                     timestamps.popleft()
-                
+
                 # If no recent activity, mark for removal
                 if not timestamps:
                     inactive_ips.append(ip)
-            
+
             # Remove inactive IPs
             for ip in inactive_ips:
                 del hits[ip]
-                
+
             if inactive_ips:
                 logger.info(f"Cleaned up {len(inactive_ips)} inactive IP addresses")
-                
+
         except Exception as e:
             logger.error(f"Error during IP cleanup: {e}")
 
@@ -291,7 +286,7 @@ async def start_session(
     await append_other_suggestions(server_messages, questionnaire_messages)
     await sio.emit(
         Commands.START_SESSION,
-        server_messages.json(),
+        server_messages.model_dump_json(),
         room=sid,
     )
 
@@ -444,7 +439,8 @@ async def add_more_suggestions(
             Commands.ADD_MORE_SUGGESTIONS,
             ErrorMessage(
                 session_id=session_id,
-                error=t("add_more_suggestions_failed", locale=language) + f" {error_message}",
+                error=t("add_more_suggestions_failed", locale=language)
+                + f" {error_message}",
             ).json(),
             room=sid,
         )
@@ -469,6 +465,13 @@ async def extend_session(sid: str, session_id: str, session_steps: int):
         session_steps,
         room=sid,
     )
+
+
+@sio.event
+async def generate_deep_research(sid: str, session_id: str, advice: str, language: str = "en"):
+    # Run deep research in background task to avoid blocking the socket handler
+    asyncio.create_task(deep_research_websocket(session_id, advice, sid, sio))
+    
 
 
 async def generate_report(session_id: str, questionnaire: Questionnaire, language: str):
@@ -678,7 +681,17 @@ async def get_pdf(request: web.Request) -> web.Response:
     questionnaire, advices = await query_questionnaire_advices(session_id)
     logger.info("PDF advices: %s", advices)
     language = extract_language(request)
-    report_path = generate_pdf_from(questionnaire, advices, language)
+    deep_research_outputs = await read_deep_research(session_id)
+    # Run PDF generation in thread pool to avoid blocking the event loop
+    report_path = await asyncio.to_thread(
+        generate_pdf_from,
+        ReportAdviceData(
+            questionnaire=questionnaire,
+            advices=advices,
+            deep_research_outputs=deep_research_outputs
+        ), 
+        language
+    )
     logger.info("PDF report_path: %s", report_path)
     content_disposition = "attachment"
     return web.FileResponse(
@@ -709,7 +722,14 @@ async def send_email_request(request: web.Request) -> web.Response:
         language = extract_language(request)
         data: Any = await request.json()
         mail_data = MailData.parse_obj(data)
-        mail_body = create_mail_body(questionnaire, advices, language=language)
+        deep_research_outputs = await read_deep_research(session_id)
+        mail_body = create_mail_body(
+            ReportAdviceData(
+                questionnaire=questionnaire, 
+                advices=advices, 
+                deep_research_outputs=deep_research_outputs
+            ), language=language
+        )
         # Respond with a JSON message indicating success
         await asyncify(send_email)(
             mail_data.person_name, mail_data.email, mail_config.mail_subject, mail_body
@@ -896,8 +916,11 @@ async def send_email_request(request: web.Request) -> web.Response:
         image, image_name = result
         return web.Response(
             body=image,
-            headers={**CORS_HEADERS, "Content-Disposition": f'attachment; filename="{image_name}"'},
-            content_type=f"image/{image_name.split('.')[1]}"
+            headers={
+                **CORS_HEADERS,
+                "Content-Disposition": f'attachment; filename="{image_name}"',
+            },
+            content_type=f"image/{image_name.split('.')[1]}",
         )
     else:
         return web.Response(status=404, text="Image not found")

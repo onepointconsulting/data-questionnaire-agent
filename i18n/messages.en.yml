@@ -2,9 +2,8 @@ en:
   "A big thank you for completing a session with": "A big thank you for completing a session with the %{name}"
   "A personal offer for you": "A personal offer for you"
   "Advice": "Advice"
-  "banner_link": /home/ubuntu/projects/data-wellness-companion-hypergility/ui/banner/report-header.png
-  "banner_link_email": https://responsible-ai.onepointltd.ai/banner/report-header.png
-  "Confidence Degree": "Data Wellness confidence degree"
+  "banner_link": https://d-well.onepointltd.ai/banner/report-header.png
+  "Confidence Degree": "Res-AI confidence degree"
   "confidence_degree_explanation_title": "About the confidence degree"
   "confidence_degree_explanation_intro": "Confidence degree is a measure of how much the Data Wellness Companion trusts its own answer. It is based on the number of sources it used to generate the answer and the quality of those sources. The higher the confidence degree, the more reliable the answer is. Here you are the available confidence degrees:"
   "Data Wellness Aggregation Report": "Data Wellness Aggregation Report"
@@ -32,7 +31,7 @@ en:
   confidence_degree_medium_explanation: "The Data Wellness Companion knows about the main problem and has some information about it causes. It still lacks information about the ethical standards, gouvernance, strategies and policies around Responsible AI."
   confidence_degree_outstanding: "Very good"
   confidence_degree_outstanding_explanation: "The Data Wellness Companion knows about the main problem and has a good understanding of its causes. It knows thoroughly about the ethical standards, gouvernance, strategies and policies around Responsible AI."
-  confidence_image_location: /development/playground/langchain/data_questionnaire_agent/public/images/confidence
+  confidence_image_location: https://d-well.onepointltd.ai/confidence-img
   db_insert_failed: "Failed to add query to database"
   db_update_failed: "Failed to update the answer in database"
   failed_insert_question: "Failed to insert question in database"

@@ -1,20 +1,19 @@
-from langchain_core.runnables.base import RunnableSequence
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables.base import RunnableSequence
 
+from data_questionnaire_agent.config import cfg
+from data_questionnaire_agent.model.question_suggestion import PossibleAnswers
+from data_questionnaire_agent.service.knowledge_base_service import fetch_context
+from data_questionnaire_agent.service.persistence_service_async import (
+    save_additional_suggestions,
+    select_confidence,
+    select_last_questionnaire_status_suggestions,
+    select_questionnaire,
+)
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
-from data_questionnaire_agent.config import cfg
-from data_questionnaire_agent.model.question_suggestion import PossibleAnswers
-from data_questionnaire_agent.service.persistence_service_async import (
-    select_questionnaire,
-    select_confidence,
-    select_last_questionnaire_status_suggestions,
-    save_additional_suggestions,
-)
-from data_questionnaire_agent.service.knowledge_base_service import fetch_context
-from data_questionnaire_agent.model.question_suggestion import QuestionSuggestion
 
 
 def prompt_factory_add_more_suggestions(language: str) -> ChatPromptTemplate:

@@ -1,6 +1,8 @@
 import requests
 
-from data_questionnaire_agent.service.persistence_service_consultants_async import read_consultant_image, save_consultant_image
+from data_questionnaire_agent.service.persistence_service_consultants_async import (
+    save_consultant_image,
+)
 
 
 async def import_images(email: str, image_url: str) -> int | None:
@@ -12,4 +14,4 @@ async def import_images(email: str, image_url: str) -> int | None:
     image = response.content
     # Save the image to the database
     image_name = f"{email}.{content_type.split('/')[1]}"
-    return await save_consultant_image(email, image_name,image)
+    return await save_consultant_image(email, image_name, image)

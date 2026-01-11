@@ -13,6 +13,7 @@ assert (
 load_dotenv(dotenv_path=alternate_env_file)
 conn_str = create_db_conn_str()
 
+from data_questionnaire_agent.model.report_advice_schema import ReportAdviceData
 from data_questionnaire_agent.server.questionnaire_server import (
     query_questionnaire_advices,
 )
@@ -100,7 +101,8 @@ async def regenerate_pdfs(session_ids: list[str]) -> list[Path]:
     pdfs = []
     for session_id in session_ids:
         questionnaire, advices = await query_questionnaire_advices(session_id)
-        report_path = generate_pdf_from(questionnaire, advices, "en")
+        report_path = generate_pdf_from(
+            ReportAdviceData(questionnaire=questionnaire, advices=advices, deep_research_outputs=None), "en")
         pdfs.append(report_path)
     return pdfs
 
