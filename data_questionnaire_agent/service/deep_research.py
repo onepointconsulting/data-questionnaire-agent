@@ -28,6 +28,9 @@ class DeepResearchCallback:
     async def on_response_complete(self, output: DeepResearchAdviceOutput):
         logger.info(output.deep_research_output)
 
+    async def on_response_fail(self, message: str):
+        logger.error(f"Deep research failed: {message}")
+
 
 class DeepResearchWebsocketCallback(DeepResearchCallback):
 
@@ -143,7 +146,8 @@ async def deep_research(
     final_output = response.output[-1].content[0].text
     citations = []
     if len(response.output) == 0:
-        logger.error(f"No output from deep research response: {response.model_dump_json()}")
+        if callback:
+            await callback.on_response_fail(f"No output from deep research response: {response.model_dump_json()}")
         return None
     annotations = response.output[-1].content[0].annotations
     for i, citation in enumerate(annotations):

@@ -28,6 +28,7 @@ def generate_html(
     combine_advices_and_deep_research_outputs(advices, deep_research_outputs)
     timestamp = datetime.today().strftime("%A, %b %d %Y")
     context = {
+        "title": t("Data Wellness Aggregation Report", locale=language),
         "banner": t("banner_link", locale=language),
         "questionnaire": questionnaire.to_html(),
         "advices": replace_bold_markdown(advices.to_advice_html()),
@@ -94,8 +95,9 @@ def generate_pdf_from(
     if report_advice_data.questionnaire is None or report_advice_data.advices is None:
         return None
     html = generate_html(report_advice_data, language)
-    logger.info("PDF html: %s", html)
     file_name = cfg.pdf_folder / f"generated_advice_{generate_iso()}.pdf"
+    file_name_html = cfg.pdf_folder / f"generated_advice_{generate_iso()}.html"
+    file_name_html.write_text(html, encoding="utf-8")
     logger.info("PDF to be created file name: %s", file_name)
     config = pdfkit.configuration(wkhtmltopdf=cfg.wkhtmltopdf_binary.as_posix())
     pdfkit.from_string(
