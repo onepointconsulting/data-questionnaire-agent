@@ -682,7 +682,9 @@ async def get_pdf(request: web.Request) -> web.Response:
     logger.info("PDF advices: %s", advices)
     language = extract_language(request)
     deep_research_outputs = await read_deep_research(session_id)
-    report_path = generate_pdf_from(
+    # Run PDF generation in thread pool to avoid blocking the event loop
+    report_path = await asyncio.to_thread(
+        generate_pdf_from,
         ReportAdviceData(
             questionnaire=questionnaire,
             advices=advices,

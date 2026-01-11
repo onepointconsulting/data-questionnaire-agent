@@ -105,7 +105,7 @@ def generate_pdf_from(
         file_name,
         configuration=config,
         verbose=True,
-        options={"--enable-local-file-access": True},
+        options={"--enable-local-file-access": True, "--disable-javascript": True},
     )
     logger.info("Created PDF: %s", file_name)
     return file_name
