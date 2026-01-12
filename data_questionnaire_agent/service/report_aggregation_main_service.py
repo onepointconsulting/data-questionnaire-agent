@@ -340,9 +340,9 @@ async def aggregate_reports_main(
 ) -> Path:
     # Fetch statuses from the database
     logger.info("Report: Fetch statuses from the database")
-    questionnaire_data: List[
-        QuestionnaireStatus
-    ] = await select_questionnaires_by_tokens(tokens, final_report)
+    questionnaire_data: List[QuestionnaireStatus] = (
+        await select_questionnaires_by_tokens(tokens, final_report)
+    )
     logger.info(f"Report: {len(questionnaire_data)} reports available.")
 
     # Extract the dimensions in batches

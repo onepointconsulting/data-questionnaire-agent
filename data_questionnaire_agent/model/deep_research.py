@@ -35,14 +35,16 @@ class Citation(BaseModel):
         )
 
     def __hash__(self):
-        return hash((
-            self.index,
-            self.title,
-            self.url,
-            self.start_index,
-            self.end_index,
-            self.text,
-        ))
+        return hash(
+            (
+                self.index,
+                self.title,
+                self.url,
+                self.start_index,
+                self.end_index,
+                self.text,
+            )
+        )
 
 
 class DeepResearchAdviceOutput(BaseModel):
@@ -52,10 +54,14 @@ class DeepResearchAdviceOutput(BaseModel):
 
 
 class DeepResearchOutputs(BaseModel):
-    outputs: List[DeepResearchAdviceOutput] = Field(..., description="The deep research outputs")
+    outputs: List[DeepResearchAdviceOutput] = Field(
+        ..., description="The deep research outputs"
+    )
 
 
 class DeepResearchStatus(BaseModel):
     status: str = Field(..., description="The status")
     advice: str = Field(..., description="The advice")
-    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now, description="The timestamp")
+    timestamp: datetime.datetime = Field(
+        default_factory=datetime.datetime.now, description="The timestamp"
+    )

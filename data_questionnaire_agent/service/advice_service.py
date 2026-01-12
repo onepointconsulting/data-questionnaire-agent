@@ -35,10 +35,14 @@ def prepare_conditional_advice(knowledge_base: str, questions_answers: str) -> d
     return {"knowledge_base": knowledge_base, "questions_answers": questions_answers}
 
 
-def combine_advices_and_deep_research_outputs(advices: ConditionalAdvice, deep_research_outputs: DeepResearchOutputs) -> ConditionalAdvice:
+def combine_advices_and_deep_research_outputs(
+    advices: ConditionalAdvice, deep_research_outputs: DeepResearchOutputs
+) -> ConditionalAdvice:
     for advice in advices.advices:
         for deep_research_output in deep_research_outputs.outputs:
             if advice == deep_research_output.advice:
-                advices.advices_with_deep_research.append((advice, deep_research_output))
+                advices.advices_with_deep_research.append(
+                    (advice, deep_research_output)
+                )
                 break
     return advices

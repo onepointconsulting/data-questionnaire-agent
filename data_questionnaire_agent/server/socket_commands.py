@@ -1,5 +1,6 @@
 from enum import StrEnum
 
+
 class Commands(StrEnum):
     START_SESSION = "start_session"
     SERVER_MESSAGE = "server_message"

@@ -4,7 +4,11 @@ from data_questionnaire_agent.model.application_schema import (
     QuestionAnswer,
     Questionnaire,
 )
-from data_questionnaire_agent.model.deep_research import Citation, DeepResearchAdviceOutput, DeepResearchOutputs
+from data_questionnaire_agent.model.deep_research import (
+    Citation,
+    DeepResearchAdviceOutput,
+    DeepResearchOutputs,
+)
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 
 
@@ -172,8 +176,8 @@ Implementing clear guidelines on collecting, storing, processing, and sharing in
                         url="https://www.linkedin.com/pulse/model-extraction-ip-protection-jitendra-kumar-te0we#:~:text=Model%20extraction%20attacks%20represent%20one,years%27%20worth%20of%20research%2C%20development",
                         start_index=1425,
                         end_index=1601,
-                        text="([www.linkedin.com](https://www.linkedin.com/pulse/model-extraction-ip-protection-jitendra-kumar-te0we#:~:text=Model%20extraction%20attacks%20represent%20one,years%27%20worth%20of%20research%2C%20development))"
-                    )
+                        text="([www.linkedin.com](https://www.linkedin.com/pulse/model-extraction-ip-protection-jitendra-kumar-te0we#:~:text=Model%20extraction%20attacks%20represent%20one,years%27%20worth%20of%20research%2C%20development))",
+                    ),
                 ],
             )
         ]

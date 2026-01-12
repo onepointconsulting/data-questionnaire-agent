@@ -126,16 +126,19 @@ class ConditionalAdvice(PydanticBaseModel):
                         citations_dict[citation.title].append(citation)
                     for title, citations in citations_dict.items():
                         from collections import Counter
+
                         citations_counter = Counter(citations)
                         citations_html_snippets = []
                         for citation in citations:
                             citation_text = get_url_text(citation.url)
                             citations_counter[citation_text] += 1
                             if citations_counter[citation_text] == 1:
-                                citations_html_snippets.append(f"""<li class="onepoint-deep-research-citation-item">
+                                citations_html_snippets.append(
+                                    f"""<li class="onepoint-deep-research-citation-item">
     <a href="{citation.url}" target="_blank" rel="noopener noreferrer">{citation_text if len(citation_text) > 1 else citation.url}</a>
     </li>
-    """)
+    """
+                                )
                         html += f"""<h4>{title}</h4>
 <ul>
 {"\n".join(sorted(citations_html_snippets))}

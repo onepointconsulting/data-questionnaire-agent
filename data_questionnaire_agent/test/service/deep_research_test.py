@@ -1,8 +1,15 @@
 import pytest
 
-from data_questionnaire_agent.model.application_schema import QuestionAnswer, Questionnaire
+from data_questionnaire_agent.model.application_schema import (
+    QuestionAnswer,
+    Questionnaire,
+)
 from data_questionnaire_agent.model.deep_research_input import DeepResearchAdviceInput
-from data_questionnaire_agent.service.deep_research import DeepResearchCallback, deep_research
+from data_questionnaire_agent.service.deep_research import (
+    DeepResearchCallback,
+    deep_research,
+)
+
 
 @pytest.mark.asyncio
 async def test_generate_deep_research():
@@ -63,7 +70,9 @@ async def test_generate_deep_research():
         ),
         conditional_advice="Consolidate open-source and proprietary solutions: To manage the balance between cost and complexity, consider integrating both open-source and proprietary solutions. Interoperability frameworks can assist in this, enabling you to choose the best fit for various tasks while managing vendor lock-in risks.",
     )
-    output = await deep_research(deep_research_advice_input, callback=DeepResearchCallback())
+    output = await deep_research(
+        deep_research_advice_input, callback=DeepResearchCallback()
+    )
 
     with open("data/deep_research_output.md", "w", encoding="utf-8") as f:
         f.write(output.deep_research_output)

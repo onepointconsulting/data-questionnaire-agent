@@ -13,8 +13,13 @@ from data_questionnaire_agent.model.deep_research import (
     DeepResearchStatus,
 )
 from data_questionnaire_agent.model.deep_research_input import DeepResearchAdviceInput
-from data_questionnaire_agent.service.persistence_deep_research_async import read_deep_research, save_deep_research
-from data_questionnaire_agent.service.persistence_service_async import select_questionnaire
+from data_questionnaire_agent.service.persistence_deep_research_async import (
+    read_deep_research,
+    save_deep_research,
+)
+from data_questionnaire_agent.service.persistence_service_async import (
+    select_questionnaire,
+)
 from data_questionnaire_agent.toml_support import get_prompts
 from data_questionnaire_agent.server.socket_commands import Commands
 
@@ -42,8 +47,12 @@ class DeepResearchWebsocketCallback(DeepResearchCallback):
     async def on_response_update(self, response: Response):
         await super().on_response_update(response)
         try:
-            data = DeepResearchStatus(status=response.status, advice=self.advice).model_dump_json()
-            logger.info(f"Emitting DEEP_RESEARCH_UPDATE to sid={self.sid}, status={response.status}")
+            data = DeepResearchStatus(
+                status=response.status, advice=self.advice
+            ).model_dump_json()
+            logger.info(
+                f"Emitting DEEP_RESEARCH_UPDATE to sid={self.sid}, status={response.status}"
+            )
             await self.sio.emit(
                 Commands.DEEP_RESEARCH_UPDATE.value,
                 data,
@@ -63,7 +72,9 @@ class DeepResearchWebsocketCallback(DeepResearchCallback):
                 data,
                 to=self.sid,
             )
-            logger.info(f"Successfully emitted DEEP_RESEARCH_COMPLETE to sid={self.sid}")
+            logger.info(
+                f"Successfully emitted DEEP_RESEARCH_COMPLETE to sid={self.sid}"
+            )
         except Exception as e:
             logger.error(f"Error emitting deep research complete: {e}", exc_info=True)
 
@@ -84,7 +95,9 @@ async def deep_research_websocket(
         conditional_advice=advice,
     )
     callback = DeepResearchWebsocketCallback(sid, sio, advice)
-    deep_research_output = await deep_research(deep_research_advice_input, callback=callback)
+    deep_research_output = await deep_research(
+        deep_research_advice_input, callback=callback
+    )
     if deep_research_output is None:
         return None
     await save_deep_research(session_id, advice, deep_research_output)
@@ -147,7 +160,9 @@ async def deep_research(
     citations = []
     if len(response.output) == 0:
         if callback:
-            await callback.on_response_fail(f"No output from deep research response: {response.model_dump_json()}")
+            await callback.on_response_fail(
+                f"No output from deep research response: {response.model_dump_json()}"
+            )
         return None
     annotations = response.output[-1].content[0].annotations
     for i, citation in enumerate(annotations):
@@ -169,5 +184,3 @@ async def deep_research(
     if callback:
         await callback.on_response_complete(output)
     return output
-
-
