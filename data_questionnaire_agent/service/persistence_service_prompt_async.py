@@ -117,7 +117,18 @@ RETURNING ID, CREATED_AT
     return await create_cursor(process_save, True)
 
 
-async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str) -> DBPrompt | None:
+async def read_system_human_prompts(categories: list[str], language_code: str = "en") -> dict:
+    system_prompt = await read_prompt_by_prompt_key(categories, "system_message", language_code)
+    human_prompt = await read_prompt_by_prompt_key(categories, "human_message", language_code)
+    if system_prompt is None or human_prompt is None:
+        raise ValueError("System or human prompt not found")
+    return {
+        "system_message": system_prompt.prompt,
+        "human_message": human_prompt.prompt,
+    }
+
+
+async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str, language_code: str = "en") -> DBPrompt | None:
     if len(categories) == 0:
         return None
     async def process_read(cur: AsyncCursor):
@@ -129,18 +140,20 @@ async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str) -> D
         CREATED_AT = 4
         UPDATED_AT = 5
         for index, category in enumerate(categories):
+            common_filters_sql = "NAME = %(category)s AND LANGUAGE_ID = (SELECT ID FROM TB_LANGUAGE WHERE LANGUAGE_CODE = %(language_code)s)"
             sql = """
-SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE NAME = %(category)s AND PROMPT_CATEGORY_PARENT_ID = %(parent_id)s
+SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE """ + common_filters_sql + """ AND PROMPT_CATEGORY_PARENT_ID = %(parent_id)s
 """
             params = {
                 "category": category,
-                "parent_id": current_category.id if current_category is not None else None
+                "parent_id": current_category.id if current_category is not None else None,
+                "language_code": language_code,
             }
             if index == 0:
                 if "parent_id" in params:
                     del params["parent_id"]
                 sql = """
-SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE NAME = %(category)s AND PROMPT_CATEGORY_PARENT_ID is null
+SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE """ + common_filters_sql + """ AND PROMPT_CATEGORY_PARENT_ID is null
 """
             await cur.execute(sql, params)
             row = await cur.fetchone()

@@ -10,16 +10,16 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_last_questionnaire_status_suggestions,
     select_questionnaire,
 )
+from data_questionnaire_agent.service.persistence_service_prompt_async import read_system_human_prompts
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 from data_questionnaire_agent.toml_support import get_prompts
 
 
-def prompt_factory_add_more_suggestions(language: str) -> ChatPromptTemplate:
+async def prompt_factory_add_more_suggestions(language: str) -> ChatPromptTemplate:
     # Assuming get_prompts() returns the required dictionary
-    prompts = get_prompts(language)
-    section = prompts["questionnaire"]["add_more_suggestions"]
+    section = await read_system_human_prompts(["questionnaire", "add_more_suggestions"], language)
     return prompt_factory_generic(
         section=section,
         input_variables=[
@@ -29,13 +29,13 @@ def prompt_factory_add_more_suggestions(language: str) -> ChatPromptTemplate:
             "suggestions",
             "confidence_report",
         ],
-        prompts=prompts,
+        prompts=get_prompts(language),
     )
 
 
-def chain_factory_add_more_suggestions(language: str) -> RunnableSequence:
+async def chain_factory_add_more_suggestions(language: str) -> RunnableSequence:
     model = cfg.llm.with_structured_output(PossibleAnswers)
-    prompt = prompt_factory_add_more_suggestions(language)
+    prompt = await prompt_factory_add_more_suggestions(language)
     return prompt | model
 
 
@@ -81,7 +81,7 @@ async def process_add_more_suggestions(
         confidence_report=confidence_report,
     )
     # Generate suggestions
-    chain = chain_factory_add_more_suggestions(language)
+    chain = await chain_factory_add_more_suggestions(language)
     result: PossibleAnswers = await chain.ainvoke(input)
     # Save the suggestions to the database
     await save_additional_suggestions(result, session_id)
