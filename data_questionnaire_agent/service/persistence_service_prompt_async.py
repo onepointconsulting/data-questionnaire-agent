@@ -12,7 +12,9 @@ async def persist_prompt_category(
         await cur.execute(
             """
 INSERT INTO TB_PROMPT_CATEGORY(NAME, PROMPT_CATEGORY_PARENT_ID, LANGUAGE_ID)
-VALUES(%(name)s, %(prompt_category_parent_id)s, (SELECT ID FROM TB_LANGUAGE WHERE LANGUAGE_CODE = %(language_code)s)) RETURNING ID, CREATED_AT
+VALUES(%(name)s, %(prompt_category_parent_id)s, (SELECT ID FROM TB_LANGUAGE WHERE LANGUAGE_CODE = %(language_code)s))
+ON CONFLICT (NAME, PROMPT_CATEGORY_PARENT_ID, LANGUAGE_ID) DO NOTHING
+RETURNING ID, CREATED_AT
             """,
             {
                 "name": prompt_category.name,
@@ -90,7 +92,9 @@ async def persist_prompt(prompt: DBPrompt) -> DBPrompt | None:
         await cur.execute(
             """
 INSERT INTO TB_PROMPT(PROMPT_CATEGORY_ID, PROMPT_KEY, PROMPT)
-VALUES(%(prompt_category_id)s, %(prompt_key)s, %(prompt)s) RETURNING ID, CREATED_AT
+VALUES(%(prompt_category_id)s, %(prompt_key)s, %(prompt)s)
+ON CONFLICT (PROMPT_CATEGORY_ID, PROMPT_KEY) DO NOTHING
+RETURNING ID, CREATED_AT
             """,
             {
                 "prompt_category_id": prompt.prompt_category.id,
