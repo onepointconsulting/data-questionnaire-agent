@@ -14,6 +14,7 @@ async def create_prompt_category():
     prompt_category = PromptCategory(
         name="Test Prompt Category",
         prompt_category_parent_id=None,
+        language_code="en",
     )
     prompt_category = await persist_prompt_category(prompt_category)
     return prompt_category

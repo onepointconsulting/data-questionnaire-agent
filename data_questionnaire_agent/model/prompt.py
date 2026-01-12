@@ -5,6 +5,7 @@ from datetime import datetime
 class PromptCategory(BaseModel):
     id: int | None = Field(default=None, description="The unique identifier")
     name: str = Field(..., description="The name of the prompt category")
+    language_code: str = Field(..., description="The language code")
     prompt_category_parent_id: int | None = Field(
         default=None, description="The parent prompt category identifier"
     )

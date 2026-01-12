@@ -11,12 +11,13 @@ async def persist_prompt_category(
     async def process_save(cur: AsyncCursor):
         await cur.execute(
             """
-INSERT INTO TB_PROMPT_CATEGORY(NAME, PROMPT_CATEGORY_PARENT_ID)
-VALUES(%(name)s, %(prompt_category_parent_id)s) RETURNING ID, CREATED_AT
+INSERT INTO TB_PROMPT_CATEGORY(NAME, PROMPT_CATEGORY_PARENT_ID, LANGUAGE_ID)
+VALUES(%(name)s, %(prompt_category_parent_id)s, (SELECT ID FROM TB_LANGUAGE WHERE LANGUAGE_CODE = %(language_code)s)) RETURNING ID, CREATED_AT
             """,
             {
                 "name": prompt_category.name,
                 "prompt_category_parent_id": prompt_category.prompt_category_parent_id,
+                "language_code": prompt_category.language_code,
             },
         )
         created_row = await cur.fetchone()
@@ -25,6 +26,7 @@ VALUES(%(name)s, %(prompt_category_parent_id)s) RETURNING ID, CREATED_AT
         return PromptCategory(
             id=created_id,
             name=prompt_category.name,
+            language_code=prompt_category.language_code,
             prompt_category_parent_id=prompt_category.prompt_category_parent_id,
             created_at=created_at,
             updated_at=prompt_category.updated_at,
@@ -38,7 +40,7 @@ async def _read_prompt_category(
 ) -> PromptCategory | None:
     await cur.execute(
         """
-SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, CREATED_AT, UPDATED_AT
+SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT
 FROM TB_PROMPT_CATEGORY WHERE ID = %(prompt_category_id)s
         """,
         {"prompt_category_id": prompt_category_id},
@@ -50,12 +52,14 @@ FROM TB_PROMPT_CATEGORY WHERE ID = %(prompt_category_id)s
     ID = 0
     NAME = 1
     PROMPT_CATEGORY_PARENT_ID = 2
-    CREATED_AT = 3
-    UPDATED_AT = 4
+    LANGUAGE_CODE = 3
+    CREATED_AT = 4
+    UPDATED_AT = 5
     return PromptCategory(
         id=row[ID],
         name=row[NAME],
         prompt_category_parent_id=row[PROMPT_CATEGORY_PARENT_ID],
+        language_code=row[LANGUAGE_CODE],
         created_at=row[CREATED_AT],
         updated_at=row[UPDATED_AT],
     )
@@ -117,11 +121,12 @@ async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str) -> D
         ID = 0
         NAME = 1
         PROMPT_CATEGORY_PARENT_ID = 2
-        CREATED_AT = 3
-        UPDATED_AT = 4
+        LANGUAGE_CODE = 3
+        CREATED_AT = 4
+        UPDATED_AT = 5
         for index, category in enumerate(categories):
             sql = """
-SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE NAME = %(category)s AND PROMPT_CATEGORY_PARENT_ID = %(parent_id)s
+SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE NAME = %(category)s AND PROMPT_CATEGORY_PARENT_ID = %(parent_id)s
 """
             params = {
                 "category": category,
@@ -131,13 +136,13 @@ SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, CREATED_AT, UPDATED_AT FROM TB_PROMP
                 if "parent_id" in params:
                     del params["parent_id"]
                 sql = """
-SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE NAME = %(category)s AND PROMPT_CATEGORY_PARENT_ID is null
+SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE NAME = %(category)s AND PROMPT_CATEGORY_PARENT_ID is null
 """
             await cur.execute(sql, params)
             row = await cur.fetchone()
             if row is None:
                 return None
-            current_category = PromptCategory(id=row[ID], name=row[NAME], prompt_category_parent_id=row[PROMPT_CATEGORY_PARENT_ID], created_at=row[CREATED_AT], updated_at=row[UPDATED_AT])
+            current_category = PromptCategory(id=row[ID], name=row[NAME], prompt_category_parent_id=row[PROMPT_CATEGORY_PARENT_ID], language_code=row[LANGUAGE_CODE], created_at=row[CREATED_AT], updated_at=row[UPDATED_AT])
         await cur.execute(
             """
 SELECT ID, PROMPT_CATEGORY_ID, PROMPT_KEY, PROMPT, CREATED_AT, UPDATED_AT
