@@ -18,10 +18,14 @@ from data_questionnaire_agent.server.questionnaire_server_consultants import (
 from data_questionnaire_agent.server.questionnaire_server_deep_research import (
     routes as deep_research_routes,
 )
+from data_questionnaire_agent.server.questionnaire_server_prompts import (
+    routes as prompts_routes,
+)
 
 assert config_routes == routes
 assert consultant_routes == routes
 assert deep_research_routes == routes
+assert prompts_routes == routes
 
 FILE_INDEX = "index.html"
 PATH_INDEX = web_server_cfg.ui_folder / FILE_INDEX
