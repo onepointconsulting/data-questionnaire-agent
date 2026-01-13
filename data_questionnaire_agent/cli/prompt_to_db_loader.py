@@ -40,6 +40,8 @@ if __name__ == "__main__":
     # Example:
     #   python -m data_questionnaire_agent.cli.prompt_to_db_loader en /tmp/hypergility_prompts_en.toml
     #   python -m data_questionnaire_agent.cli.prompt_to_db_loader de /tmp/hypergility_prompts_de.toml
+    #   python -m data_questionnaire_agent.cli.prompt_to_db_loader en data_wellness_prompts_en.toml
+    #   python -m data_questionnaire_agent.cli.prompt_to_db_loader de data_wellness_prompts_de.toml
     #
     # This script loads prompt categories and prompts from a TOML file into the database for the specified language.
     import asyncio
