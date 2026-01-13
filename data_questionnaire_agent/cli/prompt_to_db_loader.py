@@ -34,6 +34,13 @@ async def load_prompts_to_db(file_path: Path, language_code: str):
 
 
 if __name__ == "__main__":
+    # Usage:
+    #   python -m data_questionnaire_agent.cli.prompt_to_db_loader <language_code> <path_to_toml_file>
+    #
+    # Example:
+    #   python -m data_questionnaire_agent.cli.prompt_to_db_loader en prompts_en.toml
+    #
+    # This script loads prompt categories and prompts from a TOML file into the database for the specified language.
     import asyncio
     import sys
     from data_questionnaire_agent.log_init import logger
