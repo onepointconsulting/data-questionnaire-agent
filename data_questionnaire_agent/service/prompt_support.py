@@ -7,13 +7,13 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 
 
-def factory_prompt(
+async def factory_prompt(
     find_prompt: Callable, params: list[str], language: str = "en"
 ) -> ChatPromptTemplate:
-    prompts = get_prompts(language)
+    prompts = await get_prompts(language)
     section = find_prompt(prompts)
     return prompt_factory_generic(section, params, prompts)
 

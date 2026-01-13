@@ -10,15 +10,14 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_last_questionnaire_status_suggestions,
     select_questionnaire,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import read_system_human_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts, read_system_human_prompts
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-from data_questionnaire_agent.toml_support import get_prompts
+
 
 
 async def prompt_factory_add_more_suggestions(language: str) -> ChatPromptTemplate:
-    # Assuming get_prompts() returns the required dictionary
     section = await read_system_human_prompts(["questionnaire", "add_more_suggestions"], language)
     return prompt_factory_generic(
         section=section,
@@ -29,7 +28,7 @@ async def prompt_factory_add_more_suggestions(language: str) -> ChatPromptTempla
             "suggestions",
             "confidence_report",
         ],
-        prompts=get_prompts(language),
+        prompts=await get_prompts(language),
     )
 
 

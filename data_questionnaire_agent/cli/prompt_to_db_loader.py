@@ -6,7 +6,7 @@ from data_questionnaire_agent.toml_support import read_toml
 from data_questionnaire_agent.config import cfg
 
 
-async def load_prompts_to_db(file_path: Path):
+async def load_prompts_to_db(file_path: Path, language_code: str):
     if not file_path.exists():
         raise FileNotFoundError(f"File {file_path} not found")
     toml_data = read_toml(file_path)
@@ -35,6 +35,6 @@ async def load_prompts_to_db(file_path: Path):
 
 if __name__ == "__main__":
     import asyncio
-    language_code = "en"
-    file_path = cfg.project_root / f"{cfg.prompts_prefix}_{language_code}.toml"
-    asyncio.run(load_prompts_to_db(file_path))
+    for language_code in ["en", "de"]:
+        file_path = cfg.project_root / f"{cfg.prompts_prefix}_{language_code}.toml"
+        asyncio.run(load_prompts_to_db(file_path, language_code))

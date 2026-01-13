@@ -20,7 +20,7 @@ from data_questionnaire_agent.service.persistence_deep_research_async import (
 from data_questionnaire_agent.service.persistence_service_async import (
     select_questionnaire,
 )
-from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 from data_questionnaire_agent.server.socket_commands import Commands
 
 
@@ -109,7 +109,7 @@ async def deep_research(
     language: str = "en",
     callback: DeepResearchCallback = None,
 ) -> DeepResearchAdviceOutput | None:
-    prompts = get_prompts(language)
+    prompts = await get_prompts(language)
     assert (
         "deep_research" in prompts
     ), "Make sure that you have the deep research prompt in your prompts file."

@@ -117,7 +117,25 @@ RETURNING ID, CREATED_AT
     return await create_cursor(process_save, True)
 
 
+prompts_cache = {}
+
+
+async def clear_prompts_cache():
+    prompts_cache.clear()
+
+
 async def read_system_human_prompts(categories: list[str], language_code: str = "en") -> dict:
+    if language_code in prompts_cache:
+        cached = prompts_cache[language_code]
+        current_path = cached.copy()
+        for category in categories:
+            if category not in current_path:
+                return None
+            current_path = current_path[category]
+        return {
+            "system_message": current_path["system_message"],
+            "human_message": current_path["human_message"],
+        }
     system_prompt = await read_prompt_by_prompt_key(categories, "system_message", language_code)
     human_prompt = await read_prompt_by_prompt_key(categories, "human_message", language_code)
     if system_prompt is None or human_prompt is None:
@@ -126,6 +144,45 @@ async def read_system_human_prompts(categories: list[str], language_code: str = 
         "system_message": system_prompt.prompt,
         "human_message": human_prompt.prompt,
     }
+
+
+async def get_prompts(language_code: str = "en") -> dict:
+    if language_code in prompts_cache:
+        return prompts_cache[language_code].copy()
+    async def process_read(cur: AsyncCursor):
+        sql = """
+SELECT (WITH RECURSIVE CATS AS (
+  SELECT PC.ID CAT_ID, PC.NAME AS CAT_NAME, prompt_category_parent_id, 1 AS LEVEL 
+  	FROM TB_PROMPT_CATEGORY PC WHERE PC.ID = PC1.ID
+  UNION ALL
+  SELECT PC.ID CAT_ID, PC.NAME AS CAT_NAME, PC.prompt_category_parent_id, CATS.LEVEL + 1 AS LEVEL 
+  	FROM CATS INNER JOIN TB_PROMPT_CATEGORY PC ON CATS.prompt_category_parent_id = PC.ID
+)
+SELECT PATH FROM (SELECT 1, STRING_AGG(CAT_NAME, '|' ORDER BY LEVEL DESC) AS PATH FROM CATS GROUP by 1)) AS PATH, 
+PC1.ID category_id, PC1.NAME category_name, P.ID prompt_id, PROMPT_KEY, PROMPT, P.CREATED_AT, P.UPDATED_AT 
+FROM TB_PROMPT P
+INNER JOIN TB_PROMPT_CATEGORY PC1 ON P.PROMPT_CATEGORY_ID = PC1.ID
+INNER JOIN TB_LANGUAGE L on L.ID = PC1.LANGUAGE_ID
+WHERE L.LANGUAGE_CODE = %(language_code)s;
+"""
+        await cur.execute(sql, {"language_code": language_code})
+        rows = await cur.fetchall()
+        PATH = 0
+        PROMPT_KEY = 4
+        PROMPT = 5
+        path_dict = {}
+        for row in rows:
+            current_path = path_dict
+            paths = row[PATH].split("|")
+            for path in paths:
+                if path not in current_path:
+                    current_path[path] = {}
+                current_path = current_path[path]#
+            current_path[row[PROMPT_KEY]] = row[PROMPT]
+        prompts_cache[language_code] = path_dict
+        return prompts_cache[language_code]
+
+    return await create_cursor(process_read, True)
 
 
 async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str, language_code: str = "en") -> DBPrompt | None:
@@ -223,3 +280,10 @@ DELETE FROM TB_PROMPT WHERE ID = %(prompt_id)s
         return result.rowcount
 
     return await create_cursor(process_delete, True)
+
+
+if __name__ == "__main__":
+    import asyncio
+    import json
+    res = asyncio.run(get_prompts("en"))
+    json.dump(res, open("prompts.json", "w"), indent=4)

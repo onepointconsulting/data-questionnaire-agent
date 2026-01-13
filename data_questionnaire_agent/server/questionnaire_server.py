@@ -485,7 +485,7 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
             session_id, len(questionnaire) - 1, questionnaire, language
         )
         conditional_advice = await process_advice(
-            questionnaire, create_structured_question_call(language)
+            questionnaire, await create_structured_question_call(language)
         )
         await save_confidence_rating(
             confidence_rating, conditional_advice, session_id, questionnaire

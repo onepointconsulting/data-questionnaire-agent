@@ -43,8 +43,9 @@ async def process_secondary_questions(
         retries -= 1
         async for attempt in AsyncRetrying(**cfg.retry_args):
             with attempt:
+                chain = await create_structured_question_call(session_properties)
                 response_questions: ResponseQuestions = (
-                    await create_structured_question_call(session_properties).ainvoke(
+                    await chain.ainvoke(
                         secondary_question_input
                     )
                 )

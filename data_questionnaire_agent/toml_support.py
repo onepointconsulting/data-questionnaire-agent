@@ -49,28 +49,3 @@ def get_prompts_object(language: str = DEFAULT_LANGUAGE) -> object:
 class objectview(object):
     def __init__(self, d):
         self.__dict__ = d
-
-
-if __name__ == "__main__":
-    from data_questionnaire_agent.log_init import logger
-
-    def test_prompts(language: str):
-        prompts = get_prompts(language)
-        assert prompts is not None, "Could not find prompts"
-        questionnaire = prompts["questionnaire"]
-        assert questionnaire is not None, "Cannot find questionnaire"
-        initial = questionnaire["initial"]
-        assert initial is not None, "Cannot find initial"
-
-    def english_prompt_test():
-        test_prompts(DEFAULT_LANGUAGE)
-
-    def farsi_prompt_test():
-        test_prompts("fa")
-
-    english_prompt_test()
-    farsi_prompt_test()
-
-    prompts_object = get_prompts("fa")
-    print(type(prompts_object))
-    print(prompts_object)

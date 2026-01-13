@@ -1,3 +1,4 @@
+import pytest
 from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
@@ -13,10 +14,10 @@ from data_questionnaire_agent.model.session_configuration import (
     ChatType,
     SessionProperties,
 )
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-from data_questionnaire_agent.toml_support import get_prompts
 
 
 def divergent_prompt_transformer(prompt: str, language: str = "en") -> str:
@@ -43,7 +44,7 @@ def divergent_prompt_transformer(prompt: str, language: str = "en") -> str:
     return "\n".join(lines)
 
 
-def prompt_factory_secondary_questions(
+async def prompt_factory_secondary_questions(
     session_properties: SessionProperties,
 ) -> ChatPromptTemplate:
     language = session_properties.session_language
@@ -53,7 +54,7 @@ def prompt_factory_secondary_questions(
             p, language=language
         )
 
-    prompts = get_prompts(language)
+    prompts = await get_prompts(language)
     section = prompts["questionnaire"]["secondary"]
     return prompt_factory_generic(
         section,
@@ -69,11 +70,11 @@ def prompt_factory_secondary_questions(
     )
 
 
-def prompt_factory_recreate_question(
+async def prompt_factory_recreate_question(
     session_properties: SessionProperties,
 ) -> ChatPromptTemplate:
     language = session_properties.session_language
-    regenerate_template = prompt_factory_secondary_questions(session_properties)
+    regenerate_template = await prompt_factory_secondary_questions(session_properties)
     # Build the normal prompt template and then modify it to avoid code duplication
     main_message_index = 1
     main_template: HumanMessagePromptTemplate = regenerate_template.messages[
@@ -87,7 +88,7 @@ def prompt_factory_recreate_question(
     input_variables.append("previous_question")
     insertion_mark = "\n==== KNOWLEDGE BASE START ====\n"
     insertion_index = template.find(insertion_mark)
-    prompts = get_prompts(language)
+    prompts = await get_prompts(language)
     # manipulate the template
     section_mod_human_message = prompts["questionnaire"]["secondary_regenerate"][
         "human_message"
@@ -102,23 +103,23 @@ def prompt_factory_recreate_question(
     return regenerate_template
 
 
-def create_structured_question_call(
+async def create_structured_question_call(
     session_properties: SessionProperties, is_recreate: bool = False
 ) -> RunnableSequence:
     model = cfg.llm.with_structured_output(ResponseQuestions)
     prompt = (
-        prompt_factory_secondary_questions(session_properties)
+        await prompt_factory_secondary_questions(session_properties)
         if not is_recreate
-        else prompt_factory_recreate_question(session_properties)
+        else await prompt_factory_recreate_question(session_properties)
     )
     return prompt | model
 
 
-def chain_factory_secondary_question(
+async def chain_factory_secondary_question(
     session_properties: SessionProperties,
 ) -> RunnableSequence:
     model = cfg.llm.with_structured_output(ResponseQuestions)
-    prompt = prompt_factory_secondary_questions(session_properties)
+    prompt = await prompt_factory_secondary_questions(session_properties)
     return prompt | model
 
 

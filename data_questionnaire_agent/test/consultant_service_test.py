@@ -1,4 +1,5 @@
 import asyncio
+import pytest
 
 from data_questionnaire_agent.service.consultant_service import (
     convert_all_consultants,
@@ -33,14 +34,15 @@ def test_convert_all_consultants():
     Path("/tmp/consultants.md").write_text(markdown)
 
 
-def test_prompt_factory_consultants():
-    prompt_template = prompt_factory_consultants("en")
+@pytest.mark.asyncio
+async def test_prompt_factory_consultants():
+    prompt_template = await prompt_factory_consultants("en")
     assert prompt_template is not None, "There is no prompt template"
     prompt_template.config_schema is not None, "There is no configuration schema"
 
-
-def test_create_structured_consultant_call():
-    runnable_sequence = create_structured_consultant_call("en")
+@pytest.mark.asyncio
+async def test_create_structured_consultant_call():
+    runnable_sequence = await create_structured_consultant_call("en")
     assert runnable_sequence is not None, "There is no runnable sequence"
 
 

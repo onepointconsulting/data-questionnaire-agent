@@ -4,11 +4,12 @@ from langchain_core.messages import BaseMessageChunk
 from langchain_core.prompts import ChatPromptTemplate
 
 from data_questionnaire_agent.config import cfg
-from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 
 
-def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:
-    extraction_prompts = get_prompts(language)["questionnaire"]["clarification"]
+
+async def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:
+    extraction_prompts = await get_prompts(language)["questionnaire"]["clarification"]
     return ChatPromptTemplate.from_messages(
         [
             ("system", extraction_prompts["system_message"]),
@@ -20,7 +21,7 @@ def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:
 async def chain_factory_question_clarifications(
     question: str, language: str
 ) -> AsyncIterator[BaseMessageChunk]:
-    input = prompt_factory_question_clarifications(language).format(question=question)
+    input = await prompt_factory_question_clarifications(language).format(question=question)
     return cfg.llm_stream.astream(input)
 
 
