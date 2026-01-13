@@ -33,3 +33,18 @@ async def load_prompts_to_db(file_path: Path, language_code: str):
         await process_section(key, value)
 
 
+if __name__ == "__main__":
+    import asyncio
+    import sys
+    from data_questionnaire_agent.log_init import logger
+
+    if len(sys.argv) != 3:
+        logger.error("Please enter the language code and the file path as an argument.")
+        sys.exit(1)
+
+    language_code = sys.argv[1]
+    file_path = Path(sys.argv[2])
+    assert file_path.exists(), f"File {file_path} does not exist."
+
+    asyncio.run(load_prompts_to_db(file_path, language_code))
+    
