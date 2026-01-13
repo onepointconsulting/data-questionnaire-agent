@@ -333,7 +333,7 @@ async def regenerate_question(sid: str, session_id: str):
             session_properties: SessionProperties = (
                 await select_current_session_steps_and_language(session_id)
             )
-            runnable = create_structured_regeneration_call(
+            runnable = await create_structured_regeneration_call(
                 session_properties, is_recreate=True
             )
             questionnaire = await select_questionnaire(session_id)

@@ -25,7 +25,7 @@ async def chain_factory_advice(language: str) -> RunnableSequence:
 
 
 async def create_structured_question_call(language: str) -> RunnableSequence:
-    model = cfg.llm.with_structured_output(ConditionalAdvice)
+    model = cfg.llm.with_structured_output(ConditionalAdvice, method="function_calling")
     prompt = await _prompt_factory_conditional_advice(language)
     return prompt | model
 

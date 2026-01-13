@@ -33,8 +33,3 @@ async def load_prompts_to_db(file_path: Path, language_code: str):
         await process_section(key, value)
 
 
-if __name__ == "__main__":
-    import asyncio
-    for language_code in ["en", "de"]:
-        file_path = cfg.project_root / f"{cfg.prompts_prefix}_{language_code}.toml"
-        asyncio.run(load_prompts_to_db(file_path, language_code))

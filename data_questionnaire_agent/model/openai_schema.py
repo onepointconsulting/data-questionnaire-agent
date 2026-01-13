@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import mistune
 from pydantic import BaseModel as PydanticBaseModel
@@ -86,6 +86,20 @@ class ConditionalAdvice(PydanticBaseModel):
         default=[],
         description="A list of advices with the corresponding deep research outputs.",
     )
+
+    @classmethod
+    def model_json_schema(
+        cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}", **kwargs
+    ) -> Dict[str, Any]:
+        """Override to exclude advices_with_deep_research from JSON schema."""
+        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template, **kwargs)
+        # Remove the field from properties if it exists
+        if "properties" in schema and "advices_with_deep_research" in schema["properties"]:
+            del schema["properties"]["advices_with_deep_research"]
+            # Also remove from required if present
+            if "required" in schema and "advices_with_deep_research" in schema["required"]:
+                schema["required"].remove("advices_with_deep_research")
+        return schema
 
     def to_html(self, language: str = "en") -> str:
         return f"""{self.to_advice_html()}

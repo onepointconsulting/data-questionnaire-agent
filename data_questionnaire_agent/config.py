@@ -132,9 +132,6 @@ class Config:
     graphrag_read_timeout = float(os.getenv("GRAPHRAG_READ_TIMEOUT", "20"))
     graphrag_engine = os.getenv("GRAPHRAG_ENGINE", "lightrag")
 
-    prompts_prefix = os.getenv("PROMPTS_PREFIX", "prompts")
-    assert prompts_prefix is not None, "Prompts prefix is not set."
-
 
 cfg = Config()
 

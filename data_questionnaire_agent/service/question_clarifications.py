@@ -9,7 +9,8 @@ from data_questionnaire_agent.service.persistence_service_prompt_async import ge
 
 
 async def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:
-    extraction_prompts = await get_prompts(language)["questionnaire"]["clarification"]
+    prompts = await get_prompts(language)
+    extraction_prompts = prompts["questionnaire"]["clarification"]
     return ChatPromptTemplate.from_messages(
         [
             ("system", extraction_prompts["system_message"]),
@@ -21,7 +22,8 @@ async def prompt_factory_question_clarifications(language: str) -> ChatPromptTem
 async def chain_factory_question_clarifications(
     question: str, language: str
 ) -> AsyncIterator[BaseMessageChunk]:
-    input = await prompt_factory_question_clarifications(language).format(question=question)
+    prompt = await prompt_factory_question_clarifications(language)
+    input = prompt.format(question=question)
     return cfg.llm_stream.astream(input)
 
 
