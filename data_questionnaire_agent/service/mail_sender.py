@@ -13,7 +13,9 @@ from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.mail_data import Email
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.model.report_advice_schema import ReportAdviceData
-from data_questionnaire_agent.service.advice_service import combine_advices_and_deep_research_outputs
+from data_questionnaire_agent.service.advice_service import (
+    combine_advices_and_deep_research_outputs,
+)
 from data_questionnaire_agent.service.report_enhancement_service import (
     replace_bold_markdown,
 )

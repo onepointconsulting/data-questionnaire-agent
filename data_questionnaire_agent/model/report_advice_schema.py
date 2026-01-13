@@ -8,4 +8,6 @@ from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 class ReportAdviceData(BaseModel):
     questionnaire: Questionnaire | None = Field(..., description="The questionnaire")
     advices: ConditionalAdvice | None = Field(..., description="The advices")
-    deep_research_outputs: DeepResearchOutputs | None = Field(..., description="The deep research outputs")
+    deep_research_outputs: DeepResearchOutputs | None = Field(
+        ..., description="The deep research outputs"
+    )

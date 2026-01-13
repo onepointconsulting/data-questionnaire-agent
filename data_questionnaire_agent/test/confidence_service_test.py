@@ -1,4 +1,5 @@
 import asyncio
+import pytest
 from typing import List
 
 from data_questionnaire_agent.model.application_schema import (
@@ -17,8 +18,9 @@ from data_questionnaire_agent.test.provider.questionnaire_provider import (
 )
 
 
-def test_prompt_factory_confidence():
-    prompt_template = prompt_factory_confidence("en")
+@pytest.mark.asyncio
+async def test_prompt_factory_confidence():
+    prompt_template = await prompt_factory_confidence("en")
     assert prompt_template is not None
     assert prompt_template.messages is not None
     assert len(prompt_template.messages) > 0

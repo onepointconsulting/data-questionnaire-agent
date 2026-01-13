@@ -1,7 +1,11 @@
 from typing import List
 from psycopg import AsyncCursor
 
-from data_questionnaire_agent.model.deep_research import Citation, DeepResearchAdviceOutput, DeepResearchOutputs
+from data_questionnaire_agent.model.deep_research import (
+    Citation,
+    DeepResearchAdviceOutput,
+    DeepResearchOutputs,
+)
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
 
 
@@ -44,7 +48,9 @@ VALUES(%(deep_research_output_id)s, %(title)s, %(url)s, %(start_index)s, %(end_i
     return await create_cursor(process, True)
 
 
-async def read_deep_research(session_id: str, advice: str | None = None) -> DeepResearchOutputs:
+async def read_deep_research(
+    session_id: str, advice: str | None = None
+) -> DeepResearchOutputs:
     """
     Only the latest deep research output for the given advice will be returned.
     """
@@ -53,7 +59,14 @@ WITH INIT_QUERY AS
 (SELECT ROW_NUMBER() OVER (PARTITION BY SESSION_ID, ADVICE ORDER BY CREATED_AT) deep_research_row_number, ID, ADVICE, OUTPUT FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s {f"AND ADVICE = %(advice)s" if advice is not None else ""})
 SELECT ID, ADVICE, OUTPUT FROM INIT_QUERY WHERE deep_research_row_number = 1
 """
-    rows = await select_from(sql, {"session_id": session_id} if advice is None else {"session_id": session_id, "advice": advice})
+    rows = await select_from(
+        sql,
+        (
+            {"session_id": session_id}
+            if advice is None
+            else {"session_id": session_id, "advice": advice}
+        ),
+    )
     if rows is None:
         return []
     deep_research_outputs = []
@@ -63,11 +76,13 @@ SELECT ID, ADVICE, OUTPUT FROM INIT_QUERY WHERE deep_research_row_number = 1
     end_index_pos = 3
     text_pos = 4
     for row in rows:
-        deep_research_output_id =row[0]
+        deep_research_output_id = row[0]
         citations_sql = """
 SELECT TITLE, URL, START_INDEX, END_INDEX, TEXT FROM TB_DEEP_RESEARCH_CITATION WHERE DEEP_RESEARCH_OUTPUT_ID = %(deep_research_output_id)s
 """
-        citation_rows = rows = await select_from(citations_sql, {"deep_research_output_id": deep_research_output_id})
+        citation_rows = rows = await select_from(
+            citations_sql, {"deep_research_output_id": deep_research_output_id}
+        )
         citations = [
             Citation(
                 index=i,
@@ -79,7 +94,11 @@ SELECT TITLE, URL, START_INDEX, END_INDEX, TEXT FROM TB_DEEP_RESEARCH_CITATION W
             )
             for i, citation_row in enumerate(citation_rows)
         ]
-        deep_research_outputs.append(DeepResearchAdviceOutput(advice=row[1], deep_research_output=row[2], citations=citations))
+        deep_research_outputs.append(
+            DeepResearchAdviceOutput(
+                advice=row[1], deep_research_output=row[2], citations=citations
+            )
+        )
     return DeepResearchOutputs(outputs=deep_research_outputs)
 
 
@@ -93,5 +112,3 @@ DELETE FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s
         return cur.rowcount
 
     return await create_cursor(process, True)
-
-    

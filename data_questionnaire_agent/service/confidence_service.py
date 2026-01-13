@@ -11,12 +11,12 @@ from data_questionnaire_agent.service.ontology_service import PARAM_QUESTIONS_AN
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 
 
-def prompt_factory_confidence(language: str) -> ChatPromptTemplate:
+async def prompt_factory_confidence(language: str) -> ChatPromptTemplate:
     # Assuming get_prompts() returns the required dictionary
-    prompts = get_prompts(language)
+    prompts = await get_prompts(language)
     assert (
         "confidence_prompt" in prompts
     ), "Make sure that you have the confidence prompt in your prompts file."
@@ -28,9 +28,9 @@ def prompt_factory_confidence(language: str) -> ChatPromptTemplate:
     )
 
 
-def create_structured_question_call(language: str) -> RunnableSequence:
+async def create_structured_question_call(language: str) -> RunnableSequence:
     model = cfg.llm.with_structured_output(ConfidenceRating)
-    prompt = prompt_factory_confidence(language)
+    prompt = await prompt_factory_confidence(language)
     return prompt | model
 
 
@@ -44,7 +44,7 @@ async def calculate_confidence_rating(
     assert questionnaire is not None, "Missing questionnaire"
     try:
         call_params = prepare_confidence_chain_call(questionnaire)
-        chain = create_structured_question_call(language)
+        chain = await create_structured_question_call(language)
         return await chain.ainvoke(call_params)
     except Exception:
         logger.exception("Failed to calculate confidence rating.")

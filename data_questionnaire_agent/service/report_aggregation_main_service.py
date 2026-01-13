@@ -23,6 +23,7 @@ from data_questionnaire_agent.service.mail_sender import send_mail_with_attachme
 from data_questionnaire_agent.service.persistence_service_async import (
     select_questionnaires_by_tokens,
 )
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 from data_questionnaire_agent.service.prompt_support import (
     factory_prompt,
     prompt_factory_generic,
@@ -34,20 +35,20 @@ from data_questionnaire_agent.service.report_aggregation_summarization_service i
     aexecute_summarization_batch_str,
 )
 from data_questionnaire_agent.service.similarity_search import num_tokens_from_string
-from data_questionnaire_agent.toml_support import get_prompts
+
 from data_questionnaire_agent.translation import t
 
 
-def create_structured_question_call(language: str = "en") -> RunnableSequence:
+async def create_structured_question_call(language: str = "en") -> RunnableSequence:
     model = cfg.llm.with_structured_output(ReportAggregationKeywords)
-    prompt = prompt_factory_keyword_extraction_prompt(language)
+    prompt = await prompt_factory_keyword_extraction_prompt(language)
     return prompt | model
 
 
-def prompt_factory_keyword_extraction_prompt(
+async def prompt_factory_keyword_extraction_prompt(
     language: str = "en",
 ) -> ChatPromptTemplate:
-    return factory_prompt(
+    return await factory_prompt(
         lambda prompts: prompts["reporting"]["keyword_extraction_prompt"],
         [
             "full_questionnaires",
@@ -56,16 +57,16 @@ def prompt_factory_keyword_extraction_prompt(
     )
 
 
-def create_document_classifier_call(language: str = "en") -> RunnableSequence:
+async def create_document_classifier_call(language: str = "en") -> RunnableSequence:
     model = cfg.llm.with_structured_output(ReportDocumentClassification)
-    prompt = prompt_factory_document_classifier_prompt(language)
+    prompt = await prompt_factory_document_classifier_prompt(language)
     return prompt | model
 
 
-def prompt_factory_document_classifier_prompt(
+async def prompt_factory_document_classifier_prompt(
     language: str = "en",
 ) -> ChatPromptTemplate:
-    prompts = get_prompts(language)
+    prompts = await get_prompts(language)
     section = prompts["reporting"]["keyword_document_classifier"]
     return prompt_factory_generic(
         section,
@@ -127,7 +128,7 @@ async def extract_report_dimensions(
     logger.info("Batch sizes in tokens:")
     for c in count_list:
         logger.info("Batch size: %d", c)
-    chain = create_structured_question_call(language)
+    chain = await create_structured_question_call(language)
     keyword_list = []
     for batch in batched_list:
         questionnaire_list_str = "\n".join(batch)
@@ -184,7 +185,7 @@ async def generate_document_classification(
     language: str = 2,
 ) -> ReportDocumentClassificationContainer:
     questionnaire_list_str = convert_to_str(questionnaire_data)
-    chain = create_document_classifier_call(language)
+    chain = await create_document_classifier_call(language)
     final_results = []
     chain_inputs = [
         {
@@ -340,9 +341,9 @@ async def aggregate_reports_main(
 ) -> Path:
     # Fetch statuses from the database
     logger.info("Report: Fetch statuses from the database")
-    questionnaire_data: List[
-        QuestionnaireStatus
-    ] = await select_questionnaires_by_tokens(tokens, final_report)
+    questionnaire_data: List[QuestionnaireStatus] = (
+        await select_questionnaires_by_tokens(tokens, final_report)
+    )
     logger.info(f"Report: {len(questionnaire_data)} reports available.")
 
     # Extract the dimensions in batches

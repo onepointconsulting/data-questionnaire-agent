@@ -5,18 +5,19 @@ from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.ontology_schema import Ontology
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-from data_questionnaire_agent.toml_support import get_prompts
+
 
 PARAM_QUESTIONS_ANSWERS = "questions_answers"
 PARAM_ADVICE = "conditional_advice"
 
 
-def prompt_factory_ontology(language: str) -> ChatPromptTemplate:
+async def prompt_factory_ontology(language: str) -> ChatPromptTemplate:
     # Assuming get_prompts() returns the required dictionary
-    prompts = get_prompts(language)
+    prompts = await get_prompts(language)
     assert (
         "extract_ontology" in prompts
     ), "Make sure that you have the ontolgy prompt in your prompts file."
@@ -28,9 +29,9 @@ def prompt_factory_ontology(language: str) -> ChatPromptTemplate:
     )
 
 
-def create_structured_question_call(language: str) -> RunnableSequence:
+async def create_structured_question_call(language: str) -> RunnableSequence:
     model = cfg.llm.with_structured_output(Ontology)
-    prompt = prompt_factory_ontology(language)
+    prompt = await prompt_factory_ontology(language)
     return prompt | model
 
 
@@ -49,5 +50,5 @@ async def create_ontology(
     assert conditional_advice is not None, "Missing conditional advice"
     assert questionnaire is not None, "Missing questionnaire"
     call_params = prepare_ontology_chain_call(questionnaire, conditional_advice)
-    chain = create_structured_question_call(language)
+    chain = await create_structured_question_call(language)
     return await chain.ainvoke(call_params)

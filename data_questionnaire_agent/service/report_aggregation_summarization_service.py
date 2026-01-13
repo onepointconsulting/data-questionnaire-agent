@@ -13,24 +13,24 @@ from data_questionnaire_agent.service.prompt_support import (
 KEY_QUESTIONNAIRE = "full_questionnaire"
 
 
-def prompt_factory_summarization_prompt(language: str) -> ChatPromptTemplate:
-    return factory_prompt(
+async def prompt_factory_summarization_prompt(language: str) -> ChatPromptTemplate:
+    return await factory_prompt(
         lambda prompt: prompt["reporting"]["summarization_prompt"],
         [KEY_QUESTIONNAIRE],
         language,
     )
 
 
-def create_summarization_call(language: str = "en") -> RunnableSequence:
+async def create_summarization_call(language: str = "en") -> RunnableSequence:
     model = cfg.llm.with_structured_output(ReportDocumentSummarization)
-    prompt = prompt_factory_summarization_prompt(language)
+    prompt = await prompt_factory_summarization_prompt(language)
     return prompt | model
 
 
 async def aexecute_summarization_batch(
     inputs: list[str], batch_size: int = 2, language: str = "en"
 ) -> list[ReportDocumentSummarization]:
-    chain = create_summarization_call(language)
+    chain = await create_summarization_call(language)
     summaries = []
     inputs_dict = [{KEY_QUESTIONNAIRE: s} for s in inputs]
     batches = [

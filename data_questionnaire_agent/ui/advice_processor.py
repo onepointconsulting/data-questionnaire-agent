@@ -40,6 +40,10 @@ if __name__ == "__main__":
         create_questionnaire_2_questions,
     )
 
-    advice_chain = chain_factory_advice()
-    questionnaire = create_questionnaire_2_questions()
-    print(asyncio.run(process_advice(questionnaire, advice_chain)))
+    async def test_process_advice():
+        advice_chain = await chain_factory_advice("en")
+        questionnaire = create_questionnaire_2_questions()
+        res = await process_advice(questionnaire, advice_chain)
+        print(res.to_html())
+
+    asyncio.run(test_process_advice())

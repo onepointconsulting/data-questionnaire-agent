@@ -7,7 +7,7 @@ from data_questionnaire_agent.model.question_suggestion import (
     QuestionSuggestion,
 )
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
-from data_questionnaire_agent.toml_support import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 
 
 async def select_initial_question(language: str) -> tuple[int, str]:
@@ -24,8 +24,9 @@ ORDER BY PREFERRED_QUESTION_ORDER
 """,
         {"language": language},
     )
+    prompts = await get_prompts(language)
     if res is None or len(res) == 0:
-        return [(0, get_prompts(language)["questionnaire"]["initial"]["question"])]
+        return [(0, prompts["questionnaire"]["initial"]["question"])]
     return [(row[0], row[1]) for row in res]
 
 

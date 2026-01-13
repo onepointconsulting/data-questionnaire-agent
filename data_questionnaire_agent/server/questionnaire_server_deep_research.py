@@ -5,7 +5,10 @@ from data_questionnaire_agent.server.server_support import (
     extract_session,
     routes,
 )
-from data_questionnaire_agent.service.persistence_deep_research_async import read_deep_research
+from data_questionnaire_agent.service.persistence_deep_research_async import (
+    read_deep_research,
+)
+
 
 @routes.options("/deep_research/output/{session_id}")
 async def deep_research_output_options(_: web.Request) -> web.Response:

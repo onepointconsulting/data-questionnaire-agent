@@ -551,8 +551,8 @@ WHERE ID = (SELECT ID FROM PUBLIC.TB_QUESTIONNAIRE_STATUS WHERE SESSION_ID = %(s
             """,
             {
                 "session_id": session_id,
-                "confidence_rating": confidence.rating,
-                "confidence_reasoning": confidence.reasoning,
+                "confidence_rating": confidence.rating if confidence else "",
+                "confidence_reasoning": confidence.reasoning if confidence else "",
                 "step": step,
             },
         )

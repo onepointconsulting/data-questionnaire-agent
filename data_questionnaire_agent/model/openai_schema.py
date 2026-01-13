@@ -1,9 +1,8 @@
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import mistune
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field
-from pydantic import Field as FieldV1
 
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.model.deep_research import DeepResearchOutputs
@@ -64,29 +63,43 @@ class ResponseTags(BaseModel):
 class ConditionalAdvice(PydanticBaseModel):
     """If there is enough information to give advice then advice will be available here."""
 
-    has_advice: bool = FieldV1(
+    has_advice: bool = Field(
         ...,
         description="Whether there is advice here or not",
     )
-    advices: Optional[List[str]] = FieldV1(
+    advices: Optional[List[str]] = Field(
         ...,
         description="In case there is enough information to give advice, this list will contain advice to give to the user",
     )
-    what_you_should_avoid: Optional[List[str]] = FieldV1(
+    what_you_should_avoid: Optional[List[str]] = Field(
         default=[],
         description="A list of advice about what you should not do and avoid.",
     )
-    positive_outcomes: Optional[List[str]] = FieldV1(
+    positive_outcomes: Optional[List[str]] = Field(
         default=[],
         description="A list of potential positive outcomes in case the user follows the advice.",
     )
-    confidence: Optional[ConfidenceRating] = FieldV1(
+    confidence: Optional[ConfidenceRating] = Field(
         default=None, description="The confidence rating at the time of the report."
     )
-    advices_with_deep_research: list[tuple[str, DeepResearchOutputs]] = FieldV1(
+    advices_with_deep_research: list[tuple[str, DeepResearchOutputs]] = Field(
         default=[],
         description="A list of advices with the corresponding deep research outputs.",
     )
+
+    @classmethod
+    def model_json_schema(
+        cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}", **kwargs
+    ) -> Dict[str, Any]:
+        """Override to exclude advices_with_deep_research from JSON schema."""
+        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template, **kwargs)
+        # Remove the field from properties if it exists
+        if "properties" in schema and "advices_with_deep_research" in schema["properties"]:
+            del schema["properties"]["advices_with_deep_research"]
+            # Also remove from required if present
+            if "required" in schema and "advices_with_deep_research" in schema["required"]:
+                schema["required"].remove("advices_with_deep_research")
+        return schema
 
     def to_html(self, language: str = "en") -> str:
         return f"""{self.to_advice_html()}
@@ -126,16 +139,19 @@ class ConditionalAdvice(PydanticBaseModel):
                         citations_dict[citation.title].append(citation)
                     for title, citations in citations_dict.items():
                         from collections import Counter
+
                         citations_counter = Counter(citations)
                         citations_html_snippets = []
                         for citation in citations:
                             citation_text = get_url_text(citation.url)
                             citations_counter[citation_text] += 1
                             if citations_counter[citation_text] == 1:
-                                citations_html_snippets.append(f"""<li class="onepoint-deep-research-citation-item">
+                                citations_html_snippets.append(
+                                    f"""<li class="onepoint-deep-research-citation-item">
     <a href="{citation.url}" target="_blank" rel="noopener noreferrer">{citation_text if len(citation_text) > 1 else citation.url}</a>
     </li>
-    """)
+    """
+                                )
                         html += f"""<h4>{title}</h4>
 <ul>
 {"\n".join(sorted(citations_html_snippets))}

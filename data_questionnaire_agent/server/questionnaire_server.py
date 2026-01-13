@@ -68,7 +68,9 @@ from data_questionnaire_agent.service.knowledge_base_service import fetch_contex
 from data_questionnaire_agent.service.language_adapter import adapt_language
 from data_questionnaire_agent.service.mail_sender import create_mail_body, send_email
 from data_questionnaire_agent.service.ontology_service import create_ontology
-from data_questionnaire_agent.service.persistence_deep_research_async import read_deep_research
+from data_questionnaire_agent.service.persistence_deep_research_async import (
+    read_deep_research,
+)
 from data_questionnaire_agent.service.persistence_service_async import (
     delete_last_question,
     fetch_ontology,
@@ -331,7 +333,7 @@ async def regenerate_question(sid: str, session_id: str):
             session_properties: SessionProperties = (
                 await select_current_session_steps_and_language(session_id)
             )
-            runnable = create_structured_regeneration_call(
+            runnable = await create_structured_regeneration_call(
                 session_properties, is_recreate=True
             )
             questionnaire = await select_questionnaire(session_id)
@@ -468,10 +470,11 @@ async def extend_session(sid: str, session_id: str, session_steps: int):
 
 
 @sio.event
-async def generate_deep_research(sid: str, session_id: str, advice: str, language: str = "en"):
+async def generate_deep_research(
+    sid: str, session_id: str, advice: str, language: str = "en"
+):
     # Run deep research in background task to avoid blocking the socket handler
     asyncio.create_task(deep_research_websocket(session_id, advice, sid, sio))
-    
 
 
 async def generate_report(session_id: str, questionnaire: Questionnaire, language: str):
@@ -482,7 +485,7 @@ async def generate_report(session_id: str, questionnaire: Questionnaire, languag
             session_id, len(questionnaire) - 1, questionnaire, language
         )
         conditional_advice = await process_advice(
-            questionnaire, create_structured_question_call(language)
+            questionnaire, await create_structured_question_call(language)
         )
         await save_confidence_rating(
             confidence_rating, conditional_advice, session_id, questionnaire
@@ -596,9 +599,9 @@ async def append_suggestions_and_send(
 async def append_other_suggestions(server_messages, questionnaire_messages):
     if len(questionnaire_messages) > 1:
         for i, message in enumerate(questionnaire_messages[1:]):
-            server_messages.server_messages[
-                i + 1
-            ].suggestions = await select_questionnaire_status_suggestions(message.id)
+            server_messages.server_messages[i + 1].suggestions = (
+                await select_questionnaire_status_suggestions(message.id)
+            )
 
 
 async def persist_question(
@@ -688,9 +691,9 @@ async def get_pdf(request: web.Request) -> web.Response:
         ReportAdviceData(
             questionnaire=questionnaire,
             advices=advices,
-            deep_research_outputs=deep_research_outputs
-        ), 
-        language
+            deep_research_outputs=deep_research_outputs,
+        ),
+        language,
     )
     logger.info("PDF report_path: %s", report_path)
     content_disposition = "attachment"
@@ -725,10 +728,11 @@ async def send_email_request(request: web.Request) -> web.Response:
         deep_research_outputs = await read_deep_research(session_id)
         mail_body = create_mail_body(
             ReportAdviceData(
-                questionnaire=questionnaire, 
-                advices=advices, 
-                deep_research_outputs=deep_research_outputs
-            ), language=language
+                questionnaire=questionnaire,
+                advices=advices,
+                deep_research_outputs=deep_research_outputs,
+            ),
+            language=language,
         )
         # Respond with a JSON message indicating success
         await asyncify(send_email)(

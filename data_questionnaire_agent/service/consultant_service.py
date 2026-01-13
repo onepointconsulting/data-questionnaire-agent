@@ -25,10 +25,11 @@ from data_questionnaire_agent.service.persistence_service_consultants_async impo
     read_session_consultant_ratings,
     save_session_consultant_ratings,
 )
+from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-from data_questionnaire_agent.toml_support import get_prompts
+
 
 CONSULTANT_BATCH_SIZE = 10
 
@@ -56,9 +57,9 @@ async def convert_all_consultants(offset: int = None, limit: int = None) -> str:
     return convert_to_markdown(consultants)
 
 
-def prompt_factory_consultants(language: str) -> ChatPromptTemplate:
+async def prompt_factory_consultants(language: str) -> ChatPromptTemplate:
     # Assuming get_prompts() returns the required dictionary
-    prompts = get_prompts(language)
+    prompts = await get_prompts(language)
     section = prompts["consultants"]["evaluation"]
     return prompt_factory_generic(
         section=section,
@@ -67,9 +68,9 @@ def prompt_factory_consultants(language: str) -> ChatPromptTemplate:
     )
 
 
-def create_structured_consultant_call(language: str) -> RunnableSequence:
+async def create_structured_consultant_call(language: str) -> RunnableSequence:
     model = cfg.llm.with_structured_output(ConsultantRatings)
-    prompt = prompt_factory_consultants(language)
+    prompt = await prompt_factory_consultants(language)
     return prompt | model
 
 
@@ -117,7 +118,7 @@ async def calculate_consultant_ratings_for(
         prompt_data = await prepare_consultant_call(
             Questionnaire(questions=questionnaire_statuses), advice, cvs
         )
-        runnable_sequence = create_structured_consultant_call(language)
+        runnable_sequence = await create_structured_consultant_call(language)
         invocations.append(runnable_sequence.ainvoke(prompt_data))
 
     try:
