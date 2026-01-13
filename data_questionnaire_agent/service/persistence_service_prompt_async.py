@@ -124,9 +124,18 @@ async def clear_prompts_cache():
     prompts_cache.clear()
 
 
+def adapt_language_code(language_code: str) -> str:
+    if not language_code:
+        return "en"
+    # Normalize to lowercase for consistent usage
+    language_code = language_code.lower()
+    return language_code.split("-")[0] if "-" in language_code else language_code
+
+
 async def read_system_human_prompts(categories: list[str], language_code: str = "en") -> dict:
-    if language_code in prompts_cache:
-        cached = prompts_cache[language_code]
+    l_code = adapt_language_code(language_code)
+    if l_code in prompts_cache:
+        cached = prompts_cache[l_code]
         current_path = cached.copy()
         for category in categories:
             if category not in current_path:
@@ -136,8 +145,8 @@ async def read_system_human_prompts(categories: list[str], language_code: str = 
             "system_message": current_path["system_message"],
             "human_message": current_path["human_message"],
         }
-    system_prompt = await read_prompt_by_prompt_key(categories, "system_message", language_code)
-    human_prompt = await read_prompt_by_prompt_key(categories, "human_message", language_code)
+    system_prompt = await read_prompt_by_prompt_key(categories, "system_message", l_code)
+    human_prompt = await read_prompt_by_prompt_key(categories, "human_message", l_code)
     if system_prompt is None or human_prompt is None:
         raise ValueError("System or human prompt not found")
     return {
@@ -147,8 +156,10 @@ async def read_system_human_prompts(categories: list[str], language_code: str = 
 
 
 async def get_prompts(language_code: str = "en", add_ids: bool = False) -> dict:
-    if language_code in prompts_cache:
-        return prompts_cache[language_code].copy()
+
+    l_code = adapt_language_code(language_code)
+    if l_code in prompts_cache:
+        return prompts_cache[l_code].copy()
     async def process_read(cur: AsyncCursor):
         sql = """
 SELECT (WITH RECURSIVE CATS AS (
@@ -165,7 +176,7 @@ INNER JOIN TB_PROMPT_CATEGORY PC1 ON P.PROMPT_CATEGORY_ID = PC1.ID
 INNER JOIN TB_LANGUAGE L on L.ID = PC1.LANGUAGE_ID
 WHERE L.LANGUAGE_CODE = %(language_code)s;
 """
-        await cur.execute(sql, {"language_code": language_code})
+        await cur.execute(sql, {"language_code": l_code})
         rows = await cur.fetchall()
         PATH = 0
         PROMPT_ID = 3
@@ -186,13 +197,14 @@ WHERE L.LANGUAGE_CODE = %(language_code)s;
                     "id": row[PROMPT_ID],
                     "prompt": row[PROMPT],
                 }
-        prompts_cache[language_code] = path_dict
-        return prompts_cache[language_code]
+        prompts_cache[l_code] = path_dict
+        return prompts_cache[l_code]
 
     return await create_cursor(process_read, True)
 
 
 async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str, language_code: str = "en") -> DBPrompt | None:
+    l_code = adapt_language_code(language_code)
     if len(categories) == 0:
         return None
     async def process_read(cur: AsyncCursor):
@@ -211,7 +223,7 @@ SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUA
             params = {
                 "category": category,
                 "parent_id": current_category.id if current_category is not None else None,
-                "language_code": language_code,
+                "language_code": l_code,
             }
             if index == 0:
                 if "parent_id" in params:
@@ -292,5 +304,7 @@ DELETE FROM TB_PROMPT WHERE ID = %(prompt_id)s
 if __name__ == "__main__":
     import asyncio
     import json
-    res = asyncio.run(get_prompts("en"))
+    res = asyncio.run(get_prompts("en-GB"))
+    assert res is not None
+    assert "confidence_prompt" in res
     json.dump(res, open("prompts.json", "w"), indent=4)
