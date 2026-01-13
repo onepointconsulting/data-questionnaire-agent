@@ -146,7 +146,7 @@ async def read_system_human_prompts(categories: list[str], language_code: str = 
     }
 
 
-async def get_prompts(language_code: str = "en") -> dict:
+async def get_prompts(language_code: str = "en", add_ids: bool = False) -> dict:
     if language_code in prompts_cache:
         return prompts_cache[language_code].copy()
     async def process_read(cur: AsyncCursor):
@@ -168,6 +168,7 @@ WHERE L.LANGUAGE_CODE = %(language_code)s;
         await cur.execute(sql, {"language_code": language_code})
         rows = await cur.fetchall()
         PATH = 0
+        PROMPT_ID = 3
         PROMPT_KEY = 4
         PROMPT = 5
         path_dict = {}
@@ -177,8 +178,14 @@ WHERE L.LANGUAGE_CODE = %(language_code)s;
             for path in paths:
                 if path not in current_path:
                     current_path[path] = {}
-                current_path = current_path[path]#
-            current_path[row[PROMPT_KEY]] = row[PROMPT]
+                current_path = current_path[path]
+            if not add_ids:
+                current_path[row[PROMPT_KEY]] = row[PROMPT]
+            else:
+                current_path[row[PROMPT_KEY]] = {
+                    "id": row[PROMPT_ID],
+                    "prompt": row[PROMPT],
+                }
         prompts_cache[language_code] = path_dict
         return prompts_cache[language_code]
 
