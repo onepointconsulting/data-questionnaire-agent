@@ -16,3 +16,6 @@ def ui():
 def check():
     os.system("black .")
     os.system("ruff check --fix .")
+
+if __name__ == "__main__":
+    ui()

@@ -203,6 +203,18 @@ WHERE L.LANGUAGE_CODE = %(language_code)s;
     return await create_cursor(process_read, True)
 
 
+async def update_prompt(text: str, id: int) -> int:
+    async def process_update(cur: AsyncCursor):
+        await cur.execute(
+            """
+UPDATE TB_PROMPT SET PROMPT = %(text)s, UPDATED_AT = NOW() WHERE ID = %(id)s
+            """,
+            {"text": text, "id": id},
+        )
+        return cur.rowcount
+    return await create_cursor(process_update, True)
+
+
 async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str, language_code: str = "en") -> DBPrompt | None:
     l_code = adapt_language_code(language_code)
     if len(categories) == 0:
