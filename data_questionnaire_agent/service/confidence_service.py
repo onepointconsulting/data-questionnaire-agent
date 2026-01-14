@@ -16,7 +16,7 @@ from data_questionnaire_agent.service.persistence_service_prompt_async import ge
 
 async def prompt_factory_confidence(language: str) -> ChatPromptTemplate:
     # Assuming get_prompts() returns the required dictionary
-    prompts = await get_prompts(language)
+    prompts = await get_prompts(language, False)
     assert (
         "confidence_prompt" in prompts
     ), "Make sure that you have the confidence prompt in your prompts file."
