@@ -15,7 +15,10 @@ async def prompts_options(_: web.Request) -> web.Response:
 @routes.get("/prompts/{language}")
 async def prompts_get(request: web.Request) -> web.Response:
     language = request.match_info.get("language", "en")
-    prompts = await get_prompts(language, True)
+    # Get parameter which determines the type of prompts to return
+    add_ids = request.rel_url.query.get("add_ids", "false")
+    add_ids = add_ids.lower() == "true"
+    prompts = await get_prompts(language, add_ids)
     return web.json_response(prompts, headers=CORS_HEADERS)
 
 

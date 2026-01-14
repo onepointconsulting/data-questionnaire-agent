@@ -158,8 +158,9 @@ async def read_system_human_prompts(categories: list[str], language_code: str = 
 async def get_prompts(language_code: str = "en", add_ids: bool = False) -> dict:
 
     l_code = adapt_language_code(language_code)
-    if l_code in prompts_cache:
-        return prompts_cache[l_code].copy()
+    cache_key = f"{l_code}_{add_ids}"
+    if cache_key in prompts_cache:
+        return prompts_cache[cache_key].copy()
     async def process_read(cur: AsyncCursor):
         sql = """
 SELECT (WITH RECURSIVE CATS AS (
@@ -197,8 +198,8 @@ WHERE L.LANGUAGE_CODE = %(language_code)s;
                     "id": row[PROMPT_ID],
                     "prompt": row[PROMPT],
                 }
-        prompts_cache[l_code] = path_dict
-        return prompts_cache[l_code]
+        prompts_cache[cache_key] = path_dict
+        return path_dict
 
     return await create_cursor(process_read, True)
 
