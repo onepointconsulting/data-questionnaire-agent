@@ -74,7 +74,7 @@ ORDER BY ID ASC""",
         return final_res
     ids = [r[ID] for r in res]
     context_documents = await read_context_documents(ids)
-    context_documents_dict = {cd.questionnaire_status_id: cd for cd in context_documents}
+    context_documents_dict = {cd.questionnaire_status_id: cd for cd in context_documents} if context_documents is not None else {}
     for r in res:
         final_report = r[FINAL_REPORT]
         question = r[QUESTION]

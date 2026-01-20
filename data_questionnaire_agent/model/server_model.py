@@ -29,7 +29,7 @@ class ServerMessage(BaseModel):
         description="The question identifier in case a question is NOT generated",
     )
     relevant_documents: ContextDocuments | None = Field(
-        default=None, description="The relevant documents for the question"
+        default=None, description="The relevant documents for the current question."
     )
 
 
@@ -67,6 +67,7 @@ def convert_questionnaire(
             final_report=q.final_report,
             clarification=q.clarification,
             question_id=q.question_id,
+            relevant_documents=q.relevant_documents,
         )
         for q in questionnaire
     ]
