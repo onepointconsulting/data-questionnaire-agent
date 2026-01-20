@@ -42,7 +42,7 @@ async def admin_oauth_token_middleware(request, handler):
         # 1. Check Authorization header: "Bearer <token>"
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
-            token = auth_header[len("Bearer "):].strip()
+            token = auth_header[len("Bearer ") :].strip()
 
         # 2. Check for "access_token" in query params if not already found
         if not token:
@@ -61,9 +61,9 @@ async def admin_oauth_token_middleware(request, handler):
     # Continue processing request
     return await handler(request)
 
+
 # Register the middleware to the app
 app.middlewares.append(admin_oauth_token_middleware)
-
 
 
 async def get_index(_: web.Request) -> web.Response:

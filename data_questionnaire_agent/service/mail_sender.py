@@ -9,9 +9,7 @@ from typing import Union
 
 from data_questionnaire_agent.config import cfg, mail_config
 from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.mail_data import Email
-from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 from data_questionnaire_agent.model.report_advice_schema import ReportAdviceData
 from data_questionnaire_agent.service.advice_service import (
     combine_advices_and_deep_research_outputs,

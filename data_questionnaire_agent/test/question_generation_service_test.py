@@ -5,12 +5,15 @@ from langchain_community.callbacks import get_openai_callback
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.model.context import Context
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 from data_questionnaire_agent.model.session_configuration import (
     ChatType,
     SessionProperties,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.question_generation_service import (
     chain_factory_secondary_question,
     divergent_prompt_transformer,
@@ -22,9 +25,8 @@ from data_questionnaire_agent.test.provider.knowledge_base_provider import (
 )
 from data_questionnaire_agent.test.provider.questionnaire_provider import (
     create_questionnaire_2_questions,
-    create_questionnaire_2_questions__refugees_fa
+    create_questionnaire_2_questions__refugees_fa,
 )
-
 
 
 @pytest.mark.asyncio
@@ -69,7 +71,13 @@ def test_question_generation_fa():
         else create_questionnaire_2_questions__refugees_fa()
     )
     knowledge_base = provide_knowledge_base()
-    input = prepare_secondary_question(questionnaire, knowledge_base)
+    knowledge_base_context = Context(
+        context_text=knowledge_base,
+        entities_context=[],
+        relations_context=[],
+        text_units_context=[],
+    )
+    input = prepare_secondary_question(questionnaire, knowledge_base_context)
     with get_openai_callback() as cb:
         chain = chain_factory_secondary_question("fa")
         res: ResponseQuestions = asyncio.run(chain.arun(input))

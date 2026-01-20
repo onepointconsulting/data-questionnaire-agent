@@ -1,4 +1,3 @@
-from typing import List
 from psycopg import AsyncCursor
 
 from data_questionnaire_agent.model.deep_research import (
@@ -56,7 +55,7 @@ async def read_deep_research(
     """
     sql = f"""
 WITH INIT_QUERY AS
-(SELECT ROW_NUMBER() OVER (PARTITION BY SESSION_ID, ADVICE ORDER BY CREATED_AT) deep_research_row_number, ID, ADVICE, OUTPUT FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s {f"AND ADVICE = %(advice)s" if advice is not None else ""})
+(SELECT ROW_NUMBER() OVER (PARTITION BY SESSION_ID, ADVICE ORDER BY CREATED_AT) deep_research_row_number, ID, ADVICE, OUTPUT FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s {"AND ADVICE = %(advice)s" if advice is not None else ""})
 SELECT ID, ADVICE, OUTPUT FROM INIT_QUERY WHERE deep_research_row_number = 1
 """
     rows = await select_from(
@@ -103,7 +102,6 @@ SELECT TITLE, URL, START_INDEX, END_INDEX, TEXT FROM TB_DEEP_RESEARCH_CITATION W
 
 
 async def delete_deep_research(session_id: str) -> int:
-
     async def process(cur: AsyncCursor):
         sql = """
 DELETE FROM TB_DEEP_RESEARCH_OUTPUT WHERE SESSION_ID = %(session_id)s

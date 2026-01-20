@@ -1,4 +1,3 @@
-import pytest
 from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
@@ -9,12 +8,15 @@ from langchain_core.runnables.base import RunnableSequence
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
+from data_questionnaire_agent.model.context import Context
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 from data_questionnaire_agent.model.session_configuration import (
     ChatType,
     SessionProperties,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
@@ -125,7 +127,7 @@ async def chain_factory_secondary_question(
 
 def prepare_secondary_question(
     questionnaire: Questionnaire,
-    knowledge_base: str,
+    knowledge_base: Context,
     questions_per_batch: int = cfg.questions_per_batch,
     is_recreate: bool = False,
     confidence_rating: ConfidenceRating | None = None,
@@ -134,7 +136,7 @@ def prepare_secondary_question(
     if confidence_rating is not None:
         confidence_report = confidence_rating.reasoning
     params = {
-        "knowledge_base": knowledge_base,
+        "knowledge_base": knowledge_base.context_text,
         "questions_answers": str(questionnaire),
         "answers": questionnaire.answers_str(),
         "questions_per_batch": questions_per_batch,

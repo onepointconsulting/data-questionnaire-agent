@@ -1,9 +1,11 @@
 from pathlib import Path
 
 from data_questionnaire_agent.model.prompt import DBPrompt, PromptCategory
-from data_questionnaire_agent.service.persistence_service_prompt_async import persist_prompt, persist_prompt_category
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    persist_prompt,
+    persist_prompt_category,
+)
 from data_questionnaire_agent.toml_support import read_toml
-from data_questionnaire_agent.config import cfg
 
 
 async def load_prompts_to_db(file_path: Path, language_code: str):
@@ -44,6 +46,7 @@ if __name__ == "__main__":
     # This script loads prompt categories and prompts from a TOML file into the database for the specified language.
     import asyncio
     import sys
+
     from data_questionnaire_agent.log_init import logger
 
     if len(sys.argv) != 3:
@@ -55,4 +58,3 @@ if __name__ == "__main__":
     assert file_path.exists(), f"File {file_path} does not exist."
 
     asyncio.run(load_prompts_to_db(file_path, language_code))
-    

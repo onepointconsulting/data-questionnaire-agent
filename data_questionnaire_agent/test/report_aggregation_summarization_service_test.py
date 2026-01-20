@@ -1,4 +1,5 @@
 import asyncio
+
 import pytest
 
 from data_questionnaire_agent.config import cfg
@@ -14,6 +15,7 @@ def test_prompt_factory_summarization_prompt():
     assert chat_template is not None, "Chat template cannot be none"
     res = chat_template.format(full_questionnaire="Bla")
     assert res is not None, "No result from formatting"
+
 
 @pytest.mark.asyncio
 async def test_create_summarization_call():

@@ -1,4 +1,5 @@
 import pytest
+
 from data_questionnaire_agent.model.prompt import DBPrompt, PromptCategory
 from data_questionnaire_agent.service.persistence_service_prompt_async import (
     delete_prompt,
@@ -61,7 +62,9 @@ async def test_persist_prompt():
         assert prompt_from_db.prompt_key == "test_prompt_key"
         assert prompt_from_db.prompt == "test_prompt"
         assert prompt_from_db.created_at is not None
-        prompt_from_db = await read_prompt_by_prompt_key(["Test Prompt Category"], "test_prompt_key", "en")
+        prompt_from_db = await read_prompt_by_prompt_key(
+            ["Test Prompt Category"], "test_prompt_key", "en"
+        )
         assert prompt_from_db is not None
         assert prompt_from_db.id is not None
         assert prompt_from_db.prompt_category.id is not None

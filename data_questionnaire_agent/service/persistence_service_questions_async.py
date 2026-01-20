@@ -6,8 +6,10 @@ from data_questionnaire_agent.model.question_suggestion import (
     QuestionInfo,
     QuestionSuggestion,
 )
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 
 
 async def select_initial_question(language: str) -> tuple[int, str]:

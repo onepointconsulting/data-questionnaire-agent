@@ -20,7 +20,7 @@ async def process_advice(
     knowledge_base = await fetch_context(questionnaire_str)
 
     advice_input = prepare_conditional_advice(
-        knowledge_base=knowledge_base, questions_answers=questionnaire_str
+        knowledge_base=knowledge_base.context_text, questions_answers=questionnaire_str
     )
     async for attempt in AsyncRetrying(**cfg.retry_args):
         with attempt:

@@ -1,4 +1,5 @@
 import asyncio
+
 import pytest
 
 from data_questionnaire_agent.service.consultant_service import (
@@ -39,6 +40,7 @@ async def test_prompt_factory_consultants():
     prompt_template = await prompt_factory_consultants("en")
     assert prompt_template is not None, "There is no prompt template"
     prompt_template.config_schema is not None, "There is no configuration schema"
+
 
 @pytest.mark.asyncio
 async def test_create_structured_consultant_call():

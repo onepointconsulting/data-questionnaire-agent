@@ -92,12 +92,20 @@ class ConditionalAdvice(PydanticBaseModel):
         cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}", **kwargs
     ) -> Dict[str, Any]:
         """Override to exclude advices_with_deep_research from JSON schema."""
-        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template, **kwargs)
+        schema = super().model_json_schema(
+            by_alias=by_alias, ref_template=ref_template, **kwargs
+        )
         # Remove the field from properties if it exists
-        if "properties" in schema and "advices_with_deep_research" in schema["properties"]:
+        if (
+            "properties" in schema
+            and "advices_with_deep_research" in schema["properties"]
+        ):
             del schema["properties"]["advices_with_deep_research"]
             # Also remove from required if present
-            if "required" in schema and "advices_with_deep_research" in schema["required"]:
+            if (
+                "required" in schema
+                and "advices_with_deep_research" in schema["required"]
+            ):
                 schema["required"].remove("advices_with_deep_research")
         return schema
 
@@ -134,7 +142,7 @@ class ConditionalAdvice(PydanticBaseModel):
 """
                     citations_dict = {}
                     for citation in deep_research_output[1].citations:
-                        if not citation.title in citations_dict:
+                        if citation.title not in citations_dict:
                             citations_dict[citation.title] = []
                         citations_dict[citation.title].append(citation)
                     for title, citations in citations_dict.items():

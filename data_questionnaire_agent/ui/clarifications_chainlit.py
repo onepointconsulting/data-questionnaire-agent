@@ -8,9 +8,6 @@ from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.openai_schema import ResponseTags
-from data_questionnaire_agent.service.clarifications_agent import (
-    create_clarification_agent,
-)
 from data_questionnaire_agent.service.tagging_service import prepare_sentiment_input
 
 
@@ -44,5 +41,3 @@ async def process_clarifications_chainlit(
                     if use_chainlit:
                         await cl.Message(content=message).send()
                     logger.warn(message)
-
-

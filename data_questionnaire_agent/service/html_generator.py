@@ -6,8 +6,10 @@ import pdfkit
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
-
 from data_questionnaire_agent.model.report_advice_schema import ReportAdviceData
+from data_questionnaire_agent.service.advice_service import (
+    combine_advices_and_deep_research_outputs,
+)
 from data_questionnaire_agent.service.report_enhancement_service import (
     replace_bold_markdown,
 )
@@ -15,15 +17,12 @@ from data_questionnaire_agent.test.provider.advice_provider import (
     create_deep_research_outputs,
 )
 from data_questionnaire_agent.translation import t
-from data_questionnaire_agent.service.advice_service import (
-    combine_advices_and_deep_research_outputs,
-)
 
 
 def generate_html(report_advice_data: ReportAdviceData, language: str = "en") -> str:
     from data_questionnaire_agent.model.application_schema import Questionnaire
-    from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
     from data_questionnaire_agent.model.deep_research import DeepResearchOutputs
+    from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 
     questionnaire: Questionnaire = report_advice_data.questionnaire
     advices: ConditionalAdvice = report_advice_data.advices
@@ -121,14 +120,14 @@ def generate_iso() -> str:
 
 
 if __name__ == "__main__":
+    from data_questionnaire_agent.model.application_schema import Questionnaire
+    from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
     from data_questionnaire_agent.test.provider.advice_provider import (
         create_simple_advice,
     )
     from data_questionnaire_agent.test.provider.questionnaire_provider import (
         create_questionnaire_2_questions,
     )
-    from data_questionnaire_agent.model.application_schema import Questionnaire
-    from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
 
     questionnaire: Questionnaire = create_questionnaire_2_questions()
     advices: ConditionalAdvice = create_simple_advice()

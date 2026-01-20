@@ -1,6 +1,7 @@
 import asyncio
-import pytest
 from typing import List
+
+import pytest
 
 from data_questionnaire_agent.model.application_schema import (
     Questionnaire,

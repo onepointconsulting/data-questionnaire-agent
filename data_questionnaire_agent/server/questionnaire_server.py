@@ -14,6 +14,7 @@ from data_questionnaire_agent.config import cfg, mail_config, websocket_cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
+from data_questionnaire_agent.model.context_documents import ContextDocuments
 from data_questionnaire_agent.model.jwt_token import JWTTokenData
 from data_questionnaire_agent.model.mail_data import MailData
 from data_questionnaire_agent.model.openai_schema import (
@@ -47,6 +48,7 @@ from data_questionnaire_agent.server.server_support import (
     handle_error,
     routes,
 )
+from data_questionnaire_agent.server.socket_commands import Commands
 from data_questionnaire_agent.service.add_more_suggestions_service import (
     process_add_more_suggestions,
 )
@@ -97,6 +99,9 @@ from data_questionnaire_agent.service.persistence_service_async import (
 from data_questionnaire_agent.service.persistence_service_consultants_async import (
     read_consultant_image,
 )
+from data_questionnaire_agent.service.persistence_service_context_documents import (
+    persist_context_documents,
+)
 from data_questionnaire_agent.service.persistence_service_questions_async import (
     select_initial_question,
     select_outstanding_questions,
@@ -119,8 +124,6 @@ from data_questionnaire_agent.service.secondary_question_processor import (
 )
 from data_questionnaire_agent.translation import t
 from data_questionnaire_agent.ui.advice_processor import process_advice
-from data_questionnaire_agent.server.socket_commands import Commands
-
 
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
@@ -509,20 +512,24 @@ async def handle_secondary_question(
     total_cost = 0
     # Find outstanding questions
     question_answers = await select_outstanding_questions(language, session_id)
+    relevant_documents: ContextDocuments | None = None
     if len(question_answers) == 0:
         # Generate questions using AI
         with get_openai_callback() as cb:
             confidence_rating = await calculate_confidence_rating(
                 questionnaire, language
             )
-            question_answers = (
-                await process_secondary_questions(
-                    questionnaire,
-                    cfg.questions_per_batch,
-                    session_properties,
-                    session_id,
-                    confidence_rating,
-                ),
+            questionnaire_with_context_documents = await process_secondary_questions(
+                questionnaire,
+                cfg.questions_per_batch,
+                session_properties,
+                session_id,
+                confidence_rating,
+            )
+
+            question_answers, relevant_documents = (
+                questionnaire_with_context_documents.questionnaire.questions,
+                questionnaire_with_context_documents.context_documents,
             )
             total_cost = cb.total_cost
     else:
@@ -530,10 +537,14 @@ async def handle_secondary_question(
     if len(question_answers) == 0:
         await send_error(sid, session_id, t("no_answer_from_chatgpt", locale=language))
         return
-    last_question_answer = question_answers[0][0]
+    last_question_answer = question_answers[0]
     # Save the generated question
     _, qs_res = await persist_question(
-        session_id, last_question_answer.question, last_question_answer.id, total_cost
+        session_id,
+        last_question_answer.question,
+        last_question_answer.id,
+        total_cost,
+        relevant_documents,
     )
     await save_confidence_rating(confidence_rating, None, session_id, questionnaire)
     # Persist the suggestions for this answer
@@ -599,13 +610,17 @@ async def append_suggestions_and_send(
 async def append_other_suggestions(server_messages, questionnaire_messages):
     if len(questionnaire_messages) > 1:
         for i, message in enumerate(questionnaire_messages[1:]):
-            server_messages.server_messages[i + 1].suggestions = (
-                await select_questionnaire_status_suggestions(message.id)
-            )
+            server_messages.server_messages[
+                i + 1
+            ].suggestions = await select_questionnaire_status_suggestions(message.id)
 
 
 async def persist_question(
-    session_id: str, question: str, question_id: int | None, total_cost: int = 0
+    session_id: str,
+    question: str,
+    question_id: int | None,
+    total_cost: int = 0,
+    relevant_documents: ContextDocuments | None = None,
 ):
     qs = QuestionnaireStatus(
         session_id=session_id,
@@ -615,6 +630,9 @@ async def persist_question(
         question_id=question_id,
     )
     qs_res = await insert_questionnaire_status(qs)
+    if relevant_documents is not None:
+        relevant_documents.questionnaire_status_id = qs_res.id
+        await persist_context_documents(relevant_documents)
     return qs, qs_res
 
 

@@ -3,6 +3,8 @@ from typing import Union
 
 from pydantic import BaseModel, Field
 
+from data_questionnaire_agent.model.context_documents import ContextDocuments
+
 
 class QuestionnaireStatus(BaseModel):
     id: Union[int, None] = Field(default=None, description="The unique identifier")
@@ -23,4 +25,7 @@ class QuestionnaireStatus(BaseModel):
     question_id: int | None = Field(
         default=None,
         description="The question identifier in case a question is NOT generated",
+    )
+    relevant_documents: ContextDocuments | None = Field(
+        default=None, description="The relevant documents for the current question."
     )

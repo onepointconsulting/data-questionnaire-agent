@@ -4,7 +4,10 @@ from data_questionnaire_agent.server.server_support import (
     CORS_HEADERS,
     routes,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts, update_prompt
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+    update_prompt,
+)
 
 
 @routes.options("/prompts/{language}")
@@ -33,5 +36,7 @@ async def prompts_update(request: web.Request) -> web.Response:
     text = await request.text()
     rowcount = await update_prompt(text, id)
     if rowcount == 0:
-        return web.json_response({"message": "Prompt not found"}, status=404, headers=CORS_HEADERS)
+        return web.json_response(
+            {"message": "Prompt not found"}, status=404, headers=CORS_HEADERS
+        )
     return web.json_response({"message": "Prompt updated"}, headers=CORS_HEADERS)

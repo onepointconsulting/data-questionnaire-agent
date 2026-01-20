@@ -1,8 +1,7 @@
-from data_questionnaire_agent.model.prompt import PromptCategory
-from data_questionnaire_agent.model.prompt import DBPrompt
-from data_questionnaire_agent.service.query_support import create_cursor
-
 from psycopg import AsyncCursor
+
+from data_questionnaire_agent.model.prompt import DBPrompt, PromptCategory
+from data_questionnaire_agent.service.query_support import create_cursor
 
 
 async def persist_prompt_category(
@@ -132,7 +131,9 @@ def adapt_language_code(language_code: str) -> str:
     return language_code.split("-")[0] if "-" in language_code else language_code
 
 
-async def read_system_human_prompts(categories: list[str], language_code: str = "en") -> dict:
+async def read_system_human_prompts(
+    categories: list[str], language_code: str = "en"
+) -> dict:
     l_code = adapt_language_code(language_code)
     if l_code in prompts_cache:
         cached = prompts_cache[l_code]
@@ -145,7 +146,9 @@ async def read_system_human_prompts(categories: list[str], language_code: str = 
             "system_message": current_path["system_message"],
             "human_message": current_path["human_message"],
         }
-    system_prompt = await read_prompt_by_prompt_key(categories, "system_message", l_code)
+    system_prompt = await read_prompt_by_prompt_key(
+        categories, "system_message", l_code
+    )
     human_prompt = await read_prompt_by_prompt_key(categories, "human_message", l_code)
     if system_prompt is None or human_prompt is None:
         raise ValueError("System or human prompt not found")
@@ -156,11 +159,11 @@ async def read_system_human_prompts(categories: list[str], language_code: str = 
 
 
 async def get_prompts(language_code: str = "en", add_ids: bool = False) -> dict:
-
     l_code = adapt_language_code(language_code)
     cache_key = f"{l_code}_{add_ids}"
     if cache_key in prompts_cache:
         return prompts_cache[cache_key].copy()
+
     async def process_read(cur: AsyncCursor):
         sql = """
 SELECT (WITH RECURSIVE CATS AS (
@@ -212,14 +215,21 @@ UPDATE TB_PROMPT SET PROMPT = %(text)s, UPDATED_AT = NOW() WHERE ID = %(id)s
             """,
             {"text": text, "id": id},
         )
-        return cur.rowcount
+        rc = cur.rowcount
+        if rc > 0:
+            await clear_prompts_cache()
+        return rc
+
     return await create_cursor(process_update, True)
 
 
-async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str, language_code: str = "en") -> DBPrompt | None:
+async def read_prompt_by_prompt_key(
+    categories: list[str], prompt_key: str, language_code: str = "en"
+) -> DBPrompt | None:
     l_code = adapt_language_code(language_code)
     if len(categories) == 0:
         return None
+
     async def process_read(cur: AsyncCursor):
         current_category: PromptCategory | None = None
         ID = 0
@@ -230,43 +240,67 @@ async def read_prompt_by_prompt_key(categories: list[str], prompt_key: str, lang
         UPDATED_AT = 5
         for index, category in enumerate(categories):
             common_filters_sql = "NAME = %(category)s AND LANGUAGE_ID = (SELECT ID FROM TB_LANGUAGE WHERE LANGUAGE_CODE = %(language_code)s)"
-            sql = """
-SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE """ + common_filters_sql + """ AND PROMPT_CATEGORY_PARENT_ID = %(parent_id)s
+            sql = (
+                """
+SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE """
+                + common_filters_sql
+                + """ AND PROMPT_CATEGORY_PARENT_ID = %(parent_id)s
 """
+            )
             params = {
                 "category": category,
-                "parent_id": current_category.id if current_category is not None else None,
+                "parent_id": (
+                    current_category.id if current_category is not None else None
+                ),
                 "language_code": l_code,
             }
             if index == 0:
                 if "parent_id" in params:
                     del params["parent_id"]
-                sql = """
-SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE """ + common_filters_sql + """ AND PROMPT_CATEGORY_PARENT_ID is null
+                sql = (
+                    """
+SELECT ID, NAME, PROMPT_CATEGORY_PARENT_ID, (SELECT LANGUAGE_CODE FROM TB_LANGUAGE WHERE ID = LANGUAGE_ID), CREATED_AT, UPDATED_AT FROM TB_PROMPT_CATEGORY WHERE """
+                    + common_filters_sql
+                    + """ AND PROMPT_CATEGORY_PARENT_ID is null
 """
+                )
             await cur.execute(sql, params)
             row = await cur.fetchone()
             if row is None:
                 return None
-            current_category = PromptCategory(id=row[ID], name=row[NAME], prompt_category_parent_id=row[PROMPT_CATEGORY_PARENT_ID], language_code=row[LANGUAGE_CODE], created_at=row[CREATED_AT], updated_at=row[UPDATED_AT])
+            current_category = PromptCategory(
+                id=row[ID],
+                name=row[NAME],
+                prompt_category_parent_id=row[PROMPT_CATEGORY_PARENT_ID],
+                language_code=row[LANGUAGE_CODE],
+                created_at=row[CREATED_AT],
+                updated_at=row[UPDATED_AT],
+            )
         await cur.execute(
             """
 SELECT ID, PROMPT_CATEGORY_ID, PROMPT_KEY, PROMPT, CREATED_AT, UPDATED_AT
 FROM TB_PROMPT WHERE PROMPT_CATEGORY_ID = %(prompt_category_id)s AND PROMPT_KEY = %(prompt_key)s
-""", {
-"prompt_category_id": current_category.id,
-"prompt_key": prompt_key
-})
+""",
+            {"prompt_category_id": current_category.id, "prompt_key": prompt_key},
+        )
         row = await cur.fetchone()
         if row is None:
             return None
         ID = 0
-        
+
         PROMPT_KEY = 2
         PROMPT = 3
         CREATED_AT = 4
         UPDATED_AT = 5
-        return DBPrompt(id=row[ID], prompt_category=current_category, prompt_key=row[PROMPT_KEY], prompt=row[PROMPT], created_at=row[CREATED_AT], updated_at=row[UPDATED_AT])
+        return DBPrompt(
+            id=row[ID],
+            prompt_category=current_category,
+            prompt_key=row[PROMPT_KEY],
+            prompt=row[PROMPT],
+            created_at=row[CREATED_AT],
+            updated_at=row[UPDATED_AT],
+        )
+
     return await create_cursor(process_read, True)
 
 
@@ -317,6 +351,7 @@ DELETE FROM TB_PROMPT WHERE ID = %(prompt_id)s
 if __name__ == "__main__":
     import asyncio
     import json
+
     res = asyncio.run(get_prompts("en-GB"))
     assert res is not None
     assert "confidence_prompt" in res

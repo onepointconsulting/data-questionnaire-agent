@@ -2,9 +2,6 @@ from pathlib import Path
 
 import tomli
 
-from data_questionnaire_agent.config import cfg
-from data_questionnaire_agent.log_init import logger
-
 
 def read_toml(file: Path) -> dict:
     with open(file, "rb") as f:

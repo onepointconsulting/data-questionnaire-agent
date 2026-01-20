@@ -8,10 +8,12 @@ from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
 from data_questionnaire_agent.service.ontology_service import PARAM_QUESTIONS_ANSWERS
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 
 
 async def prompt_factory_confidence(language: str) -> ChatPromptTemplate:
