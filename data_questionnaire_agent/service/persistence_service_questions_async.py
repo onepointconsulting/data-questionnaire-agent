@@ -311,7 +311,8 @@ SELECT
 FROM report_sessions r
 JOIN initial_interactions i USING (session_id)
 JOIN public.tb_questionnaire_status s_start ON s_start.id = i.start_id
-JOIN public.tb_questionnaire_status s_end   ON s_end.id = r.end_id;
+JOIN public.tb_questionnaire_status s_end   ON s_end.id = r.end_id
+ORDER BY s_end.created_at DESC;
 """
     res = await select_from(sql, {"session_ids": session_ids})
     SESSION_ID = 0
