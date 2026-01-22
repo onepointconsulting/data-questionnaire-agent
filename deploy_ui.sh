@@ -1,13 +1,15 @@
 #!/bin/sh
 
-cd ~/projects/data-wellness-companion-hypergility/data-wellness-companion-ui
+cd "$(dirname "$0")"
+
+cd data-wellness-companion-ui
 yarn
 yarn run build
 
-cd ~/projects/data-wellness-companion-hypergility/ui
+cd ../ui
 rm -rf *
 
-cp -R ~/projects/data-wellness-companion-hypergility/data-wellness-companion-ui/dist/* ~/projects/data-wellness-companion-hypergility/ui
+cp -R ../data-wellness-companion-ui/dist/* .
 
 # unzip /home/ubuntu/companion_ui.zip
 sed -i -e 's/8085/443/g' ./index.html
