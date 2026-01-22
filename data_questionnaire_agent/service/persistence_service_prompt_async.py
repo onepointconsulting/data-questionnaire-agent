@@ -147,8 +147,9 @@ async def read_system_human_prompts(categories: list[str], language_code: str = 
 
 
 async def get_prompts(language_code: str = "en", add_ids: bool = False) -> dict:
-    if language_code in prompts_cache:
-        return prompts_cache[language_code].copy()
+    l_code = language_code.split("-")[0]
+    if l_code in prompts_cache:
+        return prompts_cache[l_code].copy()
     async def process_read(cur: AsyncCursor):
         sql = """
 SELECT (WITH RECURSIVE CATS AS (

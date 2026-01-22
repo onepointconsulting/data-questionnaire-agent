@@ -46,6 +46,7 @@ async def calculate_confidence_rating(
         call_params = prepare_confidence_chain_call(questionnaire)
         chain = await create_structured_question_call(language)
         return await chain.ainvoke(call_params)
-    except Exception:
-        logger.exception("Failed to calculate confidence rating.")
+    except Exception as e:
+        logger.exception(f"Failed to calculate confidence rating: {e}")
         return None
+
