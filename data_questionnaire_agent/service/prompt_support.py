@@ -7,7 +7,9 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 
 
 async def factory_prompt(

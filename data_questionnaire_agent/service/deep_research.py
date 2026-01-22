@@ -1,18 +1,18 @@
 import asyncio
 
+import socketio
 from openai import AsyncOpenAI
 from openai.types.responses.response import Response
-import socketio
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
-
 from data_questionnaire_agent.model.deep_research import (
     Citation,
     DeepResearchAdviceOutput,
     DeepResearchStatus,
 )
 from data_questionnaire_agent.model.deep_research_input import DeepResearchAdviceInput
+from data_questionnaire_agent.server.socket_commands import Commands
 from data_questionnaire_agent.service.persistence_deep_research_async import (
     read_deep_research,
     save_deep_research,
@@ -20,12 +20,12 @@ from data_questionnaire_agent.service.persistence_deep_research_async import (
 from data_questionnaire_agent.service.persistence_service_async import (
     select_questionnaire,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
-from data_questionnaire_agent.server.socket_commands import Commands
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 
 
 class DeepResearchCallback:
-
     async def on_response_update(self, response: Response):
         logger.info(f"Current status: {response.status}")
         logger.info(f"Response: {response.model_dump_json()}")
@@ -38,7 +38,6 @@ class DeepResearchCallback:
 
 
 class DeepResearchWebsocketCallback(DeepResearchCallback):
-
     def __init__(self, sid: str, sio: socketio.AsyncServer, advice: str):
         self.sid = sid
         self.sio = sio

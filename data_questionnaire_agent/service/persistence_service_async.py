@@ -31,6 +31,7 @@ from data_questionnaire_agent.model.session_configuration import (
     SessionConfigurationEntry,
     SessionProperties,
 )
+from data_questionnaire_agent.service.persistence_service_context_documents import read_context_documents
 from data_questionnaire_agent.service.query_support import (
     create_cursor,
     select_from,
@@ -71,6 +72,9 @@ ORDER BY ID ASC""",
     final_res = []
     if res is None:
         return final_res
+    ids = [r[ID] for r in res]
+    context_documents = await read_context_documents(ids)
+    context_documents_dict = {cd.questionnaire_status_id: cd for cd in context_documents} if context_documents is not None else {}
     for r in res:
         final_report = r[FINAL_REPORT]
         question = r[QUESTION]
@@ -85,6 +89,7 @@ ORDER BY ID ASC""",
                 created_at=r[CREATED_AT],
                 updated_at=r[UPDATED_AT],
                 question_id=r[QUESTION_ID],
+                relevant_documents=context_documents_dict.get(r[ID], None),
             )
         )
     return final_res

@@ -23,7 +23,9 @@ from data_questionnaire_agent.service.mail_sender import send_mail_with_attachme
 from data_questionnaire_agent.service.persistence_service_async import (
     select_questionnaires_by_tokens,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.prompt_support import (
     factory_prompt,
     prompt_factory_generic,
@@ -35,7 +37,6 @@ from data_questionnaire_agent.service.report_aggregation_summarization_service i
     aexecute_summarization_batch_str,
 )
 from data_questionnaire_agent.service.similarity_search import num_tokens_from_string
-
 from data_questionnaire_agent.translation import t
 
 
@@ -341,9 +342,9 @@ async def aggregate_reports_main(
 ) -> Path:
     # Fetch statuses from the database
     logger.info("Report: Fetch statuses from the database")
-    questionnaire_data: List[QuestionnaireStatus] = (
-        await select_questionnaires_by_tokens(tokens, final_report)
-    )
+    questionnaire_data: List[
+        QuestionnaireStatus
+    ] = await select_questionnaires_by_tokens(tokens, final_report)
     logger.info(f"Report: {len(questionnaire_data)} reports available.")
 
     # Extract the dimensions in batches

@@ -6,6 +6,7 @@ from data_questionnaire_agent.service.add_more_suggestions_service import (
     prompt_factory_add_more_suggestions,
 )
 
+
 @pytest.mark.asyncio
 async def test_add_more_suggestions_service():
     template = await prompt_factory_add_more_suggestions("en")

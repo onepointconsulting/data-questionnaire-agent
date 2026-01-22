@@ -2,9 +2,9 @@ import pytest
 
 from data_questionnaire_agent.model.deep_research import DeepResearchAdviceOutput
 from data_questionnaire_agent.service.persistence_deep_research_async import (
-    save_deep_research,
-    read_deep_research,
     delete_deep_research,
+    read_deep_research,
+    save_deep_research,
 )
 
 

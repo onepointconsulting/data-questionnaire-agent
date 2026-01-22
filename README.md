@@ -28,7 +28,7 @@ Before you run, you should compile the UI with this command from the root folder
 Please note that this requires the installation of Yarn and node 18.18.0 or later.
 
 ```
-poetry run build-ui
+python .\data_questionnaire_agent\build.py
 ```
 
 The UI connects the websocket to port 8085 natively. If the Python server runs on a different port, please change the port accordingly.

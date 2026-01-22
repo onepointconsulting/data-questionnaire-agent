@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
+from data_questionnaire_agent.model.context_documents import ContextDocuments
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
 
 
@@ -75,6 +76,12 @@ class Questionnaire:
 """
         html += "</table>"
         return html
+
+
+@dataclass
+class QuestionnaireWithContextDocuments:
+    questionnaire: Questionnaire
+    context_documents: ContextDocuments
 
 
 def convert_to_question_answers(

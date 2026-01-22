@@ -25,11 +25,12 @@ from data_questionnaire_agent.service.persistence_service_consultants_async impo
     read_session_consultant_ratings,
     save_session_consultant_ratings,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-
 
 CONSULTANT_BATCH_SIZE = 10
 

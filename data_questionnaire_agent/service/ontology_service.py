@@ -5,11 +5,12 @@ from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.application_schema import Questionnaire
 from data_questionnaire_agent.model.ontology_schema import Ontology
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
-
 
 PARAM_QUESTIONS_ANSWERS = "questions_answers"
 PARAM_ADVICE = "conditional_advice"

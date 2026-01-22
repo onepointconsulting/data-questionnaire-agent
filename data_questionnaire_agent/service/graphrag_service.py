@@ -4,9 +4,10 @@ import httpx
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.model.context import Context
 
 
-async def graphrag_context(question: str) -> Union[str, None]:
+async def graphrag_context(question: str) -> Union[Context, None]:
     params = {
         "question": question,
         "use_context_records": False,
@@ -14,6 +15,7 @@ async def graphrag_context(question: str) -> Union[str, None]:
         "context_size": cfg.graphrag_context_size,
         "project": cfg.graphrag_project,
         "engine": cfg.graphrag_engine,
+        "format": "json_string_with_json",
     }
 
     params = {key: value for key, value in params.items() if value is not None}
@@ -38,7 +40,7 @@ async def graphrag_context(question: str) -> Union[str, None]:
             if response.status_code == 200:
                 json_result = response.json()
                 if "context_text" in json_result:
-                    return json_result["context_text"]
+                    return Context(**json_result)
                 else:
                     logger.warning("Could not find context_text field in json")
                     return None

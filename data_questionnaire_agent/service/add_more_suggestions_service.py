@@ -10,15 +10,19 @@ from data_questionnaire_agent.service.persistence_service_async import (
     select_last_questionnaire_status_suggestions,
     select_questionnaire,
 )
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts, read_system_human_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+    read_system_human_prompts,
+)
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )
 
 
-
 async def prompt_factory_add_more_suggestions(language: str) -> ChatPromptTemplate:
-    section = await read_system_human_prompts(["questionnaire", "add_more_suggestions"], language)
+    section = await read_system_human_prompts(
+        ["questionnaire", "add_more_suggestions"], language
+    )
     return prompt_factory_generic(
         section=section,
         input_variables=[
@@ -73,7 +77,7 @@ async def process_add_more_suggestions(
     )
     confidence_report = confidence_rating.to_markdown() if confidence_rating else ""
     input = prepare_add_more_suggestions(
-        knowledge_base=knowledge_base,
+        knowledge_base=knowledge_base.context_text,
         questions_answers=questions_answers,
         question=question,
         suggestions="\n".join([f"- {s.main_text}" for s in suggestions]),

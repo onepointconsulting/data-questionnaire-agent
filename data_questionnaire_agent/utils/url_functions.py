@@ -1,5 +1,5 @@
-import urllib
 import re
+import urllib
 
 
 def get_url_text(url: str) -> str:

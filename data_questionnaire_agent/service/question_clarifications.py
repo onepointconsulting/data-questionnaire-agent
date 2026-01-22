@@ -4,8 +4,9 @@ from langchain_core.messages import BaseMessageChunk
 from langchain_core.prompts import ChatPromptTemplate
 
 from data_questionnaire_agent.config import cfg
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
-
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 
 
 async def prompt_factory_question_clarifications(language: str) -> ChatPromptTemplate:

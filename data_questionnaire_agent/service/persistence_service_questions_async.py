@@ -6,8 +6,11 @@ from data_questionnaire_agent.model.question_suggestion import (
     QuestionInfo,
     QuestionSuggestion,
 )
+from data_questionnaire_agent.model.session_data import SessionCompletedData, SessionCompletedDataList
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.query_support import create_cursor, select_from
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 
 
 async def select_initial_question(language: str) -> tuple[int, str]:
@@ -104,7 +107,7 @@ async def update_question(id: int, question: str, suggestions: list[dict]) -> in
 
         if ids_to_delete:
             await cur.execute(
-                "DELETE FROM public.tb_question_suggestions WHERE id = ANY(%(ids)s)",
+                "DELETE FROM public.tb_question_suggestions WHERE id = %(ids)s)",
                 {"ids": list(ids_to_delete)},
             )
 
@@ -277,3 +280,49 @@ ORDER BY S.ID""",
         },
     )
     return [r[0] for r in res]
+
+
+async def select_sessions_completed_data(session_ids: list[str]) -> SessionCompletedDataList:
+    sql = """
+WITH report_sessions AS (
+  SELECT session_id, id AS end_id
+  FROM public.tb_questionnaire_status
+  WHERE session_id = ANY(%(session_ids)s)
+  AND final_report = true
+),
+initial_interactions AS (
+  SELECT qs.session_id, MIN(qs.id) AS start_id
+  FROM public.tb_questionnaire_status qs
+  JOIN report_sessions r USING (session_id)
+  WHERE ANSWER IS NOT NULL
+  GROUP BY qs.session_id
+)
+SELECT
+  r.session_id,
+  s_end.created_at,
+  s_start.answer AS start_answer,
+  CASE
+    WHEN s_end.question IS NULL THEN NULL
+    WHEN jsonb_typeof(s_end.question::jsonb->'advices') = 'array'
+     AND jsonb_array_length(s_end.question::jsonb->'advices') > 0
+    THEN (s_end.question::jsonb->'advices'->>0)
+    ELSE NULL
+  END AS end_advice
+FROM report_sessions r
+JOIN initial_interactions i USING (session_id)
+JOIN public.tb_questionnaire_status s_start ON s_start.id = i.start_id
+JOIN public.tb_questionnaire_status s_end   ON s_end.id = r.end_id
+ORDER BY s_end.created_at DESC;
+"""
+    res = await select_from(sql, {"session_ids": session_ids})
+    SESSION_ID = 0
+    CREATED_AT = 1
+    START_ANSWER = 2
+    END_ADVICE = 3
+    sessions = sessions=[SessionCompletedData(
+        session_id=r[SESSION_ID],
+        created_at=r[CREATED_AT],
+        start_answer=r[START_ANSWER],
+        end_advice=r[END_ADVICE],
+    ) for r in res]
+    return SessionCompletedDataList(sessions=sessions)

@@ -5,8 +5,10 @@ from langchain_core.runnables import RunnableSequence
 
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.openai_schema import ResponseQuestions
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.prompt_support import prompt_factory_generic
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
 
 
 async def prompt_factory_initial_questions(language: str) -> ChatPromptTemplate:
@@ -62,7 +64,7 @@ if __name__ == "__main__":
             question=initial_question,
             answer=answer,
             questions_per_batch=1,
-            knowledge_base=search_res,
+            knowledge_base=search_res.context_text,
         )
         chain = await chain_factory_initial_question(language)
         res: dict = chain.invoke(input)

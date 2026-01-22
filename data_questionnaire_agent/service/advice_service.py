@@ -4,7 +4,9 @@ from langchain_core.runnables.base import RunnableSequence
 from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.model.deep_research import DeepResearchOutputs
 from data_questionnaire_agent.model.openai_schema import ConditionalAdvice
-from data_questionnaire_agent.service.persistence_service_prompt_async import get_prompts
+from data_questionnaire_agent.service.persistence_service_prompt_async import (
+    get_prompts,
+)
 from data_questionnaire_agent.service.prompt_support import (
     prompt_factory_generic,
 )

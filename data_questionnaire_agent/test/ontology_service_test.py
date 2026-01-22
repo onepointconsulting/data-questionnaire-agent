@@ -9,6 +9,7 @@ from data_questionnaire_agent.test.provider.advice_provider import (
     create_advice_with_questionnaire,
 )
 
+
 @pytest.mark.asyncio
 async def test_chain_factory_ontology():
     chain = await create_structured_question_call("en")
