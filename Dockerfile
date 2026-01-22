@@ -6,18 +6,17 @@ SHELL ["/bin/bash", "-c"]
 RUN apt update
 RUN apt install python3 -y
 RUN apt install python3-pip -y
-RUN apt install python3.12-venv -y
-RUN apt install swig
+RUN apt install swig -y
 
 WORKDIR /app
 
-RUN python3 -m venv venv
-RUN . venv/bin/activate
-RUN ./venv/bin/pip install poetry
+# Install uv
+RUN pip3 install uv
 
 COPY . .
 
-RUN ./venv/bin/poetry install
+# Install dependencies using uv
+RUN uv sync
 
 RUN chmod +x ./start.sh
 RUN mv .env.docker .env
@@ -33,4 +32,4 @@ RUN npm install --global yarn
 # Make sure the PDF advice folder is available
 RUN mkdir -p /tmp/data_questionnaire_agent/pdfs
 
-CMD ["/bin/bash", "./start.sh"]
+CMD ["/bin/bash", "./run_app.sh"]
