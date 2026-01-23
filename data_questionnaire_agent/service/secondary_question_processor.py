@@ -39,7 +39,7 @@ async def process_secondary_questions(
         confidence_rating=confidence_rating,
     )
     relevant_documents = extract_relevant_documents(
-        knowledge_base, most_common_count=10
+        knowledge_base, most_common_count=5
     )
     retries = 3
     while retries > 0:

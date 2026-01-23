@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 
 from data_questionnaire_agent.model.context import (
     Context,
@@ -35,22 +35,26 @@ def count_documents(
 
 
 def extract_relevant_documents(
-    context: Context, most_common_count: int = 10
+    context: Context, most_common_count: int = 5
 ) -> ContextDocuments:
+    document_extracts = defaultdict(list)
     relevant_documents = []
     relevant_documents_counter = Counter()
     count_documents(context.entities_context, relevant_documents_counter)
     count_documents(context.relations_context, relevant_documents_counter)
     count_documents(context.text_units_context, relevant_documents_counter)
-    for document_path, count in relevant_documents_counter.most_common(
-        most_common_count
-    ):
+    for entry in context.text_units_context:
+        file_path = entry.file_path
+        document_extracts[file_path].append(entry.content[:16384]) # 16384 is the max length of a document extract
+
+    for file_path, extract_list in document_extracts.items():
         relevant_documents.append(
             ContextDocument(
-                count=count,
-                document_path=document_path,
-                document_name=document_path.split("/")[-1],
-                document_extract=find_document_extract(document_path, context),
+                count=relevant_documents_counter.get(file_path, 1),
+                document_path=file_path,
+                document_name=file_path.split("/")[-1],
+                document_extracts=extract_list,
             )
         )
-    return ContextDocuments(documents=relevant_documents)
+    sorted_relevant_documents = sorted(relevant_documents, key=lambda x: x.count, reverse=True)
+    return ContextDocuments(documents=sorted_relevant_documents[:most_common_count])

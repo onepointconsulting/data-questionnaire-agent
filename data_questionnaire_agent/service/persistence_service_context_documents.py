@@ -15,8 +15,8 @@ async def persist_context_documents(
         for context_document in context_documents.documents:
             await cur.execute(
                 """
-    INSERT INTO TB_CONTEXT_DOCUMENTS(DOCUMENT_PATH, DOCUMENT_NAME, COUNT, DOCUMENT_EXTRACT, QUESTIONNAIRE_STATUS_ID)
-    VALUES(%(document_path)s, %(document_name)s, %(count)s, %(document_extract)s, %(questionnaire_status_id)s)
+    INSERT INTO TB_CONTEXT_DOCUMENTS(DOCUMENT_PATH, DOCUMENT_NAME, COUNT, DOCUMENT_EXTRACTS, QUESTIONNAIRE_STATUS_ID)
+    VALUES(%(document_path)s, %(document_name)s, %(count)s, %(document_extracts)s, %(questionnaire_status_id)s)
     ON CONFLICT (DOCUMENT_PATH, QUESTIONNAIRE_STATUS_ID) DO NOTHING
     RETURNING ID, CREATED_AT
                 """,
@@ -24,7 +24,7 @@ async def persist_context_documents(
                     "document_path": context_document.document_path,
                     "document_name": context_document.document_name,
                     "count": context_document.count,
-                    "document_extract": context_document.document_extract,
+                    "document_extracts": context_document.document_extracts,
                     "questionnaire_status_id": context_documents.questionnaire_status_id,
                 },
             )
@@ -56,7 +56,7 @@ async def read_context_documents(
     async def process_read(cur: AsyncCursor):
         await cur.execute(
             """
-SELECT ID, DOCUMENT_PATH, DOCUMENT_NAME, COUNT, DOCUMENT_EXTRACT, QUESTIONNAIRE_STATUS_ID, CREATED_AT, UPDATED_AT
+SELECT ID, DOCUMENT_PATH, DOCUMENT_NAME, COUNT, DOCUMENT_EXTRACTS, QUESTIONNAIRE_STATUS_ID, CREATED_AT, UPDATED_AT
 FROM TB_CONTEXT_DOCUMENTS WHERE QUESTIONNAIRE_STATUS_ID = ANY(%(questionnaire_status_ids)s)
             """,
             {"questionnaire_status_ids": questionnaire_status_ids},
@@ -68,7 +68,7 @@ FROM TB_CONTEXT_DOCUMENTS WHERE QUESTIONNAIRE_STATUS_ID = ANY(%(questionnaire_st
         DOCUMENT_PATH = 1
         DOCUMENT_NAME = 2
         COUNT = 3
-        DOCUMENT_EXTRACT = 4
+        DOCUMENT_EXTRACTS = 4
         QUESTIONNAIRE_STATUS_ID = 5
         context_documents_dict = defaultdict(list)
         for row in rows:
@@ -77,7 +77,7 @@ FROM TB_CONTEXT_DOCUMENTS WHERE QUESTIONNAIRE_STATUS_ID = ANY(%(questionnaire_st
                 document_path=row[DOCUMENT_PATH],
                 document_name=row[DOCUMENT_NAME],
                 count=row[COUNT],
-                document_extract=row[DOCUMENT_EXTRACT],
+                document_extracts=row[DOCUMENT_EXTRACTS],
             )
             context_documents_dict[row[QUESTIONNAIRE_STATUS_ID]].append(context_document)
         context_documents_list = []
