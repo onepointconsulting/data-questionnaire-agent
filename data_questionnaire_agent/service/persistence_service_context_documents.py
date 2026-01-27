@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 from psycopg import AsyncCursor
 
 from data_questionnaire_agent.model.context_documents import (
@@ -79,13 +80,20 @@ FROM TB_CONTEXT_DOCUMENTS WHERE QUESTIONNAIRE_STATUS_ID = ANY(%(questionnaire_st
                 count=row[COUNT],
                 document_extracts=row[DOCUMENT_EXTRACTS],
             )
-            context_documents_dict[row[QUESTIONNAIRE_STATUS_ID]].append(context_document)
+            context_documents_dict[row[QUESTIONNAIRE_STATUS_ID]].append(
+                context_document
+            )
         context_documents_list = []
-        for questionnaire_status_id, context_documents in context_documents_dict.items():
-            context_documents_list.append(ContextDocuments(
-                questionnaire_status_id=questionnaire_status_id,
-                documents=context_documents,
-            ))
+        for (
+            questionnaire_status_id,
+            context_documents,
+        ) in context_documents_dict.items():
+            context_documents_list.append(
+                ContextDocuments(
+                    questionnaire_status_id=questionnaire_status_id,
+                    documents=context_documents,
+                )
+            )
         return context_documents_list
 
     return await create_cursor(process_read, True)

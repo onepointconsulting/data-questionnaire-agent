@@ -18,7 +18,7 @@ async def consultant_ratings(_: web.Request) -> web.Response:
 
 
 @routes.get("/consultant/ratings/{session_id}")
-async def consultant_ratings(request: web.Request) -> web.Response:
+async def consultant_ratings_get(request: web.Request) -> web.Response:
     session_id = extract_session(request)
     language = extract_language(request)
     consultant_ratings = await calculate_consultant_ratings_for(session_id, language)

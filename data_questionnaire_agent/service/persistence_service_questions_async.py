@@ -6,7 +6,10 @@ from data_questionnaire_agent.model.question_suggestion import (
     QuestionInfo,
     QuestionSuggestion,
 )
-from data_questionnaire_agent.model.session_data import SessionCompletedData, SessionCompletedDataList
+from data_questionnaire_agent.model.session_data import (
+    SessionCompletedData,
+    SessionCompletedDataList,
+)
 from data_questionnaire_agent.service.persistence_service_prompt_async import (
     get_prompts,
 )
@@ -282,7 +285,9 @@ ORDER BY S.ID""",
     return [r[0] for r in res]
 
 
-async def select_sessions_completed_data(session_ids: list[str]) -> SessionCompletedDataList:
+async def select_sessions_completed_data(
+    session_ids: list[str],
+) -> SessionCompletedDataList:
     sql = """
 WITH report_sessions AS (
   SELECT session_id, id AS end_id
@@ -319,10 +324,13 @@ ORDER BY s_end.created_at DESC;
     CREATED_AT = 1
     START_ANSWER = 2
     END_ADVICE = 3
-    sessions = sessions=[SessionCompletedData(
-        session_id=r[SESSION_ID],
-        created_at=r[CREATED_AT],
-        start_answer=r[START_ANSWER],
-        end_advice=r[END_ADVICE],
-    ) for r in res]
+    sessions = sessions = [
+        SessionCompletedData(
+            session_id=r[SESSION_ID],
+            created_at=r[CREATED_AT],
+            start_answer=r[START_ANSWER],
+            end_advice=r[END_ADVICE],
+        )
+        for r in res
+    ]
     return SessionCompletedDataList(sessions=sessions)

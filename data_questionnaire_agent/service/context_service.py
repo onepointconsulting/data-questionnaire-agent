@@ -45,7 +45,9 @@ def extract_relevant_documents(
     count_documents(context.text_units_context, relevant_documents_counter)
     for entry in context.text_units_context:
         file_path = entry.file_path
-        document_extracts[file_path].append(entry.content[:16384]) # 16384 is the max length of a document extract
+        document_extracts[file_path].append(
+            entry.content[:16384]
+        )  # 16384 is the max length of a document extract
 
     for file_path, extract_list in document_extracts.items():
         relevant_documents.append(
@@ -56,5 +58,7 @@ def extract_relevant_documents(
                 document_extracts=extract_list,
             )
         )
-    sorted_relevant_documents = sorted(relevant_documents, key=lambda x: x.count, reverse=True)
+    sorted_relevant_documents = sorted(
+        relevant_documents, key=lambda x: x.count, reverse=True
+    )
     return ContextDocuments(documents=sorted_relevant_documents[:most_common_count])

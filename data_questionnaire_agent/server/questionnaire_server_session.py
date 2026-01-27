@@ -1,10 +1,16 @@
 import json
 
-from data_questionnaire_agent.log_init import logger
-from data_questionnaire_agent.server.server_support import CORS_HEADERS, handle_error, routes
 from aiohttp import web
 
-from data_questionnaire_agent.service.persistence_service_questions_async import select_sessions_completed_data
+from data_questionnaire_agent.log_init import logger
+from data_questionnaire_agent.server.server_support import (
+    CORS_HEADERS,
+    handle_error,
+    routes,
+)
+from data_questionnaire_agent.service.persistence_service_questions_async import (
+    select_sessions_completed_data,
+)
 
 
 @routes.options("/session/completed")
@@ -18,7 +24,10 @@ async def verify_sessions_completed(request: web.Request) -> web.Response:
         session_ids = extract_sessions(request)
         sessions = await select_sessions_completed_data(session_ids)
         # Use model_dump_json() to properly serialize datetime objects, then parse back to dict
-        return web.json_response(json.loads(sessions.model_dump_json()), headers=CORS_HEADERS)
+        return web.json_response(
+            json.loads(sessions.model_dump_json()), headers=CORS_HEADERS
+        )
+
     return await handle_error(process, request=request)
 
 

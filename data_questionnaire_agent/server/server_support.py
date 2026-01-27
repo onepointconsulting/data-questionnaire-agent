@@ -8,9 +8,37 @@ CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Max-Age": "86400",
 }
+
+
+def get_cors_headers_with_credentials(request: web.Request) -> dict:
+    """
+    Get CORS headers that work with credentials.
+    When credentials are involved, Access-Control-Allow-Origin cannot be "*".
+    It must be the actual origin of the request.
+    """
+    origin = request.headers.get("Origin")
+    if not origin:
+        # Fallback to "*" if no origin (shouldn't happen with credentials, but handle gracefully)
+        origin = "*"
+
+    # Get the requested headers from the preflight request, or use common defaults
+    requested_headers = request.headers.get("Access-Control-Request-Headers")
+    if requested_headers:
+        # Echo back what the browser requested
+        allowed_headers = requested_headers
+    else:
+        # Default headers that are commonly needed
+        allowed_headers = "Content-Type, Authorization, Accept"
+
+    return {
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Headers": allowed_headers,
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Max-Age": "86400",
+    }
+
 
 routes = web.RouteTableDef()
 

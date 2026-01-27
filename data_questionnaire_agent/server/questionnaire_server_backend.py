@@ -1,16 +1,20 @@
 import json
 
+import aiohttp
 from aiohttp import web
 
 from data_questionnaire_agent.model.global_configuration import (
     GlobalConfiguration,
     GlobalConfigurationProperty,
 )
+from data_questionnaire_agent.model.jwt_token import JWTTokenData
 from data_questionnaire_agent.server.server_support import (
     CORS_HEADERS,
+    get_cors_headers_with_credentials,
     handle_error,
     routes,
 )
+from data_questionnaire_agent.service.jwt_token_service import generate_token
 from data_questionnaire_agent.service.persistence_service_async import (
     select_global_configuration,
     update_global_configuration,
@@ -25,16 +29,79 @@ from data_questionnaire_agent.service.persistence_service_questions_async import
 SUPPORTED_LANGUAGES = ["en", "de"]
 
 
-@routes.get("/global_configuration")
-async def global_configuration(request: web.Request) -> web.Response:
-    async def process(_: web.Request):
-        global_configuration: GlobalConfiguration = await select_global_configuration()
-        return web.json_response(global_configuration.dict(), headers=CORS_HEADERS)
+@routes.options("/admin/login")
+async def admin_login_options(request: web.Request) -> web.Response:
+    return web.json_response(
+        {"message": "Accept all hosts"},
+        headers=get_cors_headers_with_credentials(request),
+    )
+
+
+@routes.post("/admin/login")
+async def admin_login(request: web.Request) -> web.Response:
+    async def process(request: web.Request):
+        json_content = await request.json()
+        match json_content:
+            case {"access_token": str(access_token)}:
+                user_info = {"name": "", "email": ""}
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(
+                        f"https://www.googleapis.com/oauth2/v1/userinfo?access_token={access_token}",
+                        headers={
+                            "Authorization": f"Bearer {access_token}",
+                            "Accept": "application/json",
+                        },
+                    ) as response:
+                        user_info = await response.json()
+                        if response.status == 200:
+                            user_info = {
+                                "name": user_info["name"],
+                                "email": user_info["email"],
+                            }
+                        else:
+                            raise web.HTTPInternalServerError(
+                                text="Failed to get user info",
+                                headers=get_cors_headers_with_credentials(request),
+                            )
+                jwt_token = await generate_token(
+                    JWTTokenData(
+                        name=user_info["name"],
+                        email=user_info["email"],
+                        time_delta_minutes=60 * 24,  # 24 hours
+                    )
+                )
+                if jwt_token is None:
+                    raise web.HTTPInternalServerError(
+                        text="Failed to generate token",
+                        headers=get_cors_headers_with_credentials(request),
+                    )
+                return web.json_response(
+                    {
+                        "access_token": jwt_token.token,
+                    },
+                    headers=get_cors_headers_with_credentials(request),
+                )
 
     return await handle_error(process, request=request)
 
 
-# Reuse the cors response.
+@routes.options("/protected/global_configuration")
+async def global_configuration_options(request: web.Request) -> web.Response:
+    return web.json_response(
+        {"message": "Accept all hosts"},
+        headers=get_cors_headers_with_credentials(request),
+    )
+
+
+@routes.get("/protected/global_configuration")
+async def global_configuration(request: web.Request) -> web.Response:
+    async def process(_: web.Request):
+        global_configuration: GlobalConfiguration = await select_global_configuration()
+        return web.json_response(
+            global_configuration.model_dump(), headers=CORS_HEADERS
+        )
+
+    return await handle_error(process, request=request)
 
 
 def generate_cors_response(message: str = "Accept all hosts") -> web.Response:
@@ -42,8 +109,8 @@ def generate_cors_response(message: str = "Accept all hosts") -> web.Response:
 
 
 @routes.options("/protected/update_global_configuration")
-async def update_global_configuration_options(_: web.Request) -> web.Response:
-    return generate_cors_response()
+async def update_global_configuration_options(request: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all requests"}, headers=get_cors_headers_with_credentials(request))
 
 
 @routes.post("/protected/update_global_configuration")
@@ -67,31 +134,36 @@ async def update_global_configuration_web(request: web.Request) -> web.Response:
                 ]
                 gc = GlobalConfiguration(properties=properties)
                 updated = await update_global_configuration(gc)
-                return web.json_response({"updated": updated}, headers=CORS_HEADERS)
+                return web.json_response({"updated": updated}, headers=get_cors_headers_with_credentials(request))
             case _:
                 raise web.HTTPBadRequest(
                     text="Please provide the message_lower_limit and message_upper_limit properties.",
-                    headers=CORS_HEADERS,
+                    headers=get_cors_headers_with_credentials(request),
                 )
 
     return await handle_error(process, request=request)
 
 
-@routes.get("/questions/{language}")
+@routes.options("/protected/questions/{language}")
+async def read_questions_options(request: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all requests"}, headers=get_cors_headers_with_credentials(request))
+
+
+@routes.get("/protected/questions/{language}")
 async def read_questions(request: web.Request) -> web.Response:
     async def process(request: web.Request):
         lang_response = process_language(request)
         if isinstance(lang_response, web.Response):
             return lang_response
         question_and_suggestions = await select_question_and_suggestions(lang_response)
-        return web.json_response(question_and_suggestions.dict(), headers=CORS_HEADERS)
+        return web.json_response(question_and_suggestions.dict(), headers=get_cors_headers_with_credentials(request))
 
     return await handle_error(process, request=request)
 
 
 @routes.options("/protected/questions/update")
-async def update_questions_options(_: web.Request) -> web.Response:
-    return generate_cors_response()
+async def update_questions_options(request: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all requests"}, headers=get_cors_headers_with_credentials(request))
 
 
 @routes.post("/protected/questions/update")
@@ -126,11 +198,13 @@ async def update_questions(request: web.Request) -> web.Response:
                                 if id > rowcount:
                                     rowcount += 1
                         case _:
-                            return send_rest_error(
-                                """Wrong JSON format: Expected 'id' and 'question' keys in JSON.""",
-                                400,
+                            return web.Response(
+                                text=json.dumps({"error": """Wrong JSON format: Expected 'id' and 'question' keys in JSON."""}),
+                                status=400,
+                                content_type="application/json",
+                                headers=get_cors_headers_with_credentials(request),
                             )
-                return web.json_response({"updated": rowcount}, headers=CORS_HEADERS)
+                return web.json_response({"updated": rowcount}, headers=get_cors_headers_with_credentials(request))
             case _:
                 return send_rest_error(
                     """Wrong JSON format: Expected list with objects with'id' and 'question' keys in JSON.""",

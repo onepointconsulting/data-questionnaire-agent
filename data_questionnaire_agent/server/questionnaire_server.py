@@ -1,8 +1,5 @@
 import asyncio
-import ipaddress
 import json
-import time
-from collections import defaultdict, deque
 from typing import Any, List, Tuple, Union
 
 import socketio
@@ -40,6 +37,7 @@ from data_questionnaire_agent.model.session_configuration import (
     create_session_configurations,
 )
 from data_questionnaire_agent.server.agent_session import AgentSession, agent_sessions
+from data_questionnaire_agent.server.middleware import cleanup_inactive_ips, protected_middleware, rate_limit
 from data_questionnaire_agent.server.server_support import (
     CORS_HEADERS,
     extract_email,
@@ -127,9 +125,6 @@ from data_questionnaire_agent.ui.advice_processor import process_advice
 
 FAILED_SESSION_STEPS = -1
 MAX_SESSION_STEPS = 14
-WINDOW, MAX_REQ = 1.0, 8  # 8 req/sec per IP
-CLEANUP_INTERVAL = 300  # Clean up every 5 minutes
-
 
 sio = socketio.AsyncServer(
     cors_allowed_origins=websocket_cfg.websocket_cors_allowed_origins,
@@ -139,30 +134,7 @@ sio = socketio.AsyncServer(
 )
 
 
-@web.middleware
-async def rate_limit(request, handler):
-    # Only apply rate limiting to socket.io requests
-    if not request.path.startswith("/socket.io/"):
-        return await handler(request)
-
-    ip = extract_client_ip(request)
-    now = time.monotonic()
-    q = hits[ip]
-
-    # Clean old timestamps
-    while q and now - q[0] > WINDOW:
-        q.popleft()
-
-    # Check rate limit
-    if len(q) >= MAX_REQ:
-        return web.Response(status=429, text="Too Many Requests")
-
-    # Add current request timestamp
-    q.append(now)
-    return await handler(request)
-
-
-app = web.Application(middlewares=[rate_limit])
+app = web.Application(middlewares=[rate_limit, protected_middleware])
 sio.attach(app)
 
 
@@ -174,63 +146,6 @@ async def on_startup(app):
 
 # Register startup handler
 app.on_startup.append(on_startup)
-
-
-hits = defaultdict(deque)
-
-
-def extract_client_ip(request) -> str:
-    """Extract and validate client IP address from request headers."""
-    # Check X-Forwarded-For header (for reverse proxies)
-    forwarded_for = request.headers.get("X-Forwarded-For")
-    if forwarded_for:
-        # X-Forwarded-For can contain multiple IPs, take the first one
-        client_ip = forwarded_for.split(",")[0].strip()
-        try:
-            # Validate IP address
-            ipaddress.ip_address(client_ip)
-            return client_ip
-        except ValueError:
-            pass
-
-    # Fall back to direct connection IP
-    if request.remote:
-        try:
-            ipaddress.ip_address(request.remote)
-            return request.remote
-        except ValueError:
-            pass
-
-    # If all else fails, return a default identifier
-    return "unknown"
-
-
-async def cleanup_inactive_ips():
-    """Periodically clean up inactive IP addresses to prevent memory leaks."""
-    while True:
-        try:
-            await asyncio.sleep(CLEANUP_INTERVAL)
-            now = time.monotonic()
-            inactive_ips = []
-
-            for ip, timestamps in hits.items():
-                # Remove old timestamps
-                while timestamps and now - timestamps[0] > WINDOW:
-                    timestamps.popleft()
-
-                # If no recent activity, mark for removal
-                if not timestamps:
-                    inactive_ips.append(ip)
-
-            # Remove inactive IPs
-            for ip in inactive_ips:
-                del hits[ip]
-
-            if inactive_ips:
-                logger.info(f"Cleaned up {len(inactive_ips)} inactive IP addresses")
-
-        except Exception as e:
-            logger.error(f"Error during IP cleanup: {e}")
 
 
 @sio.event
@@ -931,7 +846,7 @@ async def generate_aggregated_report(request: web.Request) -> web.Response:
 
 
 @routes.get("/consultant/image/{email}")
-async def send_email_request(request: web.Request) -> web.Response:
+async def consultant_image(request: web.Request) -> web.Response:
     email = extract_email(request)
     result = await read_consultant_image(email)
     if result is not None:
