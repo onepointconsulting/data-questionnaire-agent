@@ -117,29 +117,13 @@ async def update_global_configuration_options(request: web.Request) -> web.Respo
 async def update_global_configuration_web(request: web.Request) -> web.Response:
     async def process(request: web.Request):
         json_content = await request.json()
-        match json_content:
-            case {
-                "message_lower_limit": message_lower_limit,
-                "message_upper_limit": message_upper_limit,
-            }:
-                properties = [
-                    GlobalConfigurationProperty(
-                        config_key="MESSAGE_LOWER_LIMIT",
-                        config_value=str(message_lower_limit),
-                    ),
-                    GlobalConfigurationProperty(
-                        config_key="MESSAGE_UPPER_LIMIT",
-                        config_value=str(message_upper_limit),
-                    ),
-                ]
-                gc = GlobalConfiguration(properties=properties)
-                updated = await update_global_configuration(gc)
-                return web.json_response({"updated": updated}, headers=get_cors_headers_with_credentials(request))
-            case _:
-                raise web.HTTPBadRequest(
-                    text="Please provide the message_lower_limit and message_upper_limit properties.",
-                    headers=get_cors_headers_with_credentials(request),
-                )
+        properties: list[GlobalConfigurationProperty] = []
+        for entry in json_content:
+            key, value = entry["config_key"], entry["config_value"]
+            properties.append(GlobalConfigurationProperty(config_key=key, config_value=str(value)))
+        gc = GlobalConfiguration(properties=properties)
+        updated = await update_global_configuration(gc)
+        return web.json_response({"updated": updated}, headers=get_cors_headers_with_credentials(request))
 
     return await handle_error(process, request=request)
 

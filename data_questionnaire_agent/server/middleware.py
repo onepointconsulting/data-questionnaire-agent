@@ -37,6 +37,9 @@ async def rate_limit(request, handler):
 
 @web.middleware
 async def protected_middleware(request, handler):
+    if request.method == "OPTIONS":
+        return await handler(request)
+        
     if request.path.startswith("/protected/"):
         auth_header = request.headers.get("Authorization", "")
         if not auth_header.startswith("Bearer "):
