@@ -1,7 +1,10 @@
 import i18n
-from data_questionnaire_agent.config import cfg
+from pathlib import Path
 
-i18n.load_path.append(cfg.translation_path)
+translations_path = Path(__file__).resolve().parent.parent / "i18n"
+assert translations_path.exists(), f"Cannot find {translations_path}"
+
+i18n.load_path.append(translations_path.as_posix())
 
 
 def t(key: str, **kwargs):
@@ -9,6 +12,8 @@ def t(key: str, **kwargs):
 
 
 if __name__ == "__main__":
+    from data_questionnaire_agent.config import cfg
+
     print(
         t(
             "A big thank you for completing a session with",

@@ -2,7 +2,7 @@ import asyncio
 import sys
 from pathlib import Path
 
-from data_questionnaire_agent.config import db_cfg
+from data_questionnaire_agent.db_config import db_cfg
 from data_questionnaire_agent.log_init import logger
 from data_questionnaire_agent.service.db_bootstrap_service import execute_script
 

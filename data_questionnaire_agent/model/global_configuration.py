@@ -19,8 +19,10 @@ class GlobalConfiguration(BaseModel):
                 try:
                     return int(p.config_value)
                 except ValueError as e:
-                    logger.warn(
+                    logger.warning(
                         f"Could not extract default steps from configuration: {e}"
                     )
                     return default_steps
         return default_steps
+
+    

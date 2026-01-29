@@ -1,18 +1,13 @@
-import os
+import asyncio
 from enum import StrEnum
 from pathlib import Path
 
 import tenacity
-from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from tenacity import stop_after_attempt
 
-from data_questionnaire_agent.config_support import create_db_conn_str
 from data_questionnaire_agent.log_init import logger
-
-root_project = Path(__file__).resolve().parent.parent
-
-load_dotenv((root_project / ".env").resolve().as_posix(), verbose=True)
+from data_questionnaire_agent.model.global_configuration import GlobalConfiguration
 
 
 class GraphRagMode(StrEnum):
@@ -27,15 +22,25 @@ def create_if_not_exists(folder):
     assert folder.exists(), "Folder {folder} does not exist."
 
 
+
+def convert_global_configuration_cfg_to_dict() -> dict:
+    from data_questionnaire_agent.service.persistence_service_async import select_global_configuration
+    global_configuration_cfg: GlobalConfiguration = asyncio.run(select_global_configuration())
+    return {prop.config_key: prop.config_value for prop in global_configuration_cfg.properties}
+
+
+global_configuration_dict = convert_global_configuration_cfg_to_dict()
+
+
 class Config:
-    model = os.getenv("OPENAI_MODEL")
-    deep_research_model = os.getenv("DEEP_RESEARCH_MODEL")
-    request_timeout = int(os.getenv("REQUEST_TIMEOUT"))
-    has_langchain_cache = os.getenv("LANGCHAIN_CACHE") == "true"
-    streaming = os.getenv("CHATGPT_STREAMING") == "true"
-    temperature = float(os.getenv("OPENAI_API_TEMPERATURE", 0.0))
+    model = global_configuration_dict.get("OPENAI_MODEL")
+    deep_research_model = global_configuration_dict.get("DEEP_RESEARCH_MODEL")
+    request_timeout = int(global_configuration_dict.get("REQUEST_TIMEOUT"))
+    has_langchain_cache = global_configuration_dict.get("LANGCHAIN_CACHE") == "true"
+    streaming = global_configuration_dict.get("CHATGPT_STREAMING") == "true"
+    temperature = float(global_configuration_dict.get("OPENAI_API_TEMPERATURE", 0.0))
     llm = ChatOpenAI(
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        openai_api_key=global_configuration_dict.get("OPENAI_API_KEY"),
         model=model,
         temperature=temperature,
         request_timeout=request_timeout,
@@ -43,7 +48,7 @@ class Config:
         streaming=streaming,
     )
     llm_stream = ChatOpenAI(
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        openai_api_key=global_configuration_dict.get("OPENAI_API_KEY"),
         model=model,
         temperature=temperature,
         request_timeout=request_timeout,
@@ -52,151 +57,145 @@ class Config:
     )
     logger.info(f"Using AI model {model}")
 
-    verbose_llm = os.getenv("VERBOSE_LLM") == "true"
-    ui_timeout = int(os.getenv("UI_TIMEOUT", "60"))
+    verbose_llm = global_configuration_dict.get("VERBOSE_LLM") == "true"
+    ui_timeout = int(global_configuration_dict.get("UI_TIMEOUT", "60"))
     project_root = Path(
-        os.getenv("PROJECT_ROOT", Path(__file__).resolve().parent.parent)
+        global_configuration_dict.get("PROJECT_ROOT", Path(__file__).resolve().parent.parent)
     )
     assert project_root.exists()
-    question_cache_folder = os.getenv(
+    question_cache_folder = global_configuration_dict.get(
         "QUESTION_CACHE_FOLDER", Path(__file__).resolve().parent.parent
     )
     question_cache_folder_path = Path(question_cache_folder)
 
     create_if_not_exists(question_cache_folder_path)
-    wkhtmltopdf_binary = Path(os.getenv("WKHTMLTOPDF_BINARY"))
+    wkhtmltopdf_binary = Path(global_configuration_dict.get("WKHTMLTOPDF_BINARY"))
     assert wkhtmltopdf_binary.exists(), f"Cannot find {wkhtmltopdf_binary}"
-    template_location = Path(os.getenv("TEMPLATE_LOCATION"))
-    assert template_location.exists()
-    pdf_folder = Path(os.getenv("PDF_FOLDER"))
+    template_location = Path(__file__).resolve().parent.parent / "templates"
+    assert template_location.exists(), f"Cannot find {template_location}"
+    pdf_folder = Path(global_configuration_dict.get("PDF_FOLDER"))
     create_if_not_exists(pdf_folder)
-    jwt_gen_folder = Path(os.getenv("JWT_GEN_FOLDER"))
+    jwt_gen_folder = Path(global_configuration_dict.get("JWT_GEN_FOLDER"))
     create_if_not_exists(jwt_gen_folder)
 
     # Embedding related
-    raw_text_folder = Path(os.getenv("RAW_TEXT_FOLDER"))
+    raw_text_folder = Path(global_configuration_dict.get("RAW_TEXT_FOLDER"))
     create_if_not_exists(raw_text_folder)
-    embeddings_persistence_dir = Path(os.getenv("EMBEDDINGS_PERSISTENCE_DIR"))
-    chunk_size = int(os.getenv("EMBEDDINGS_CHUNK_SIZE"))
-    embeddings = OpenAIEmbeddings(chunk_size=chunk_size)
-    search_results_how_many = int(os.getenv("SEARCH_RESULTS_HOW_MANY"))
-    token_limit = int(os.getenv("TOKEN_LIMIT"))
+    embeddings_persistence_dir = Path(global_configuration_dict.get("EMBEDDINGS_PERSISTENCE_DIR"))
+    chunk_size = int(global_configuration_dict.get("EMBEDDINGS_CHUNK_SIZE"))
+    embeddings = OpenAIEmbeddings(
+        chunk_size=chunk_size, openai_api_key=global_configuration_dict.get("OPENAI_API_KEY")
+    )
+    search_results_how_many = int(global_configuration_dict.get("SEARCH_RESULTS_HOW_MANY"))
+    token_limit = int(global_configuration_dict.get("TOKEN_LIMIT"))
 
     # Questions
-    questions_per_batch = int(os.getenv("QUESTIONS_PER_BATCH"))
-    minimum_questionnaire_size = int(os.getenv("MINIMUM_QUESTIONNAIRE_SIZE"))
+    questions_per_batch = int(global_configuration_dict.get("QUESTIONS_PER_BATCH"))
+    minimum_questionnaire_size = int(global_configuration_dict.get("MINIMUM_QUESTIONNAIRE_SIZE"))
 
     # Session cost
-    show_session_cost = os.getenv("SHOW_SESSION_COST") == "true"
-    openai_retry_attempts = int(os.getenv("OPENAI_RETRY_ATTEMPTS"))
-    wait_fixed = int(os.getenv("OPENAI_WAIT_FIXED"))
+    show_session_cost = global_configuration_dict.get("SHOW_SESSION_COST") == "true"
+    openai_retry_attempts = int(global_configuration_dict.get("OPENAI_RETRY_ATTEMPTS"))
+    wait_fixed = int(global_configuration_dict.get("OPENAI_WAIT_FIXED"))
 
     retry_args = {
         "stop": stop_after_attempt(openai_retry_attempts),
         "wait": tenacity.wait_fixed(wait_fixed),
     }
 
-    product_title = os.getenv("PRODUCT_TITLE", "Onepoint Data Wellness Companion™")
+    product_title = global_configuration_dict.get("PRODUCT_TITLE", "Onepoint Data Wellness Companion™")
 
-    translation_path = os.getenv("TRANSLATION_PATH")
+    translation_path = Path(__file__).resolve().parent.parent / "i18n"
     assert Path(translation_path).exists()
     assert (
         translation_path is not None
     ), "Please specifiy the translation path TRANSLATION_PATH."
 
-    aggregator_report_folder_str = os.getenv("AGGREGATOR_REPORT_FOLDER")
+    aggregator_report_folder_str = global_configuration_dict.get("AGGREGATOR_REPORT_FOLDER")
     assert (
         aggregator_report_folder_str is not None
     ), "The aggregator report is not None."
     aggregator_report_folder = Path(aggregator_report_folder_str)
     create_if_not_exists(aggregator_report_folder)
 
-    use_graphrag = os.getenv("USE_GRAPHRAG") == "true"
-    graphrag_base_url = os.getenv("GRAPHRAG_BASE_URL")
+    use_graphrag = global_configuration_dict.get("USE_GRAPHRAG") == "true"
+    graphrag_base_url = global_configuration_dict.get("GRAPHRAG_BASE_URL")
     if use_graphrag:
         assert (
             graphrag_base_url is not None
         ), "If you want to use Graphrag you should specify the base URL."
-    graphrag_mode = os.getenv("GRAPHRAG_MODE")
+    graphrag_mode = global_configuration_dict.get("GRAPHRAG_MODE")
     assert graphrag_mode in [
         GraphRagMode.LOCAL,
         GraphRagMode.GLOBAL,
         GraphRagMode.ALL,
     ], "GraphRAG mode not recognized"
-    graphrag_context_size_str = os.getenv("GRAPHRAG_CONTEXT_SIZE", "10000")
+    graphrag_context_size_str = global_configuration_dict.get("GRAPHRAG_CONTEXT_SIZE", "10000")
     graphrag_context_size = int(graphrag_context_size_str)
-    graphrag_jwt = os.getenv("GRAPHRAG_JWT")
+    graphrag_jwt = global_configuration_dict.get("GRAPHRAG_JWT")
     assert graphrag_jwt is not None, "JWT is needed to access GraphRAG server"
-    graphrag_project = os.getenv("GRAPHRAG_PROJECT")
+    graphrag_project = global_configuration_dict.get("GRAPHRAG_PROJECT")
     assert graphrag_project is not None, "GraphRAG project is required."
-    graphrag_read_timeout = float(os.getenv("GRAPHRAG_READ_TIMEOUT", "20"))
-    graphrag_engine = os.getenv("GRAPHRAG_ENGINE", "lightrag")
+    graphrag_read_timeout = float(global_configuration_dict.get("GRAPHRAG_READ_TIMEOUT", "20"))
+    graphrag_engine = global_configuration_dict.get("GRAPHRAG_ENGINE", "lightrag")
 
 
 cfg = Config()
 
 
 class MailConfig:
-    mail_user = os.getenv("MAIL_USER")
-    mail_password = os.getenv("MAIL_PASSWORD")
-    mail_from = os.getenv("MAIL_FROM")
-    mail_server = os.getenv("MAIL_SERVER")
-    mail_from_person = os.getenv("MAIL_FROM_PERSON")
-    mail_to_name = os.getenv("MAIL_TO_NAME")
-    mail_subject = os.getenv("MAIL_SUBJECT")
-    feedback_email = os.getenv("FEEDBACK_EMAIL", "feedback@onepointltd.com")
+    mail_user = global_configuration_dict.get("MAIL_USER")
+    mail_password = global_configuration_dict.get("MAIL_PASSWORD")
+    mail_from = global_configuration_dict.get("MAIL_FROM")
+    mail_server = global_configuration_dict.get("MAIL_SERVER")
+    mail_from_person = global_configuration_dict.get("MAIL_FROM_PERSON")
+    mail_to_name = global_configuration_dict.get("MAIL_TO_NAME")
+    mail_subject = global_configuration_dict.get("MAIL_SUBJECT")
+    feedback_email = global_configuration_dict.get("FEEDBACK_EMAIL", "feedback@onepointltd.com")
 
 
 mail_config = MailConfig()
 
 
 class WebsocketConfig:
-    websocket_server = os.getenv("WEBSOCKET_SERVER", "0.0.0.0")
-    websocket_port = int(os.getenv("WEBSOCKET_PORT", 8080))
+    websocket_server = global_configuration_dict.get("WEBSOCKET_SERVER", "0.0.0.0")
+    websocket_port = int(global_configuration_dict.get("WEBSOCKET_PORT", 8080))
     logger.info(f"Websocket server: {websocket_server}")
     logger.info(f"Websocket port: {websocket_port}")
-    websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
+    websocket_cors_allowed_origins = global_configuration_dict.get("WEBSOCKET_CORS_ALLOWED_ORIGINS", "*")
 
 
 websocket_cfg = WebsocketConfig()
 
 
 class WebServerConfig:
-    ui_folder = Path(os.getenv("UI_FOLDER", "./web/ui"))
+    ui_folder = Path(__file__).resolve().parent.parent / "ui"
     if not ui_folder.exists():
         ui_folder.mkdir(parents=True, exist_ok=True)
-    images_folder = Path(os.getenv("IMAGES_FOLDER", "./public/images"))
+    images_folder = Path(__file__).resolve().parent.parent / "public" / "images"
     assert images_folder.exists(), f"{images_folder} does not exist. Please create it."
 
 
 web_server_cfg = WebServerConfig()
 
 
-class DBConfig:
-    db_create = os.getenv("DB_CREATE", "false") == "true"
-    db_conn_str = create_db_conn_str()
-
-
-db_cfg = DBConfig()
-
-
 class JWTTokenConfig:
-    secret = os.getenv("JWT_SECRET")
+    secret = global_configuration_dict.get("JWT_SECRET")
     assert secret is not None, "Cannot find JWT secret"
-    algorithm = os.getenv("JWT_ALGORITHM")
+    algorithm = global_configuration_dict.get("JWT_ALGORITHM")
     assert algorithm is not None, "Cannot find JWT algorithm"
-    timedelta_minutes = os.getenv("JWT_TIME_DELTA_MINUTES")
+    timedelta_minutes = global_configuration_dict.get("JWT_TIME_DELTA_MINUTES")
     assert timedelta_minutes is not None, "No time delta in minutes available"
     timedelta_minutes = int(timedelta_minutes)
-    dwell_url = os.getenv("DWELL_URL", "https://d-well.onepointltd.ai")
-    dwise_url = os.getenv("DWISE_URL", "https://d-wise.onepointltd.ai")
+    dwell_url = global_configuration_dict.get("DWELL_URL", "https://d-well.onepointltd.ai")
+    dwise_url = global_configuration_dict.get("DWISE_URL", "https://d-wise.onepointltd.ai")
 
 
 jwt_token_cfg = JWTTokenConfig()
 
 
 class ReportAggregationConfig:
-    report_token_limit_str = os.getenv("REPORT_TOKEN_LIMIT", "30000")
+    report_token_limit_str = global_configuration_dict.get("REPORT_TOKEN_LIMIT", "30000")
     report_token_limit = int(report_token_limit_str)
 
 

@@ -4,7 +4,7 @@ from typing import Any, Callable, Coroutine
 
 from psycopg import AsyncConnection, AsyncCursor
 
-from data_questionnaire_agent.config import db_cfg
+from data_questionnaire_agent.db_config import db_cfg
 from data_questionnaire_agent.log_init import logger
 
 if sys.platform == "win32":

@@ -165,3 +165,5 @@ embeddings/
 docker_start.bat
 
 data/*.sql
+
+sql/tb_config.sql
