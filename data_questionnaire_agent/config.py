@@ -138,6 +138,7 @@ class Config:
     assert graphrag_project is not None, "GraphRAG project is required."
     graphrag_read_timeout = float(global_configuration_dict.get("GRAPHRAG_READ_TIMEOUT", "20"))
     graphrag_engine = global_configuration_dict.get("GRAPHRAG_ENGINE", "lightrag")
+    relevant_documents_count = int(global_configuration_dict.get("RELEVANT_DOCUMENTS_COUNT", "3"))
 
 
 cfg = Config()

@@ -9,6 +9,7 @@ from data_questionnaire_agent.model.application_schema import (
     convert_to_question_answers,
 )
 from data_questionnaire_agent.model.confidence_schema import ConfidenceRating
+from data_questionnaire_agent.model.context_documents import ContextDocuments
 from data_questionnaire_agent.model.openai_schema import (
     ResponseQuestions,
 )
@@ -41,7 +42,7 @@ async def process_secondary_questions(
         question_per_batch,
         confidence_rating=confidence_rating,
     )
-    relevant_documents = extract_relevant_documents(knowledge_base, most_common_count=MOST_COMMON_COUNT)
+    relevant_documents = extract_relevant_documents(knowledge_base, most_common_count=cfg.relevant_documents_count) if cfg.relevant_documents_count > 0 else ContextDocuments(documents=[])
     retries = 3
     while retries > 0:
         retries -= 1
