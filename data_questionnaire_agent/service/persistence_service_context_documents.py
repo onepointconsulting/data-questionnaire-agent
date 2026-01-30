@@ -6,6 +6,7 @@ from data_questionnaire_agent.model.context_documents import (
     ContextDocument,
     ContextDocuments,
 )
+from data_questionnaire_agent.service.context_service import create_download_url
 from data_questionnaire_agent.service.query_support import create_cursor
 
 
@@ -54,6 +55,8 @@ DELETE FROM TB_CONTEXT_DOCUMENTS WHERE QUESTIONNAIRE_STATUS_ID = %(questionnaire
 async def read_context_documents(
     questionnaire_status_ids: list[int],
 ) -> list[ContextDocuments] | None:
+    from data_questionnaire_agent.config import cfg
+
     async def process_read(cur: AsyncCursor):
         await cur.execute(
             """
@@ -75,6 +78,7 @@ FROM TB_CONTEXT_DOCUMENTS WHERE QUESTIONNAIRE_STATUS_ID = ANY(%(questionnaire_st
         for row in rows:
             context_document = ContextDocument(
                 id=row[ID],
+                download_url=create_download_url(row[DOCUMENT_PATH], cfg),
                 document_path=row[DOCUMENT_PATH],
                 document_name=row[DOCUMENT_NAME],
                 count=row[COUNT],

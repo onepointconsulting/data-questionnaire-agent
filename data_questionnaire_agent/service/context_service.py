@@ -10,6 +10,7 @@ from data_questionnaire_agent.model.context_documents import (
     ContextDocument,
     ContextDocuments,
 )
+from data_questionnaire_agent.service.context_service_support import create_download_url
 
 
 def find_document_extract(document_path: str, context: Context) -> str:
@@ -37,6 +38,9 @@ def count_documents(
 def extract_relevant_documents(
     context: Context, most_common_count: int = 5
 ) -> ContextDocuments:
+
+    from data_questionnaire_agent.config import cfg
+
     document_extracts = defaultdict(list)
     relevant_documents = []
     relevant_documents_counter = Counter()
@@ -53,6 +57,7 @@ def extract_relevant_documents(
         relevant_documents.append(
             ContextDocument(
                 count=relevant_documents_counter.get(file_path, 1),
+                download_url=create_download_url(file_path, cfg),
                 document_path=file_path,
                 document_name=file_path.split("/")[-1],
                 document_extracts=extract_list,
@@ -62,3 +67,4 @@ def extract_relevant_documents(
         relevant_documents, key=lambda x: x.count, reverse=True
     )
     return ContextDocuments(documents=sorted_relevant_documents[:most_common_count])
+

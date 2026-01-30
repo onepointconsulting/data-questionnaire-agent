@@ -5,6 +5,7 @@ class ContextDocument(BaseModel):
     id: int | None = Field(default=None, description="The identifier of the document")
     document_path: str = Field(..., description="The path to the document")
     document_name: str = Field(..., description="The name of the document")
+    download_url: str = Field(..., description="The download URL of the document")
     count: int = Field(..., description="The count of the document")
     document_extracts: list[str] | None = Field(
         default=None, description="The extract of the document"

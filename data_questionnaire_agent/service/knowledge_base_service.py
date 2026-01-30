@@ -21,7 +21,7 @@ async def fetch_context(questionnaire: Union[str, Questionnaire]) -> Context:
         if cfg.use_graphrag:
             knowledge_base = await graphrag_context(questionnaire_str)
             if knowledge_base is None:
-                raise Context(
+                return Context(
                     entities_context=[],
                     relations_context=[],
                     text_units_context=[],

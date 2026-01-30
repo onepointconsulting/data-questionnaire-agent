@@ -18,7 +18,7 @@ async def rate_limit(request, handler):
     if not request.path.startswith("/socket.io/"):
         return await handler(request)
 
-    ip = extract_client_ip(request)
+    ip = await extract_client_ip(request)
     now = time.monotonic()
     q = hits[ip]
 
@@ -39,7 +39,7 @@ async def rate_limit(request, handler):
 async def protected_middleware(request, handler):
     if request.method == "OPTIONS":
         return await handler(request)
-        
+
     if request.path.startswith("/protected/"):
         auth_header = request.headers.get("Authorization", "")
         if not auth_header.startswith("Bearer "):

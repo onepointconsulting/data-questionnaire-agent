@@ -24,6 +24,9 @@ from data_questionnaire_agent.service.question_generation_service import (
 )
 
 
+MOST_COMMON_COUNT = 3
+
+
 async def process_secondary_questions(
     questionnaire: Questionnaire,
     question_per_batch: int,
@@ -38,7 +41,7 @@ async def process_secondary_questions(
         question_per_batch,
         confidence_rating=confidence_rating,
     )
-    relevant_documents = extract_relevant_documents(knowledge_base, most_common_count=5)
+    relevant_documents = extract_relevant_documents(knowledge_base, most_common_count=MOST_COMMON_COUNT)
     retries = 3
     while retries > 0:
         retries -= 1
