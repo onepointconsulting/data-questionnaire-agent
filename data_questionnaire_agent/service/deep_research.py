@@ -113,7 +113,7 @@ async def deep_research(
         "deep_research" in prompts
     ), "Make sure that you have the deep research prompt in your prompts file."
     section = prompts["deep_research"]["advice"]
-    client = AsyncOpenAI()
+    client = AsyncOpenAI(api_key=cfg.openai_api_key)
     user_query = section["human_message"].format(
         questions_answers=str(deep_research_advice_input.questionnaire),
         conditional_advice=deep_research_advice_input.conditional_advice,

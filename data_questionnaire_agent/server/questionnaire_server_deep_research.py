@@ -1,5 +1,6 @@
 from aiohttp import web
 
+from data_questionnaire_agent.config import cfg
 from data_questionnaire_agent.server.server_support import (
     CORS_HEADERS,
     extract_session,
@@ -20,3 +21,13 @@ async def deep_research_output_get(request: web.Request) -> web.Response:
     session_id = extract_session(request)
     deep_research_outputs = await read_deep_research(session_id)
     return web.json_response(deep_research_outputs.model_dump(), headers=CORS_HEADERS)
+
+
+@routes.options("/deep_research/active")
+async def deep_research_active_options(_: web.Request) -> web.Response:
+    return web.json_response({"message": "Accept all hosts"}, headers=CORS_HEADERS)
+
+
+@routes.get("/deep_research/active")
+async def deep_research_active_get(_: web.Request) -> web.Response:
+    return web.json_response({"active": cfg.deep_research_enabled}, headers=CORS_HEADERS)

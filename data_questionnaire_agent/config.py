@@ -39,8 +39,9 @@ class Config:
     has_langchain_cache = global_configuration_dict.get("LANGCHAIN_CACHE") == "true"
     streaming = global_configuration_dict.get("CHATGPT_STREAMING") == "true"
     temperature = float(global_configuration_dict.get("OPENAI_API_TEMPERATURE", 0.0))
+    openai_api_key = global_configuration_dict.get("OPENAI_API_KEY")
     llm = ChatOpenAI(
-        openai_api_key=global_configuration_dict.get("OPENAI_API_KEY"),
+        openai_api_key=openai_api_key,
         model=model,
         temperature=temperature,
         request_timeout=request_timeout,
@@ -48,7 +49,7 @@ class Config:
         streaming=streaming,
     )
     llm_stream = ChatOpenAI(
-        openai_api_key=global_configuration_dict.get("OPENAI_API_KEY"),
+        openai_api_key=openai_api_key,
         model=model,
         temperature=temperature,
         request_timeout=request_timeout,
@@ -139,6 +140,7 @@ class Config:
     graphrag_read_timeout = float(global_configuration_dict.get("GRAPHRAG_READ_TIMEOUT", "20"))
     graphrag_engine = global_configuration_dict.get("GRAPHRAG_ENGINE", "lightrag")
     relevant_documents_count = int(global_configuration_dict.get("RELEVANT_DOCUMENTS_COUNT", "3"))
+    deep_research_enabled = global_configuration_dict.get("DEEP_RESEARCH", "true") == "true"
 
 
 cfg = Config()
