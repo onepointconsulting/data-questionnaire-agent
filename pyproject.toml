@@ -1,5 +1,4 @@
 [project]
-[project]
 name = "data-questionnaire-agent"
 version = "0.2.0"
 description = "Implementation of an agent which asks questions and gives advices about a predefined question."
@@ -58,8 +57,6 @@ dev = [
 consultant-info-generator = { git = "https://github.com/OnepointConsultingLtd/consultant_info_generator.git" }
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
