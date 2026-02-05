@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from data_questionnaire_agent.translation import t
 
@@ -80,3 +80,14 @@ class ConfidenceRating(BaseModel):
 
 <p>{self.reasoning}</p>
 """
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def validate_id(cls, v):
+        """Handle string IDs from Gemini models by converting to None"""
+        if isinstance(v, str):
+            return None
+        return v
+
+    def _value(self) -> int:
+        return CONFIDENCE_DEGREE_DICT[self.rating]

@@ -40,21 +40,31 @@ class Config:
     streaming = global_configuration_dict.get("CHATGPT_STREAMING") == "true"
     temperature = float(global_configuration_dict.get("OPENAI_API_TEMPERATURE", 0.0))
     openai_api_key = global_configuration_dict.get("OPENAI_API_KEY")
+    openrouter_api_key = global_configuration_dict.get("OPENROUTER_API_KEY")
+    openrouter_base_url = global_configuration_dict.get("OPENROUTER_BASE_URL")
+    openrouter_provider = global_configuration_dict.get("OPENROUTER_PROVIDER")  # e.g., "google" or "anthropic"
+    open_ai_common_params = {
+        "api_key": openai_api_key,
+        "model": model,
+        "temperature": temperature,
+        "request_timeout": request_timeout,
+        "cache": has_langchain_cache,
+    }
+    if openrouter_base_url and openrouter_api_key:
+        open_ai_common_params["base_url"] = openrouter_base_url
+        open_ai_common_params["api_key"] = openrouter_api_key
+        # Optionally add provider info via default_headers
+        if openrouter_provider:
+            open_ai_common_params["default_headers"] = {
+                "X-Provider": openrouter_provider,  # Custom header for tracking
+            }
     llm = ChatOpenAI(
-        openai_api_key=openai_api_key,
-        model=model,
-        temperature=temperature,
-        request_timeout=request_timeout,
-        cache=has_langchain_cache,
         streaming=streaming,
+        **open_ai_common_params
     )
     llm_stream = ChatOpenAI(
-        openai_api_key=openai_api_key,
-        model=model,
-        temperature=temperature,
-        request_timeout=request_timeout,
-        cache=has_langchain_cache,
         streaming=True,
+        **open_ai_common_params
     )
     logger.info(f"Using AI model {model}")
 
